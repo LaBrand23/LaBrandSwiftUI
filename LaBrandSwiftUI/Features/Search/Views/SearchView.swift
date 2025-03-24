@@ -41,6 +41,7 @@ struct SearchView: View {
                                 ], spacing: 16) {
                                     ForEach(viewModel.trendingProducts) { product in
                                         ProductCard(product: product, imageSize: 140)
+                                            .environmentObject(FavoritesManager())
                                     }
                                 }
                             }

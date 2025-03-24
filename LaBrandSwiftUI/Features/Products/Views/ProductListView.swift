@@ -70,6 +70,7 @@ struct ProductListView: View {
                     ForEach(viewModel.filteredProducts) { product in
                         NavigationLink(destination: ProductDetailView(product: product)) {
                             ProductCard(product: product)
+                                .environmentObject(FavoritesManager())
                         }
                     }
                 }

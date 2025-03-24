@@ -38,6 +38,7 @@ struct HomeView: View {
                             HStack(spacing: 16) {
                                 ForEach(viewModel.newArrivals) { product in
                                     ProductCard(product: product)
+                                        .environmentObject(FavoritesManager())
                                 }
                             }
                             .padding(.horizontal)
@@ -52,6 +53,7 @@ struct HomeView: View {
                             HStack(spacing: 16) {
                                 ForEach(viewModel.saleProducts) { product in
                                     ProductCard(product: product)
+                                        .environmentObject(FavoritesManager())
                                 }
                             }
                             .padding(.horizontal)

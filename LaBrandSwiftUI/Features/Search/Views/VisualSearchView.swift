@@ -40,6 +40,7 @@ struct VisualSearchView: View {
                             ], spacing: 16) {
                                 ForEach(viewModel.similarProducts) { product in
                                     ProductCard(product: product, imageSize: 140)
+                                        .environmentObject(FavoritesManager())
                                 }
                             }
                             .padding()

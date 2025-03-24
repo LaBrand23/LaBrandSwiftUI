@@ -5,7 +5,7 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-            if authManager.isAuthenticated {
+            if true /*authManager.isAuthenticated*/ {
                 MainTabView()
             } else {
                 SignInView()
@@ -15,6 +15,9 @@ struct ContentView: View {
 }
 
 struct MainTabView: View {
+    
+    @StateObject private var favoritesManager = FavoritesManager()
+    
     var body: some View {
         TabView {
             HomeView()
@@ -22,14 +25,19 @@ struct MainTabView: View {
                     Label("Home", systemImage: "house")
                 }
             
+            CategoriesView()
+                .tabItem {
+                    Label("Categories", systemImage: "square.grid.2x2")
+                }
+            
             SearchView()
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
             
-            CategoriesView()
+            FavoritesView(favoritesManager: favoritesManager)
                 .tabItem {
-                    Label("Categories", systemImage: "square.grid.2x2")
+                    Label("Favorites", systemImage: "heart")
                 }
             
             ProfileView()
@@ -37,7 +45,8 @@ struct MainTabView: View {
                     Label("Profile", systemImage: "person")
                 }
         }
-        .accentColor(.red)
+        .environmentObject(favoritesManager)
+//        .accentColor(.red)
     }
 }
 
