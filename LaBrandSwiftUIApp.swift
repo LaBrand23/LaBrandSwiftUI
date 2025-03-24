@@ -27,6 +27,11 @@ struct LaBrandSwiftUIApp: App {
                         Label("Favorites", systemImage: "heart")
                     }
                 
+                BagView()
+                    .tabItem {
+                        Label("Bag", systemImage: "bag")
+                    }
+                
                 ProfileView()
                     .tabItem {
                         Label("Profile", systemImage: "person")

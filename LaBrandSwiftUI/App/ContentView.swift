@@ -30,14 +30,19 @@ struct MainTabView: View {
                     Label("Categories", systemImage: "square.grid.2x2")
                 }
             
-            SearchView()
-                .tabItem {
-                    Label("Search", systemImage: "magnifyingglass")
-                }
-            
+//            SearchView()
+//                .tabItem {
+//                    Label("Search", systemImage: "magnifyingglass")
+//                }
+//            
             FavoritesView(favoritesManager: favoritesManager)
                 .tabItem {
                     Label("Favorites", systemImage: "heart")
+                }
+            
+            BagView()
+                .tabItem {
+                    Label("Bag", systemImage: "bag")
                 }
             
             ProfileView()
