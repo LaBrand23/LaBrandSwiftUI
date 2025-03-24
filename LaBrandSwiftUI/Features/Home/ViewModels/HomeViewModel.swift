@@ -37,10 +37,10 @@ class HomeViewModel: ObservableObject {
         ]
         
         categories = [
-            Category(id: UUID(), name: "Women", image: "women_category", parentCategory: nil, subcategories: nil),
-            Category(id: UUID(), name: "Men", image: "men_category", parentCategory: nil, subcategories: nil),
-            Category(id: UUID(), name: "Kids", image: "kids_category", parentCategory: nil, subcategories: nil),
-            Category(id: UUID(), name: "Accessories", image: "accessories_category", parentCategory: nil, subcategories: nil)
+            Category(id: UUID(), name: "Women", image: "women_category", parentCategoryID: nil, subcategories: nil),
+            Category(id: UUID(), name: "Men", image: "men_category", parentCategoryID: nil, subcategories: nil),
+            Category(id: UUID(), name: "Kids", image: "kids_category", parentCategoryID: nil, subcategories: nil),
+            Category(id: UUID(), name: "Accessories", image: "accessories_category", parentCategoryID: nil, subcategories: nil)
         ]
         
         newArrivals = [
@@ -58,7 +58,8 @@ class HomeViewModel: ObservableObject {
                 colors: ["Blue", "Pink"],
                 sizes: ["XS", "S", "M", "L"],
                 isNew: true,
-                isFavorite: false
+                isFavorite: false,
+                createdAt: .now
             ),
             Product(
                 id: UUID(),
@@ -74,7 +75,8 @@ class HomeViewModel: ObservableObject {
                 colors: ["Blue", "Black"],
                 sizes: ["S", "M", "L", "XL"],
                 isNew: true,
-                isFavorite: false
+                isFavorite: false,
+                createdAt: .now
             )
         ]
         
@@ -93,7 +95,8 @@ class HomeViewModel: ObservableObject {
                 colors: ["White", "Navy"],
                 sizes: ["XS", "S", "M", "L", "XL"],
                 isNew: false,
-                isFavorite: false
+                isFavorite: false,
+                createdAt: .now
             ),
             Product(
                 id: UUID(),
@@ -109,7 +112,8 @@ class HomeViewModel: ObservableObject {
                 colors: ["Black", "Brown", "Tan"],
                 sizes: ["One Size"],
                 isNew: false,
-                isFavorite: false
+                isFavorite: false,
+                createdAt: .now
             )
         ]
     }

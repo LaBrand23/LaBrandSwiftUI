@@ -91,26 +91,29 @@ struct SectionHeader: View {
     }
 }
 
-struct CategoryCard: View {
-    let category: Category
+extension HomeView {
     
-    var body: some View {
-        VStack {
-            AsyncImage(url: URL(string: category.image)) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Color(.systemGray6)
+    struct CategoryCard: View {
+        let category: Category
+        
+        var body: some View {
+            VStack {
+                AsyncImage(url: URL(string: category.image)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Color(.systemGray6)
+                }
+                .frame(width: 80, height: 80)
+                .clipShape(Circle())
+                
+                Text(category.name)
+                    .font(.caption)
+                    .multilineTextAlignment(.center)
             }
-            .frame(width: 80, height: 80)
-            .clipShape(Circle())
-            
-            Text(category.name)
-                .font(.caption)
-                .multilineTextAlignment(.center)
+            .frame(width: 100)
         }
-        .frame(width: 100)
     }
 }
 

@@ -84,13 +84,14 @@ struct ProductCard: View {
         price: 29.99,
         originalPrice: 39.99,
         images: ["placeholder"],
-        category: Category(id: UUID(), name: "T-Shirts", image: "tshirt", parentCategory: nil, subcategories: nil),
+        category: Category(id: UUID(), name: "T-Shirts", image: "tshirt", parentCategoryID: nil, subcategories: nil),
         brand: "LaBrand",
         rating: 4.5,
         reviewCount: 128,
         colors: ["White", "Black"],
         sizes: ["S", "M", "L", "XL"],
         isNew: true,
-        isFavorite: false
+        isFavorite: false,
+        createdAt: .now
     ))
 } 

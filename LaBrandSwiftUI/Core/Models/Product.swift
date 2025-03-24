@@ -1,6 +1,6 @@
 import Foundation
 
-struct Product: Identifiable, Codable {
+struct Product: Identifiable {
     let id: UUID
     let name: String
     let description: String
@@ -15,6 +15,7 @@ struct Product: Identifiable, Codable {
     let sizes: [String]
     let isNew: Bool
     let isFavorite: Bool
+    let createdAt: Date
     
     var discountPercentage: Int? {
         guard let originalPrice = originalPrice else { return nil }
@@ -26,15 +27,64 @@ struct Product: Identifiable, Codable {
         
         return Int(round(discount))
     }
-
 }
 
-struct Category: Identifiable, Codable {
-    let id: UUID
-    let name: String
-    let image: String
-    let parentCategory: UUID?
-    let subcategories: [Category]?
+
+// MARK: - Mock Data
+extension Product {
+    static let mockProducts: [Product] = [
+        Product(
+            id: UUID(),
+            name: "Nike Air Max 270",
+            description: "A stylish and comfortable sneaker with Air cushioning.",
+            price: 150.00,
+            originalPrice: 200.00,
+            images: ["https://example.com/nike1.jpg", "https://example.com/nike2.jpg"],
+            category: Category.mockCategories.first!,
+            brand: "Nike",
+            rating: 4.8,
+            reviewCount: 1200,
+            colors: ["Red", "Black", "White"],
+            sizes: ["7", "8", "9", "10", "11"],
+            isNew: true,
+            isFavorite: false,
+            createdAt: .now
+        ),
+        Product(
+            id: UUID(),
+            name: "Adidas Ultraboost",
+            description: "A performance running shoe with great energy return.",
+            price: 180.00,
+            originalPrice: 220.00,
+            images: ["https://example.com/adidas1.jpg", "https://example.com/adidas2.jpg"],
+            category: Category.mockCategories.first!,
+            brand: "Adidas",
+            rating: 4.7,
+            reviewCount: 950,
+            colors: ["Blue", "White"],
+            sizes: ["8", "9", "10", "12"],
+            isNew: false,
+            isFavorite: true,
+            createdAt: .now
+        ),
+        Product(
+            id: UUID(),
+            name: "Puma Running Shoes",
+            description: "Lightweight and comfortable for daily runs.",
+            price: 120.00,
+            originalPrice: nil,  // No discount
+            images: ["https://example.com/puma1.jpg"],
+            category: Category.mockCategories.first!,
+            brand: "Puma",
+            rating: 4.5,
+            reviewCount: 500,
+            colors: ["Green", "Black"],
+            sizes: ["6", "7", "8", "9"],
+            isNew: false,
+            isFavorite: false,
+            createdAt: .now
+        )
+    ]
 }
 
 struct ProductFilter: Codable {

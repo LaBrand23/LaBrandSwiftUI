@@ -89,14 +89,15 @@ class SearchViewModel: ObservableObject {
             price: 79.99,
             originalPrice: 99.99,
             images: ["dress_1"],
-            category: Category(id: UUID(), name: "Dresses", image: "dresses", parentCategory: nil, subcategories: nil),
+            category: Category(id: UUID(), name: "Dresses", image: "dresses", parentCategoryID: nil, subcategories: nil),
             brand: "LaBrand",
             rating: 4.8,
             reviewCount: 24,
             colors: ["Blue", "Pink"],
             sizes: ["XS", "S", "M", "L"],
             isNew: true,
-            isFavorite: false
+            isFavorite: false,
+            createdAt: .now
         ),
         Product(
             id: UUID(),
@@ -105,14 +106,15 @@ class SearchViewModel: ObservableObject {
             price: 89.99,
             originalPrice: nil,
             images: ["jacket_1"],
-            category: Category(id: UUID(), name: "Jackets", image: "jackets", parentCategory: nil, subcategories: nil),
+            category: Category(id: UUID(), name: "Jackets", image: "jackets", parentCategoryID: nil, subcategories: nil),
             brand: "LaBrand",
             rating: 4.6,
             reviewCount: 42,
             colors: ["Blue", "Black"],
             sizes: ["S", "M", "L", "XL"],
             isNew: true,
-            isFavorite: false
+            isFavorite: false,
+            createdAt: .now
         ),
         Product(
             id: UUID(),
@@ -121,14 +123,15 @@ class SearchViewModel: ObservableObject {
             price: 79.99,
             originalPrice: 129.99,
             images: ["bag_1"],
-            category: Category(id: UUID(), name: "Bags", image: "bags", parentCategory: nil, subcategories: nil),
+            category: Category(id: UUID(), name: "Bags", image: "bags", parentCategoryID: nil, subcategories: nil),
             brand: "LaBrand",
             rating: 4.7,
             reviewCount: 153,
             colors: ["Black", "Brown", "Tan"],
             sizes: ["One Size"],
             isNew: false,
-            isFavorite: false
+            isFavorite: false,
+            createdAt: .now
         ),
         Product(
             id: UUID(),
@@ -137,14 +140,15 @@ class SearchViewModel: ObservableObject {
             price: 24.99,
             originalPrice: 39.99,
             images: ["tshirt_1"],
-            category: Category(id: UUID(), name: "T-Shirts", image: "tshirts", parentCategory: nil, subcategories: nil),
+            category: Category(id: UUID(), name: "T-Shirts", image: "tshirts", parentCategoryID: nil, subcategories: nil),
             brand: "LaBrand",
             rating: 4.5,
             reviewCount: 86,
             colors: ["White", "Navy"],
             sizes: ["XS", "S", "M", "L", "XL"],
             isNew: false,
-            isFavorite: false
+            isFavorite: false,
+            createdAt: .now
         )
     ]
 } 

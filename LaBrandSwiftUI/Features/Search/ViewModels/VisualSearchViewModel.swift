@@ -19,14 +19,15 @@ class VisualSearchViewModel: ObservableObject {
             price: 129.99,
             originalPrice: nil,
             images: ["dress_2"],
-            category: Category(id: UUID(), name: "Dresses", image: "dresses", parentCategory: nil, subcategories: nil),
+            category: Category(id: UUID(), name: "Dresses", image: "dresses", parentCategoryID: nil, subcategories: nil),
             brand: "LaBrand",
             rating: 4.7,
             reviewCount: 58,
             colors: ["Blue", "Pink"],
             sizes: ["XS", "S", "M", "L"],
             isNew: true,
-            isFavorite: false
+            isFavorite: false,
+            createdAt: .now
         ),
         Product(
             id: UUID(),
@@ -35,14 +36,15 @@ class VisualSearchViewModel: ObservableObject {
             price: 79.99,
             originalPrice: nil,
             images: ["skirt_1"],
-            category: Category(id: UUID(), name: "Skirts", image: "skirts", parentCategory: nil, subcategories: nil),
+            category: Category(id: UUID(), name: "Skirts", image: "skirts", parentCategoryID: nil, subcategories: nil),
             brand: "LaBrand",
             rating: 4.5,
             reviewCount: 42,
             colors: ["Multi"],
             sizes: ["XS", "S", "M", "L"],
             isNew: false,
-            isFavorite: false
+            isFavorite: false,
+            createdAt: .now
         )
     ]
     
