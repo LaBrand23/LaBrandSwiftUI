@@ -17,43 +17,51 @@ struct ContentView: View {
 struct MainTabView: View {
     
     @StateObject private var favoritesManager = FavoritesManager()
+    @State private var selectedTab: TabBarTag = .home
     
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             HomeView()
                 .tabItem {
-                    Label("Home", systemImage: "house")
+                    Image(selectedTab == .home ? .homeActivated : .homeInactive)
+                    Text(selectedTab.rawValue)
                 }
+                .tag(TabBarTag.home)
             
             CategoriesView()
                 .tabItem {
-                    Label("Categories", systemImage: "square.grid.2x2")
+                    Image(selectedTab == .shop ? .shopActivated : .shopInactive)
+                    Text(selectedTab.rawValue)
                 }
-            
-//            SearchView()
-//                .tabItem {
-//                    Label("Search", systemImage: "magnifyingglass")
-//                }
-//            
-            FavoritesView(favoritesManager: favoritesManager)
-                .tabItem {
-                    Label("Favorites", systemImage: "heart")
-                }
+                .tag(TabBarTag.shop)
             
             BagView()
                 .tabItem {
-                    Label("Bag", systemImage: "bag")
+                    Image(selectedTab == .bag ? .bagActivated : .bagInactive)
+                    Text(selectedTab.rawValue)
                 }
+                .tag(TabBarTag.bag)
+            
+            FavoritesView(favoritesManager: favoritesManager)
+                .tabItem {
+                    Image(selectedTab == .favorites ? .heartActivated : .heartInactive)
+                    Text(selectedTab.rawValue)
+                }
+                .tag(TabBarTag.favorites)
             
             ProfileView()
                 .tabItem {
-                    Label("Profile", systemImage: "person")
+                    Image(selectedTab == .profile ? .profileActivated : .profileInactive)
+                    Text(selectedTab.rawValue)
                 }
+                .tag(TabBarTag.profile)
         }
+        .accentColor(.red)
         .environmentObject(favoritesManager)
-//        .accentColor(.red)
+        .environment(\.tabSelection, $selectedTab)
     }
 }
+
 
 
 #Preview {

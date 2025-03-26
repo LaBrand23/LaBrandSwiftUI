@@ -14,7 +14,7 @@ struct Product: Identifiable, Codable {
     let colors: [String]
     let sizes: [String]
     let isNew: Bool
-    let isFavorite: Bool
+    var isFavorite: Bool
     let createdAt: Date
     
     var discountPercentage: Int? {
@@ -27,8 +27,25 @@ struct Product: Identifiable, Codable {
         
         return Int(round(discount))
     }
+    
+    var tag: Tag {
+        return if discountPercentage != nil {
+            .sale
+        } else if isNew {
+            .new
+        } else {
+            .default
+        }
+    }
 }
 
+extension Product {
+    enum Tag {
+        case sale
+        case new
+        case `default`
+    }
+}
 
 // MARK: - Mock Data
 extension Product {
