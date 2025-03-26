@@ -114,7 +114,7 @@ struct ChangePasswordView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         SettingsView(viewModel: ProfileViewModel())
     }
 } 

@@ -5,7 +5,7 @@ struct CheckoutView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
                     // Shipping Address Section
@@ -136,7 +136,7 @@ struct CheckoutView: View {
             .fullScreenCover(isPresented: $viewModel.showingSuccessView) {
                 OrderSuccessView()
             }
-        }
+//        }
     }
 }
 

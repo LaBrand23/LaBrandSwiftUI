@@ -5,7 +5,7 @@ struct BagView: View {
     @State private var showingCheckout = false
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             VStack {
                 if viewModel.bagItems.isEmpty {
                     emptyBagView
@@ -55,7 +55,7 @@ struct BagView: View {
             .fullScreenCover(isPresented: $showingCheckout) {
                 CheckoutView()
             }
-        }
+//        }
     }
     
     private var emptyBagView: some View {
@@ -121,7 +121,7 @@ struct BagView: View {
     }
     
     private var promoCodeSheet: some View {
-        NavigationView {
+//        NavigationView {
             VStack {
                 TextField("Enter promo code", text: $viewModel.promoCode)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -139,7 +139,7 @@ struct BagView: View {
             .navigationBarItems(trailing: Button("Done") {
                 viewModel.showingPromoCodeSheet = false
             })
-        }
+//        }
     }
 }
 

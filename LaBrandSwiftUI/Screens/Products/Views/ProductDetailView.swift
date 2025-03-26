@@ -140,6 +140,7 @@ struct ProductDetailView: View {
             .padding()
             .background(.regularMaterial)
         }
+        .toolbar(.hidden, for: .tabBar)
     }
 }
 

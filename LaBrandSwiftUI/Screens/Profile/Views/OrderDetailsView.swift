@@ -162,7 +162,7 @@ struct InfoRow: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         OrderDetailsView(
             order: Order.sampleOrders[0],
             viewModel: ProfileViewModel()

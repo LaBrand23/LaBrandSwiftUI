@@ -5,7 +5,7 @@ struct AddShippingAddressView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             Form {
                 Section {
                     TextField("Full name", text: $viewModel.newFullName)
@@ -59,6 +59,6 @@ struct AddShippingAddressView: View {
                     }
                 }
             }
-        }
+//        }
     }
 } 

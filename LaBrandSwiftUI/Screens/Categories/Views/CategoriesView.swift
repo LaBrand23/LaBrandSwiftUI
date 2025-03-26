@@ -8,7 +8,7 @@ struct CategoriesView: View {
     @State private var scrollPosition: Int? = nil
     
     var body: some View {
-        NavigationStack {
+//        NavigationStack {
             VStack(spacing: 0) {
                 // Main Category Segment [Men, Women, Kids]
                 CustomSegmentedControl(selectedIndex: $selectedCategoryIndex)
@@ -74,7 +74,7 @@ struct CategoriesView: View {
                     }
                 }
             }
-        }
+//        }
     }
 }
 // MARK: - UI

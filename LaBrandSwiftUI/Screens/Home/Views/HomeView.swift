@@ -4,7 +4,6 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
-        NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     // Featured Banner
@@ -71,7 +70,6 @@ struct HomeView: View {
             .refreshable {
                 await viewModel.fetchData()
             }
-        }
     }
 }
 

@@ -4,7 +4,7 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
                     // Profile Header
@@ -81,7 +81,7 @@ struct ProfileView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("My Profile")
-        }
+//        }
     }
 }
 

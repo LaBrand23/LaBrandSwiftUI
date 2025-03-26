@@ -5,7 +5,7 @@ struct ForgotPasswordView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             VStack(spacing: 24) {
                 // Header
                 Text("Forgot password")
@@ -68,7 +68,7 @@ struct ForgotPasswordView: View {
             } message: {
                 Text("Password reset link has been sent to your email")
             }
-        }
+//        }
     }
 }
 

@@ -12,7 +12,7 @@ struct FilterView: View {
     private let brands = ["Nike", "Adidas", "Puma", "New Balance", "Under Armour"]
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             Form {
                 // Price Range Section
                 Section {
@@ -127,7 +127,7 @@ struct FilterView: View {
                     }
                 }
             }
-        }
+//        }
     }
     
     private func resetFilters() {

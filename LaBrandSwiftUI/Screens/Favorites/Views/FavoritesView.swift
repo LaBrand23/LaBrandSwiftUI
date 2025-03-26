@@ -8,7 +8,7 @@ struct FavoritesView: View {
     }
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             VStack(spacing: 16) {
                 // Category Filter
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -97,7 +97,7 @@ struct FavoritesView: View {
                 }
             }
             .navigationTitle("Favorites")
-        }
+//        }
     }
 }
 

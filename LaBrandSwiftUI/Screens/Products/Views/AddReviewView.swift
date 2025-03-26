@@ -8,7 +8,7 @@ struct AddReviewView: View {
     @EnvironmentObject private var productDetailViewModel: ProductDetailViewModel
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             Form {
                 Section {
                     // Rating Selection
@@ -133,7 +133,7 @@ struct AddReviewView: View {
             } message: {
                 Text(viewModel.errorMessage)
             }
-        }
+//        }
     }
 }
 

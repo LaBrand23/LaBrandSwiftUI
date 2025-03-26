@@ -6,7 +6,7 @@ struct AddPaymentCardView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             Form {
                 Section {
                     TextField("Card number", text: $viewModel.newCardNumber)
@@ -55,7 +55,7 @@ struct AddPaymentCardView: View {
                     }
                 }
             }
-        }
+//        }
     }
 } 
 

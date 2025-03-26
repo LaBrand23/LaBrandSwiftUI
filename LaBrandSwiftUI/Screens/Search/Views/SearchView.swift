@@ -5,7 +5,7 @@ struct SearchView: View {
     @State private var showVisualSearch = false
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             VStack(spacing: 0) {
                 // Search header
                 SearchHeader(
@@ -65,7 +65,7 @@ struct SearchView: View {
             }
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.inline)
-        }
+//        }
         .sheet(isPresented: $showVisualSearch) {
             VisualSearchView()
         }

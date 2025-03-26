@@ -6,7 +6,7 @@ struct VisualSearchView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             VStack(spacing: 24) {
                 if let selectedImage = viewModel.selectedImage {
                     // Selected image preview
@@ -118,7 +118,7 @@ struct VisualSearchView: View {
                     }
                 }
             }
-        }
+//        }
     }
 }
 

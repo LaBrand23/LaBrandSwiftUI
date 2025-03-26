@@ -5,6 +5,7 @@ struct ProductListView: View {
     let category: Category
     @StateObject private var viewModel = ProductListViewModel()
     @State private var showFilters = false
+    @State private var showProductDetail = false
     @State private var selectedProduct: Product?
     
     // MARK: - body
@@ -48,13 +49,8 @@ struct ProductListView: View {
                     spacing: 16
                 ) {
                     ForEach(viewModel.filteredProducts) { product in
-                        NavigationLink(value: product) {
-                            ProductCard(product: product)
-                        }
-//                        Button {
-//                            selectedProduct = product
-//                        } label: {
-//                        }
+                        ProductCard(product: product)
+                            .navigateOnTap(to: product, selection: $selectedProduct)
                     }
                 }
                 .padding(.horizontal)
@@ -80,15 +76,9 @@ struct ProductListView: View {
                 isPresented: $showFilters
             )
         }
-        .navigationDestination(for: Product.self) { product in
+        .navigationDestination(for: $selectedProduct) { product in
             ProductDetailView(product: product)
         }
-//        .navigationDestination(
-//            item: $selectedProduct, // Change to item binding
-//            destination: { product in
-//                ProductDetailView(product: product)
-//            }
-//        )
         .task {
             viewModel.loadProducts(for: category)
         }
@@ -154,5 +144,7 @@ private extension ProductListView {
 }
 
 #Preview {
-    ProductListView(category: .mockCategories.first!)
+    NavigationStack {
+        ProductListView(category: .mockCategories.first!)
+    }
 }

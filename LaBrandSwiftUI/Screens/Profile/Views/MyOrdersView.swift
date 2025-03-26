@@ -130,7 +130,7 @@ struct OrderRow: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         MyOrdersView(viewModel: ProfileViewModel())
     }
 } 
