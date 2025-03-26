@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct CategoriesView: View {
-    
     // MARK: - PROPERTIES
     @Environment(\.tabSelection) private var tabSelection
     @StateObject private var viewModel = CategoriesViewModel()
@@ -9,19 +8,16 @@ struct CategoriesView: View {
     @State private var scrollPosition: Int? = nil
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
-                
                 // Main Category Segment [Men, Women, Kids]
                 CustomSegmentedControl(selectedIndex: $selectedCategoryIndex)
                 
                 ScrollView(.horizontal) {
                     HStack(spacing: 0) {
                         ForEach(0..<viewModel.categories.count, id: \.self) { index in
-                            
                             ScrollView {
                                 VStack(spacing: 16) {
-                                    
                                     bannerButtonUI {
                                         // TODO: - Open Banned Deep link
                                     }
@@ -37,15 +33,12 @@ struct CategoriesView: View {
                                 .padding(.horizontal)
                             }
                             .id(index)
-//                            .frame(width: UIScreen.screenWidth)
                             .containerRelativeFrame(.horizontal)
-                            
                         }
                     }
                 }
                 .scrollTargetLayout()
                 .scrollTargetBehavior(.viewAligned)
-//                .scrollBounceBehavior(.basedOnSize)
                 .scrollPosition(id: $scrollPosition, anchor: .center)
                 .animation(.smooth, value: scrollPosition)
                 .onChange(of: selectedCategoryIndex) { old, new in
@@ -53,11 +46,10 @@ struct CategoriesView: View {
                 }
                 .onChange(of: self.scrollPosition) { old, new in
                     guard let new else { return }
-                    withAnimation(.easeInOut(duration: 0.2)) { // Smooth animation
+                    withAnimation(.easeInOut(duration: 0.2)) {
                         self.selectedCategoryIndex = new
                     }
                 }
-                
             }
             .navigationTitle("Categories")
             .navigationBarTitleDisplayMode(.inline)
@@ -85,7 +77,6 @@ struct CategoriesView: View {
         }
     }
 }
-
 // MARK: - UI
 private extension CategoriesView {
     
@@ -111,13 +102,6 @@ private extension CategoriesView {
             }
         }
     }
-    
-//    func categoryCardButton(category: Category, _ action: @escaping ()-> Void) -> some View {
-//        Button(action: action) {
-//            CategoryCard(category: category)
-//        }
-//    }
-    
 }
 
 #Preview {

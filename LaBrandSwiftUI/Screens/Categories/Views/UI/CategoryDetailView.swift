@@ -14,20 +14,6 @@ struct CategoryDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                // View All Items Button
-                Button {
-                    // TODO: - Open Show All
-//                    viewModel.showAllItems = true
-                } label: {
-                    Text("VIEW ALL ITEMS")
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(25)
-                }
-                .padding(.horizontal)
                 
                 // Subcategories List
                 VStack(alignment: .leading, spacing: 12) {
@@ -41,17 +27,42 @@ struct CategoryDetailView: View {
                                     .foregroundColor(.gray)
                             }
                             .padding(.vertical, 8)
+                            .padding(.horizontal)
                         }
                         Divider()
                     }
                 }
-                .padding(.horizontal)
             }
+            
+        }
+        .safeAreaInset(edge: .top) {
+            // View All Items Button
+            viewAllNavBtn
+                .padding(.top)
+                .padding(.horizontal)
         }
         .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
+
+// MARK: - UI, Navigations
+
+private extension CategoryDetailView {
+    
+    var viewAllNavBtn: some View {
+        NavigationLink(destination: ProductListView(category: category)) {
+            Text("VIEW ALL ITEMS")
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.red)
+                .foregroundColor(.white)
+                .clipShape(Capsule())
+        }
+    }
+}
+
 
 #Preview {
     CategoryDetailView(category: Category.mockCategories.first!)

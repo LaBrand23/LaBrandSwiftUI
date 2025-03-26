@@ -1,6 +1,6 @@
 import Foundation
 
-struct Product: Identifiable, Codable {
+struct Product: Identifiable, Codable, Hashable {
     let id: UUID
     let name: String
     let description: String
@@ -36,6 +36,11 @@ struct Product: Identifiable, Codable {
         } else {
             .default
         }
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(name)
     }
 }
 

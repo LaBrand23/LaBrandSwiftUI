@@ -42,37 +42,33 @@ struct ProductCard: View {
             if showFullDetails {
                 // Brand & Name
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(product.brand)
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                    // Rating
+                    ratingUI
                     
-                    Text(product.name)
-                        .font(.subheadline)
-                        .lineLimit(2)
-                }
-                
-                // Rating
-                HStack(spacing: 4) {
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.yellow)
-                    Text(String(format: "%.1f", product.rating))
-                        .font(.caption)
-                    Text("(\(product.reviewCount))")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-                
-                // Price
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text("$\(String(format: "%.2f", Double(truncating: product.price as NSNumber)))")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                    
-                    if let originalPrice = product.originalPrice {
-                        Text("$\(String(format: "%.2f", Double(truncating: originalPrice as NSNumber)))")
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(product.brand)
                             .font(.caption)
-                            .strikethrough()
                             .foregroundColor(.gray)
+                        
+                        Text(product.name)
+                            .font(.subheadline)
+                            .foregroundStyle(.black)
+                            .lineLimit(2)
+                    }
+                    
+                    // Price
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text("$\(String(format: "%.2f", Double(truncating: product.price as NSNumber)))")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.black)
+                        
+                        if let originalPrice = product.originalPrice {
+                            Text("$\(String(format: "%.2f", Double(truncating: originalPrice as NSNumber)))")
+                                .font(.caption)
+                                .strikethrough()
+                                .foregroundColor(.gray)
+                        }
                     }
                 }
             }
@@ -112,6 +108,18 @@ private extension ProductCard {
         }
     }
     
+    var ratingUI: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "star.fill")
+                .foregroundColor(.yellow)
+            Text(String(format: "%.1f", product.rating))
+                .font(.caption)
+                .foregroundStyle(.black)
+            Text("(\(product.reviewCount))")
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+    }
 }
 
 #Preview {
@@ -133,4 +141,5 @@ private extension ProductCard {
         createdAt: .now
     ))
     .environmentObject(FavoritesManager())
+    
 }
