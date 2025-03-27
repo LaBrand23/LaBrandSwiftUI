@@ -1,57 +1,65 @@
 import SwiftUI
 
 struct BagView: View {
+    
+    // MARK: - PROPERTIES
     @StateObject private var viewModel = BagViewModel()
     @State private var showingCheckout = false
+    @State private var selectedProduct: Product?
     
+    // MARK: - body
     var body: some View {
-        VStack {
-            if viewModel.bagItems.isEmpty {
-                emptyBagView
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                ScrollView {
-                    VStack(spacing: 16) {
-                        // Bag Items
-                        ForEach(viewModel.bagItems) { item in
-                            BagItemView(
-                                item: item,
-                                onIncrement: { viewModel.incrementQuantity(for: item) },
-                                onDecrement: { viewModel.decrementQuantity(for: item) },
-                                onRemove: { viewModel.removeItem(item: item) }
-                            )
+        NavigationStack {
+            VStack {
+                if viewModel.bagItems.isEmpty {
+                    emptyBagView
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            // Bag Items
+                            ForEach(viewModel.bagItems) { item in
+                                BagItemView(
+                                    item: item,
+                                    onIncrement: { viewModel.incrementQuantity(for: item) },
+                                    onDecrement: { viewModel.decrementQuantity(for: item) },
+                                    onRemove: { viewModel.removeItem(item: item) }
+                                )
+                                .navigateOnTap(to: item.product, selection: $selectedProduct)
+                            }
+                            
+                            // Promo Code Section
+                            promoCodeSection
+                            
+                            // Order Summary
+                            orderSummarySection
                         }
-                        
-                        // Promo Code Section
-                        promoCodeSection
-                        
-                        // Order Summary
-                        orderSummarySection
+                        .padding()
+                    }
+                    
+                    // Checkout Button
+                    Button(action: { showingCheckout = true }) {
+                        Text("Check Out")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.red)
+                            .cornerRadius(12)
                     }
                     .padding()
                 }
-                
-                // Checkout Button
-                Button(action: { showingCheckout = true }) {
-                    Text("Check Out")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.red)
-                        .cornerRadius(12)
-                }
-                .padding()
             }
-        }
-        .navigationTitle("My Bag")
-        .background(Color(.systemGroupedBackground))
-        .sheet(isPresented: $viewModel.showingPromoCodeSheet) {
-            PromoCodeView()
-                .environmentObject(viewModel)
-        }
-        .fullScreenCover(isPresented: $showingCheckout) {
-            CheckoutView()
+            .navigationTitle("My Bag")
+            .background(Color(.systemGroupedBackground))
+            .navigationDestination(item: $selectedProduct, destination: { ProductDetailView(product: $0) })
+            .sheet(isPresented: $viewModel.showingPromoCodeSheet) {
+                PromoCodeView()
+                    .environmentObject(viewModel)
+            }
+            .fullScreenCover(isPresented: $showingCheckout) {
+                CheckoutView()
+            }
         }
     }
     

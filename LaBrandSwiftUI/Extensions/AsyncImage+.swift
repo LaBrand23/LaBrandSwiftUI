@@ -7,21 +7,26 @@
 
 import SwiftUI
 
-extension View {
-    func asyncImage(_ urlString: String, usePlaceholder: Bool = true) -> some View {
-        AsyncImage(url: URL(string: urlString)) { image in
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-        } placeholder: {
-            if usePlaceholder {
-                Image(urlString)
+struct AsyncImageView<Placeholder: View>: View {
+    let imageUrl: String?
+    let placeholder: Placeholder
+    
+    init(imageUrl: String?, @ViewBuilder placeholder: () -> Placeholder) {
+        self.imageUrl = imageUrl
+        self.placeholder = placeholder()
+    }
+    
+    var body: some View {
+        if let urlString = imageUrl, let url = URL(string: urlString) {
+            AsyncImage(url: url) { image in
+                image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-            } else {
-                Color.clear
+            } placeholder: {
+                placeholder
             }
+        } else {
+            placeholder
         }
-        .frame(maxWidth: .infinity)
     }
 }
