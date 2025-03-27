@@ -16,7 +16,7 @@ struct BagItem: Identifiable {
 // Sample data
 extension BagItem {
     static let sampleItems = [
-        BagItem(name: "Pullover", image: "pullover_image", price: 59.99, quantity: 1, size: "M"),
+        BagItem(name: "Pullover", image: "card_men", price: 59.99, quantity: 1, size: "M"),
         BagItem(name: "T-Shirt", image: "tshirt_image", price: 29.99, quantity: 1, size: "L"),
         BagItem(name: "Sport Dress", image: "sport_dress_image", price: 45.99, quantity: 1, size: "S")
     ]

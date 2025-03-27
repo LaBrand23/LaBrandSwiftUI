@@ -3,22 +3,38 @@ import SwiftUI
 
 @MainActor
 class BagViewModel: ObservableObject {
-    @Published var bagItems: [BagItem] = BagItem.sampleItems
-    @Published var promoCode: String = ""
-    @Published var isPromoCodeValid: Bool = false
+    @Published var bagItems: [BagItem] = []
     @Published var showingPromoCodeSheet = false
+    @Published var appliedPromoCode: PromoCode?
+    
+    private let promoCodeService: PromoCodeServiceProtocol
+    
+    init(promoCodeService: PromoCodeServiceProtocol = MockPromoCodeService()) {
+        self.promoCodeService = promoCodeService
+        // Load mock data for testing
+        bagItems = BagItem.sampleItems
+    }
+    
+    // MARK: - Computed Properties
     
     var subtotal: Double {
         bagItems.reduce(0) { $0 + $1.totalPrice }
     }
     
     var discount: Double {
-        isPromoCodeValid ? subtotal * 0.1 : 0 // 10% discount if promo code is valid
+        guard let promoCode = appliedPromoCode else { return 0 }
+        return (subtotal * Double(promoCode.discountPercentage)) / 100
     }
     
     var total: Double {
         subtotal - discount
     }
+    
+    var isPromoCodeApplied: Bool {
+        appliedPromoCode != nil
+    }
+    
+    // MARK: - Item Management
     
     func incrementQuantity(for item: BagItem) {
         if let index = bagItems.firstIndex(where: { $0.id == item.id }) {
@@ -38,9 +54,14 @@ class BagViewModel: ObservableObject {
         bagItems.removeAll { $0.id == item.id }
     }
     
-    func applyPromoCode() {
-        // In a real app, this would validate against a backend
-        isPromoCodeValid = !promoCode.isEmpty
+    // MARK: - Promo Code
+    
+    func applyPromoCode(_ promoCode: PromoCode) {
+        appliedPromoCode = promoCode
+    }
+    
+    func removePromoCode() {
+        appliedPromoCode = nil
     }
     
     func proceedToCheckout() {

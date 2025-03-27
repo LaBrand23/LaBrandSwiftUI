@@ -5,57 +5,54 @@ struct BagView: View {
     @State private var showingCheckout = false
     
     var body: some View {
-//        NavigationView {
-            VStack {
-                if viewModel.bagItems.isEmpty {
-                    emptyBagView
-                } else {
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            // Bag Items
-                            ForEach(viewModel.bagItems) { item in
-                                BagItemView(
-                                    item: item,
-                                    onIncrement: { viewModel.incrementQuantity(for: item) },
-                                    onDecrement: { viewModel.decrementQuantity(for: item) },
-                                    onRemove: { viewModel.removeItem(item: item) }
-                                )
-                                .background(Color(.systemBackground))
-                                .cornerRadius(12)
-                                .shadow(radius: 2)
-                            }
-                            
-                            // Promo Code Section
-                            promoCodeSection
-                            
-                            // Order Summary
-                            orderSummarySection
+        VStack {
+            if viewModel.bagItems.isEmpty {
+                emptyBagView
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // Bag Items
+                        ForEach(viewModel.bagItems) { item in
+                            BagItemView(
+                                item: item,
+                                onIncrement: { viewModel.incrementQuantity(for: item) },
+                                onDecrement: { viewModel.decrementQuantity(for: item) },
+                                onRemove: { viewModel.removeItem(item: item) }
+                            )
                         }
-                        .padding()
-                    }
-                    
-                    // Checkout Button
-                    Button(action: { showingCheckout = true }) {
-                        Text("Check Out")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.red)
-                            .cornerRadius(12)
+                        
+                        // Promo Code Section
+                        promoCodeSection
+                        
+                        // Order Summary
+                        orderSummarySection
                     }
                     .padding()
                 }
+                
+                // Checkout Button
+                Button(action: { showingCheckout = true }) {
+                    Text("Check Out")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.red)
+                        .cornerRadius(12)
+                }
+                .padding()
             }
-            .navigationTitle("My Bag")
-            .background(Color(.systemGroupedBackground))
-            .sheet(isPresented: $viewModel.showingPromoCodeSheet) {
-                promoCodeSheet
-            }
-            .fullScreenCover(isPresented: $showingCheckout) {
-                CheckoutView()
-            }
-//        }
+        }
+        .navigationTitle("My Bag")
+        .background(Color(.systemGroupedBackground))
+        .sheet(isPresented: $viewModel.showingPromoCodeSheet) {
+            PromoCodeView()
+                .environmentObject(viewModel)
+        }
+        .fullScreenCover(isPresented: $showingCheckout) {
+            CheckoutView()
+        }
     }
     
     private var emptyBagView: some View {
@@ -73,17 +70,43 @@ struct BagView: View {
     }
     
     private var promoCodeSection: some View {
-        VStack {
-            Button(action: { viewModel.showingPromoCodeSheet = true }) {
-                HStack {
-                    Image(systemName: "tag")
-                    Text("Add Promo Code")
+        VStack(spacing: 12) {
+            if let appliedPromo = viewModel.appliedPromoCode {
+                // Applied Promo Code
+                HStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Applied Promo Code:")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                        Text(appliedPromo.code)
+                            .font(.headline)
+                    }
+                    
                     Spacer()
-                    Image(systemName: "chevron.right")
+                    
+                    Button {
+                        viewModel.removePromoCode()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.gray)
+                    }
                 }
                 .padding()
                 .background(Color(.systemBackground))
                 .cornerRadius(12)
+            } else {
+                // Add Promo Code Button
+                Button(action: { viewModel.showingPromoCodeSheet = true }) {
+                    HStack {
+                        Image(systemName: "tag")
+                        Text("Add Promo Code")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                    }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(12)
+                }
             }
         }
     }
@@ -96,12 +119,12 @@ struct BagView: View {
                 Text("$\(viewModel.subtotal, specifier: "%.2f")")
             }
             
-            if viewModel.isPromoCodeValid {
+            if viewModel.isPromoCodeApplied {
                 HStack {
-                    Text("Discount")
+                    Text("Discount (\(viewModel.appliedPromoCode?.discountPercentage ?? 0)% off)")
                     Spacer()
                     Text("-$\(viewModel.discount, specifier: "%.2f")")
-                        .foregroundColor(.green)
+                        .foregroundColor(.red)
                 }
             }
             
@@ -119,30 +142,10 @@ struct BagView: View {
         .background(Color(.systemBackground))
         .cornerRadius(12)
     }
-    
-    private var promoCodeSheet: some View {
-//        NavigationView {
-            VStack {
-                TextField("Enter promo code", text: $viewModel.promoCode)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-                
-                Button("Apply") {
-                    viewModel.applyPromoCode()
-                    viewModel.showingPromoCodeSheet = false
-                }
-                .disabled(viewModel.promoCode.isEmpty)
-                
-                Spacer()
-            }
-            .navigationTitle("Promo Code")
-            .navigationBarItems(trailing: Button("Done") {
-                viewModel.showingPromoCodeSheet = false
-            })
-//        }
-    }
 }
 
 #Preview {
-    BagView()
-} 
+    NavigationStack {
+        BagView()
+    }
+}

@@ -12,8 +12,7 @@ struct BagItemView: View {
             Image(item.image)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: 80, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .frame(width: UIScreen.screenWidth/3.3)
             
             VStack(alignment: .leading, spacing: 4) {
                 // Product Name
@@ -22,13 +21,21 @@ struct BagItemView: View {
                 
                 // Size
                 Text("Size: \(item.size)")
-                    .font(.subheadline)
+                    .font(.system(size: 12))
                     .foregroundColor(.gray)
                 
                 // Quantity Controls
                 HStack {
-                    Button(action: onDecrement) {
-                        Image(systemName: "minus.circle")
+                    Button(action: onIncrement) {
+                        Image(systemName: "minus")
+                            .foregroundStyle(.gray)
+                            .fontWeight(.semibold)
+                            .frame(width: 36, height: 36)
+                            .background {
+                                Circle()
+                                    .fill(.white)
+                                    .shadow(color: .gray.opacity(0.3), radius: 5, y: 5)
+                            }
                     }
                     
                     Text("\(item.quantity)")
@@ -36,10 +43,19 @@ struct BagItemView: View {
                         .font(.headline)
                     
                     Button(action: onIncrement) {
-                        Image(systemName: "plus.circle")
+                        Image(systemName: "plus")
+                            .foregroundStyle(.gray)
+                            .fontWeight(.semibold)
+                            .frame(width: 36, height: 36)
+                            .background {
+                                Circle()
+                                    .fill(.white)
+                                    .shadow(color: .gray.opacity(0.3), radius: 5, y: 5)
+                            }
                     }
                 }
                 .foregroundColor(.primary)
+                .padding(.top, 10)
             }
             
             Spacer()
@@ -48,16 +64,22 @@ struct BagItemView: View {
                 // Price
                 Text("$\(item.totalPrice, specifier: "%.2f")")
                     .font(.headline)
+                    .frame(maxHeight: .infinity)
                 
                 // Remove Button
                 Button(action: onRemove) {
                     Image(systemName: "trash")
                         .foregroundColor(.red)
                 }
+                .frame(maxHeight: .infinity)
             }
+            .frame(maxWidth: .infinity)
+            .padding(.trailing)
         }
-        .padding()
-        .background(Color(.systemBackground))
+        .frame(height: 110)
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .shadow(color: .gray.opacity(0.5), radius: 5)
     }
 }
 
@@ -68,4 +90,5 @@ struct BagItemView: View {
         onDecrement: {},
         onRemove: {}
     )
-} 
+    .padding()
+}
