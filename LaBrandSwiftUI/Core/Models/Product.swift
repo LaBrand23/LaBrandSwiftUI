@@ -67,7 +67,7 @@ extension Product {
             brand: Brand(id: "1", name: "Nike", category: "Sports"),
             rating: 4.8,
             reviewCount: 1200,
-            colors: ["Red", "Black", "White"],
+            colors: ["#FF0000", "#000000", "#FFFFFF"], // Red, Black, White
             sizes: ["7", "8", "9", "10", "11"],
             isNew: true,
             isFavorite: false,
@@ -85,7 +85,7 @@ extension Product {
             brand: Brand(id: "2", name: "Adidas", category: "Sports"),
             rating: 4.7,
             reviewCount: 950,
-            colors: ["Blue", "White"],
+            colors: ["#0000FF", "#FFFFFF"], // Blue, White
             sizes: ["8", "9", "10", "12"],
             isNew: false,
             isFavorite: true,
@@ -103,7 +103,7 @@ extension Product {
             brand: Brand(id: "3", name: "Puma", category: "Sports"),
             rating: 4.5,
             reviewCount: 500,
-            colors: ["Green", "Black"],
+            colors: ["#008000", "#000000"], // Green, Black
             sizes: ["6", "7", "8", "9"],
             isNew: false,
             isFavorite: false,
@@ -111,6 +111,7 @@ extension Product {
             subcategory: .sweaters
         )
     ]
+
 }
 
 struct ProductFilter: Codable {

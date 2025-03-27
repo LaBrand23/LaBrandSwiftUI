@@ -21,7 +21,7 @@ struct ProductDetailView: View {
                         }
                     }
                 }
-                .frame(height: 450)
+                .frame(height: UIScreen.screenHeight/2.5)
                 .tabViewStyle(.page)
                 
                 VStack(alignment: .leading, spacing: 16) {
@@ -170,12 +170,13 @@ struct ColorButton: View {
     var body: some View {
         Button(action: action) {
             Circle()
-                .fill(Color(color.lowercased()))
-                .frame(width: 32, height: 32)
-                .overlay(
+                .fill(isSelected ? Color(hex: color) : Color(hex: color).opacity(0.7))
+                .padding(4)
+                .frame(width: 36, height: 36)
+                .background(
                     Circle()
-                        .strokeBorder(isSelected ? .black : .clear, lineWidth: 2)
-                        .padding(2)
+                        .strokeBorder(isSelected ? Color(hex: color) : .clear, lineWidth: 2)
+//                        .padding(2)
                 )
         }
     }
