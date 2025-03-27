@@ -1,4 +1,5 @@
-import Foundation
+
+import SwiftUI
 
 struct PaymentCard: Identifiable {
     let id: String = UUID().uuidString
@@ -50,4 +51,12 @@ enum DeliveryMethod: String, CaseIterable, Identifiable {
         case .dhl: return 19.99
         }
     }
-} 
+    
+    var image: ImageResource {
+        return switch self {
+        case .fedex: .fexEx
+        case .ups: .fexEx
+        case .dhl: .fexEx
+        }
+    }
+}
