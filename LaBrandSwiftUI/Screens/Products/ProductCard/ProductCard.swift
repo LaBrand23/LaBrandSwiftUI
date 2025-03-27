@@ -5,9 +5,10 @@ struct ProductCard: View {
     // MARK: - PROPERTIS
     let product: Product
     var state: ProductCardState = .defaultForOther
-    var imageSize: CGFloat = 160
-    var showFullDetails: Bool = true
-    var secondaryAction: ()->Void = {}
+    var imageSize: CGFloat
+    var showFullDetails: Bool
+    var secondaryAction: ()->Void
+    var removeAction: ()->Void
     
     // MARK: - init
     init(
@@ -15,12 +16,14 @@ struct ProductCard: View {
         state: ProductCardState = .defaultForOther,
         imageSize: CGFloat = 160,
         showFullDetails: Bool = true,
+        removeAction: @escaping ()-> Void = {},
         secondaryAction: @escaping () -> Void = {}
     ) {
         self.product = product
         self.state = state
         self.imageSize = imageSize
         self.showFullDetails = showFullDetails
+        self.removeAction = removeAction
         self.secondaryAction = secondaryAction
     }
     

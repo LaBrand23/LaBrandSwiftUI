@@ -75,7 +75,7 @@ struct FavoritesView: View {
                         spacing: 16
                     ) {
                         ForEach(viewModel.filteredProducts) { product in
-                            ProductCard(product: product, state: .defaultForFavorite)
+                            ProductCard(product: product, state: Bool.random() ? .soldOut : .defaultForFavorite)
                         }
                     }
                     .padding()
