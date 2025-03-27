@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
+    @State var selectedProduct: Product?
     @State private var showVisualSearch = false
     
     var body: some View {
@@ -41,7 +42,7 @@ struct SearchView: View {
                                 ], spacing: 16) {
                                     ForEach(viewModel.trendingProducts) { product in
                                         ProductCard(product: product, imageSize: 140)
-                                            .environmentObject(FavoritesManager())
+                                            .navigateOnTap(to: product, selection: $selectedProduct)
                                     }
                                 }
                             }
@@ -65,6 +66,7 @@ struct SearchView: View {
             }
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(item: $selectedProduct, destination: { ProductDetailView(product: $0) })
 //        }
         .sheet(isPresented: $showVisualSearch) {
             VisualSearchView()
@@ -158,3 +160,9 @@ struct RecentSearchRow: View {
         .padding(.vertical, 4)
     }
 } 
+
+#Preview {
+    NavigationStack {
+        SearchView()
+    }
+}

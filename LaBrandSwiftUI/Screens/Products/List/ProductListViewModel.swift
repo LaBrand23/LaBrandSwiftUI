@@ -7,107 +7,127 @@
 
 import SwiftUI
 
+@MainActor
 class ProductListViewModel: ObservableObject {
-    
-    enum SortOption {
-        case popular, newest, customerReview, priceLowToHigh, priceHighToLow
-        
-        var displayText: String {
-            switch self {
-            case .popular: return "Popular"
-            case .newest: return "Newest"
-            case .customerReview: return "Customer Review"
-            case .priceLowToHigh: return "Price: Low to High"
-            case .priceHighToLow: return "Price: High to Low"
-            }
-        }
-    }
-    
     @Published var products: [Product] = []
-    @Published var sortOption: SortOption = .popular
+    @Published var filteredProducts: [Product] = []
     @Published var selectedPriceRange: ClosedRange<Double> = 0...1000
     @Published var selectedColors: Set<String> = []
     @Published var selectedSizes: Set<String> = []
     @Published var selectedBrands: Set<String> = []
-    
-    var filteredProducts: [Product] {
-        var result = products
+    var activeFilters: Set<String> {
+        var filters: Set<String> = []
         
-        // Apply filters
         if !selectedColors.isEmpty {
-            result = result.filter { product in
-                product.colors.contains { selectedColors.contains($0) }
-            }
+            filters.formUnion(selectedColors) //append(contentsOf: selectedColors)
         }
         
         if !selectedSizes.isEmpty {
-            result = result.filter { product in
-                product.sizes.contains { selectedSizes.contains($0) }
-            }
+            filters.formUnion(selectedSizes)
         }
         
         if !selectedBrands.isEmpty {
-            result = result.filter { selectedBrands.contains($0.brand) }
-        }
-        
-        let minPrice = Decimal(selectedPriceRange.lowerBound)
-        let maxPrice = Decimal(selectedPriceRange.upperBound)
-        result = result.filter { $0.price >= minPrice && $0.price <= maxPrice }
-        
-        // Apply sorting
-        switch sortOption {
-        case .popular:
-            result.sort { $0.reviewCount > $1.reviewCount }
-        case .newest:
-            result.sort(by: { $0.createdAt > $1.createdAt})
-        case .customerReview:
-            result.sort { $0.rating > $1.rating }
-        case .priceLowToHigh:
-            result.sort { $0.price < $1.price }
-        case .priceHighToLow:
-            result.sort { $0.price > $1.price }
-        }
-        
-        return result
-    }
-    
-    var activeFilters: [String] {
-        var filters: [String] = []
-        
-        if !selectedColors.isEmpty {
-            filters.append(contentsOf: selectedColors)
-        }
-        
-        if !selectedSizes.isEmpty {
-            filters.append(contentsOf: selectedSizes)
-        }
-        
-        if !selectedBrands.isEmpty {
-            filters.append(contentsOf: selectedBrands)
+            filters.formUnion(selectedBrands)
         }
         
         if selectedPriceRange != 0...1000 {
-            filters.append("$\(Int(selectedPriceRange.lowerBound))-$\(Int(selectedPriceRange.upperBound))")
+            filters.insert("$\(Int(selectedPriceRange.lowerBound))-$\(Int(selectedPriceRange.upperBound))")
         }
         
         return filters
     }
+    @Published var sortOption: SortOption = .newest
+    @Published var currentSubcategory: ProductSubcategory? = .tshirts
     
     func loadProducts(for category: Category) {
-        // TODO: Load products from backend
-        // For now, using mock data
+        // Here you would typically load products from an API
+        // For now, we'll use mock data
         products = Product.mockProducts
+        filterProducts()
+    }
+    
+    func showAllProducts() {
+        currentSubcategory = nil // Indicate no filtering by subcategory
+        filterProducts()
+    }
+    
+    func filterBySubcategory(_ subcategory: ProductSubcategory) {
+        currentSubcategory = subcategory
+        filterProducts()
     }
     
     func removeFilter(_ filter: String) {
-        selectedColors.remove(filter)
-        selectedSizes.remove(filter)
-        selectedBrands.remove(filter)
-        
+        // Remove the corresponding filter from the appropriate set
+        if selectedColors.contains(filter) {
+            selectedColors.remove(filter)
+        } else if selectedSizes.contains(filter) {
+            selectedSizes.remove(filter)
+        } else if selectedBrands.contains(filter) {
+            selectedBrands.remove(filter)
+        }
         // Handle price range filter removal
         if filter.contains("$") {
             selectedPriceRange = 0...1000
         }
+        filterProducts()
+    }
+    
+    private func filterProducts() {
+        filteredProducts = products
+            .filter { product in
+                // Filter by subcategory
+                let subcategoryMatch = currentSubcategory == nil || product.subcategory == currentSubcategory
+
+                // Filter by price range
+                let priceMatch = selectedPriceRange.contains(product.price)
+
+                // Filter by colors
+                let colorMatch = selectedColors.isEmpty || product.colors.contains(selectedColors)
+
+                // Filter by sizes
+                let sizeMatch = selectedSizes.isEmpty || !selectedSizes.isDisjoint(with: product.sizes)
+
+                // Filter by brands
+                let brandMatch = selectedBrands.isEmpty || selectedBrands.contains(product.brand)
+
+                return subcategoryMatch && priceMatch && colorMatch && sizeMatch && brandMatch
+            }
+            .sorted { (lhs: Product, rhs: Product) in
+                switch sortOption {
+                case .popular:
+                    return lhs.rating > rhs.rating
+                case .newest:
+                    return lhs.createdAt > rhs.createdAt
+                case .customerReview:
+                    return lhs.reviewCount > rhs.reviewCount
+                case .priceLowToHigh:
+                    return lhs.price < rhs.price
+                case .priceHighToLow:
+                    return lhs.price > rhs.price
+                }
+            }
     }
 }
 
+enum SortOption {
+    case popular
+    case newest
+    case customerReview
+    case priceLowToHigh
+    case priceHighToLow
+    
+    var displayText: String {
+        switch self {
+        case .popular:
+            return "Popular"
+        case .newest:
+            return "Newest"
+        case .customerReview:
+            return "Customer Review"
+        case .priceLowToHigh:
+            return "Price: Low to High"
+        case .priceHighToLow:
+            return "Price: High to Low"
+        }
+    }
+}

@@ -138,7 +138,8 @@ private extension ProductCard {
         sizes: ["S", "M", "L", "XL"],
         isNew: false,
         isFavorite: false,
-        createdAt: .now
+        createdAt: .now,
+        subcategory: .tshirts
     ))
     .environmentObject(FavoritesManager())
     

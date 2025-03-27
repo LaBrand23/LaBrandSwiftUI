@@ -23,15 +23,15 @@ class FavoritesManager: ObservableObject {
     }
     
     private func loadFavorites() {
-        if let data = UserDefaults.standard.data(forKey: favoritesKey),
-           let favorites = try? JSONDecoder().decode([Product].self, from: data) {
-            favoriteProducts = favorites
-        }
+//        if let data = UserDefaults.standard.data(forKey: favoritesKey),
+//           let favorites = try? JSONDecoder().decode([Product].self, from: data) {
+//            favoriteProducts = favorites
+//        }
     }
     
     private func saveFavorites() {
-        if let data = try? JSONEncoder().encode(favoriteProducts) {
-            UserDefaults.standard.set(data, forKey: favoritesKey)
-        }
+//        if let data = try? JSONEncoder().encode(favoriteProducts) {
+//            UserDefaults.standard.set(data, forKey: favoritesKey)
+//        }
     }
 } 

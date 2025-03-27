@@ -1,10 +1,10 @@
 import Foundation
 
-struct Product: Identifiable, Codable, Hashable {
+struct Product: Identifiable, Hashable {
     let id: UUID
     let name: String
     let description: String
-    let price: Decimal
+    let price: Double
     let originalPrice: Decimal?
     let images: [String]
     let category: Category
@@ -16,11 +16,12 @@ struct Product: Identifiable, Codable, Hashable {
     let isNew: Bool
     var isFavorite: Bool
     let createdAt: Date
+    let subcategory: ProductSubcategory
     
     var discountPercentage: Int? {
         guard let originalPrice = originalPrice else { return nil }
         
-        let priceDouble = NSDecimalNumber(decimal: price).doubleValue
+        let priceDouble = NSDecimalNumber(decimal: Decimal(price)).doubleValue
         let originalPriceDouble = NSDecimalNumber(decimal: originalPrice).doubleValue
         
         let discount = (1 - (priceDouble / originalPriceDouble)) * 100
@@ -70,7 +71,8 @@ extension Product {
             sizes: ["7", "8", "9", "10", "11"],
             isNew: true,
             isFavorite: false,
-            createdAt: .now
+            createdAt: .now,
+            subcategory: .blouses
         ),
         Product(
             id: UUID(),
@@ -87,7 +89,8 @@ extension Product {
             sizes: ["8", "9", "10", "12"],
             isNew: false,
             isFavorite: true,
-            createdAt: .now
+            createdAt: .now,
+            subcategory: .tshirts
         ),
         Product(
             id: UUID(),
@@ -104,7 +107,8 @@ extension Product {
             sizes: ["6", "7", "8", "9"],
             isNew: false,
             isFavorite: false,
-            createdAt: .now
+            createdAt: .now,
+            subcategory: .sweaters
         )
     ]
 }

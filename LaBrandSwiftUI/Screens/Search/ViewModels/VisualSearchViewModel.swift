@@ -11,42 +11,7 @@ class VisualSearchViewModel: ObservableObject {
     @Published var error: Error?
     
     // Mock products for demo
-    private let mockProducts = [
-        Product(
-            id: UUID(),
-            name: "Floral Maxi Dress",
-            description: "Beautiful floral print maxi dress",
-            price: 129.99,
-            originalPrice: nil,
-            images: ["dress_2"],
-            category: Category(id: UUID(), name: "Dresses", image: "dresses", parentCategoryID: nil, subcategories: nil),
-            brand: "LaBrand",
-            rating: 4.7,
-            reviewCount: 58,
-            colors: ["Blue", "Pink"],
-            sizes: ["XS", "S", "M", "L"],
-            isNew: true,
-            isFavorite: false,
-            createdAt: .now
-        ),
-        Product(
-            id: UUID(),
-            name: "Printed Midi Skirt",
-            description: "Elegant printed midi skirt",
-            price: 79.99,
-            originalPrice: nil,
-            images: ["skirt_1"],
-            category: Category(id: UUID(), name: "Skirts", image: "skirts", parentCategoryID: nil, subcategories: nil),
-            brand: "LaBrand",
-            rating: 4.5,
-            reviewCount: 42,
-            colors: ["Multi"],
-            sizes: ["XS", "S", "M", "L"],
-            isNew: false,
-            isFavorite: false,
-            createdAt: .now
-        )
-    ]
+    private let mockProducts = Product.mockProducts
     
     func searchSimilarProducts() async {
         guard let image = selectedImage else { return }

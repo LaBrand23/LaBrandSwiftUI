@@ -133,7 +133,7 @@ struct ProductDetailView: View {
         }
         .safeAreaInset(edge: .bottom) {
             AddToCartButton(
-                price: product.price,
+                price: Decimal(product.price),
                 isEnabled: viewModel.selectedSize != nil,
                 action: viewModel.addToCart
             )

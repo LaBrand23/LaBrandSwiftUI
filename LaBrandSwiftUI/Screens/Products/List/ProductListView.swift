@@ -7,63 +7,93 @@ struct ProductListView: View {
     @State private var showFilters = false
     @State private var showProductDetail = false
     @State private var selectedProduct: Product?
+    @State private var selectedSubcategory: ProductSubcategory? = .tshirts
     
     // MARK: - body
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                // Filter Bar
-                HStack(spacing: 16) {
-                    // Filter Button
-                    filterButton {
-                        showFilters = true
+        VStack(spacing: 0) {
+            // Category Tags
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    // Show All Products Button
+                    SubCategoryTag(
+                        title: "Show All",
+                        isSelected: selectedSubcategory == nil
+                    ) {
+                        selectedSubcategory = nil
+                        viewModel.showAllProducts()
+                    }
+
+                    // Existing Categories
+                    ForEach(ProductSubcategory.allCases) { subcategory in
+                        SubCategoryTag(
+                            title: subcategory.rawValue,
+                            isSelected: selectedSubcategory == subcategory
+                        ) {
+                            selectedSubcategory = subcategory
+                            viewModel.filterBySubcategory(subcategory)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+            }
+            
+            // Filter Bar
+            HStack(spacing: 16) {
+                // Filter Button
+                filterButton {
+                    showFilters = true
+                }
+                
+                // Sort Button
+                sortButtonUI
+            }
+            .tint(.black)
+            .compositingGroup()
+            .containerRelativeFrame(.horizontal)
+            .padding([.horizontal, .vertical], 10)
+            .background {
+                Rectangle()
+                    .fill(.white)
+                    .shadow(color: .gray.opacity(0.3), radius: 3, y: 6)
+            }
+            .zIndex(99)
+            
+            
+            ScrollView {
+                VStack(spacing: 16) {
+                    
+                    // Active Filters
+                    if !viewModel.activeFilters.isEmpty {
+                        activeFilterUI
                     }
                     
-                    // Sort Button
-                    sortButtonUI
-                }
-                .padding(.horizontal)
-                .tint(.black)
-                
-                // Active Filters
-                if !viewModel.activeFilters.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(viewModel.activeFilters, id: \.self) { filter in
-                                FilterChip(
-                                    text: filter,
-                                    onRemove: { viewModel.removeFilter(filter) }
-                                )
-                            }
+                    // Products Grid
+                    LazyVGrid(
+                        columns: [
+                            GridItem(.flexible(), spacing: 16),
+                            GridItem(.flexible(), spacing: 16)
+                        ],
+                        spacing: 16
+                    ) {
+                        ForEach(viewModel.filteredProducts) { product in
+                            ProductCard(product: product)
+                                .navigateOnTap(to: product, selection: $selectedProduct)
                         }
-                        .padding(.horizontal)
                     }
+                    .padding(.horizontal)
                 }
-                
-                // Products Grid
-                LazyVGrid(
-                    columns: [
-                        GridItem(.flexible(), spacing: 16),
-                        GridItem(.flexible(), spacing: 16)
-                    ],
-                    spacing: 16
-                ) {
-                    ForEach(viewModel.filteredProducts) { product in
-                        ProductCard(product: product)
-                            .navigateOnTap(to: product, selection: $selectedProduct)
-                    }
-                }
-                .padding(.horizontal)
+                .padding(.vertical)
             }
         }
         .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    // Search action
-                } label: {
+                NavigationLink(destination: SearchView()) {
                     Image(systemName: "magnifyingglass")
+                        .fontWeight(.semibold)
+                        .tint(.black)
                 }
             }
         }
@@ -75,18 +105,21 @@ struct ProductListView: View {
                 selectedBrands: $viewModel.selectedBrands,
                 isPresented: $showFilters
             )
+            .onDisappear {
+                viewModel.loadProducts(for: category)
+            }
         }
         .navigationDestination(for: $selectedProduct) { product in
             ProductDetailView(product: product)
         }
-        .task {
+        .onAppear {
             viewModel.loadProducts(for: category)
         }
     }
 }
 
-// MARK: - Privates UI
 
+// MARK: - Privates UI
 private extension ProductListView {
     struct FilterChip: View {
         let text: String
@@ -141,6 +174,20 @@ private extension ProductListView {
             .cornerRadius(20)
         }
     }
+    
+    var activeFilterUI: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(Array(viewModel.activeFilters), id: \.self) { filter in
+                    FilterChip(
+                        text: filter,
+                        onRemove: { viewModel.removeFilter(filter) }
+                    )
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
 }
 
 #Preview {
@@ -148,3 +195,5 @@ private extension ProductListView {
         ProductListView(category: .mockCategories.first!)
     }
 }
+
+
