@@ -4,20 +4,20 @@ struct ProductDetailView: View {
     let product: Product
     @StateObject private var viewModel = ProductDetailViewModel()
     @Environment(\.dismiss) private var dismiss
+    @State var selectedProduct: Product?
     
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Product Images
+//                 Product Images
                 TabView {
                     ForEach(product.images, id: \.self) { imageUrl in
-                        AsyncImage(url: URL(string: imageUrl)) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                        } placeholder: {
+                        AsyncImageView(imageUrl: imageUrl) {
                             Rectangle()
                                 .foregroundColor(Color(.systemGray6))
+                        }
+                        .onTapGesture {
+                            viewModel.selectedImageForFullScreen = imageUrl
                         }
                     }
                 }
@@ -35,6 +35,7 @@ struct ProductDetailView: View {
                             .font(.title2)
                             .fontWeight(.bold)
                     }
+                    .padding(.horizontal)
                     
                     // Price
                     HStack(alignment: .firstTextBaseline) {
@@ -61,6 +62,7 @@ struct ProductDetailView: View {
                         }
                         .font(.subheadline)
                     }
+                    .padding(.horizontal)
                     
                     // Size Selection
                     VStack(alignment: .leading, spacing: 12) {
@@ -77,6 +79,7 @@ struct ProductDetailView: View {
                             }
                         }
                     }
+                    .padding(.horizontal)
                     
                     // Color Selection
                     if !product.colors.isEmpty {
@@ -94,12 +97,15 @@ struct ProductDetailView: View {
                                 }
                             }
                         }
+                        .padding(.horizontal)
                     }
+                    
                     
                     // Description
                     Text(product.description)
                         .foregroundColor(.gray)
                         .padding(.vertical)
+                        .padding(.horizontal)
                     
                     // Reviews Section
                     NavigationLink {
@@ -115,10 +121,38 @@ struct ProductDetailView: View {
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.gray)
                         }
+                        .padding(.horizontal)
+                    }
+                    
+                    // Recommended Products Section
+                    if !viewModel.recommendedProducts.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("You may also like")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 16) {
+                                    ForEach(viewModel.recommendedProducts) { product in
+                                        ProductCard(product: product)
+                                            .navigateOnTap(to: product, selection: $selectedProduct)
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
+                        }
+                    } else if viewModel.isLoadingRecommendations {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                            Spacer()
+                        }
+                        .padding(.horizontal)
                     }
                 }
-                .padding()
+                
             }
+            .padding(.bottom)
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -141,93 +175,21 @@ struct ProductDetailView: View {
             .background(.regularMaterial)
         }
         .toolbar(.hidden, for: .tabBar)
-    }
-}
-
-struct SizeButton: View {
-    let size: String
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Text(size)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .frame(width: 44, height: 44)
-                .background(isSelected ? Color.black : Color(.systemGray6))
-                .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(12)
+        .navigationDestination(item: $selectedProduct, destination: { ProductDetailView(product: $0) })
+        .fullScreenCover(item: .init(
+            get: { viewModel.selectedImageForFullScreen.map { ImageSource(url: $0) } },
+            set: { viewModel.selectedImageForFullScreen = $0?.url }
+        )) { imageSource in
+            ImageFullScreenView(imageUrl: imageSource.url)
         }
-    }
-}
-
-struct ColorButton: View {
-    let color: String
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Circle()
-                .fill(isSelected ? Color(hex: color) : Color(hex: color).opacity(0.7))
-                .padding(4)
-                .frame(width: 36, height: 36)
-                .background(
-                    Circle()
-                        .strokeBorder(isSelected ? Color(hex: color) : .clear, lineWidth: 2)
-//                        .padding(2)
-                )
+        .onAppear {
+            viewModel.fetchRecommendedProducts(for: product.id)
         }
-    }
-}
-
-struct AddToCartButton: View {
-    let price: Decimal
-    let isEnabled: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                Text("Add to Cart")
-                    .fontWeight(.semibold)
-                Spacer()
-                Text("$\(String(format: "%.2f", Double(truncating: price as NSNumber)))")
-                    .fontWeight(.semibold)
-            }
-            .foregroundColor(.white)
-            .padding()
-            .background(isEnabled ? Color.red : Color.gray)
-            .cornerRadius(25)
-        }
-        .disabled(!isEnabled)
-    }
-}
-
-class ProductDetailViewModel: ObservableObject {
-    @Published var selectedSize: String?
-    @Published var selectedColor: String?
-    @Published var quantity = 1
-    @Published var isFavorite = false
-    @Published var showAddReview = false
-    
-    func toggleFavorite() {
-        isFavorite.toggle()
-        // TODO: Implement favorite toggling with backend
-    }
-    
-    func addToCart() {
-        guard let size = selectedSize else { return }
-        // TODO: Implement add to cart with backend
-        print("Adding to cart: size \(size), color: \(selectedColor ?? "default"), quantity: \(quantity)")
-    }
-    
-    func addReview() {
-        showAddReview = true
     }
 }
 
 #Preview {
-    ProductDetailView(product: .mockProducts.first!)
+    NavigationStack {
+        ProductDetailView(product: .mockProducts.first!)
+    }
 }

@@ -9,10 +9,12 @@ import SwiftUI
 
 struct AsyncImageView<Placeholder: View>: View {
     let imageUrl: String?
+    let contentMode: ContentMode
     let placeholder: Placeholder
     
-    init(imageUrl: String?, @ViewBuilder placeholder: () -> Placeholder) {
+    init(imageUrl: String?, _ contentMode: ContentMode = .fill, @ViewBuilder placeholder: () -> Placeholder) {
         self.imageUrl = imageUrl
+        self.contentMode = contentMode
         self.placeholder = placeholder()
     }
     
@@ -21,7 +23,7 @@ struct AsyncImageView<Placeholder: View>: View {
             AsyncImage(url: url) { image in
                 image
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: contentMode)
             } placeholder: {
                 placeholder
             }
