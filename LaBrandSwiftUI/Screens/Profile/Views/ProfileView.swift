@@ -4,7 +4,6 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     
     var body: some View {
-//        NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
                     // Profile Header
@@ -30,7 +29,7 @@ struct ProfileView: View {
                             ProfileOptionRow(
                                 title: "My orders",
                                 subtitle: "Already have \(viewModel.orders.count) orders",
-                                iconName: "box.fill"
+                                iconName: "shippingbox.fill"
                             )
                         }
                         
@@ -80,8 +79,8 @@ struct ProfileView: View {
                 .padding()
             }
             .background(Color(.systemGroupedBackground))
+            .accentColor(.black)
             .navigationTitle("My Profile")
-//        }
     }
 }
 
@@ -116,5 +115,7 @@ struct ProfileOptionRow: View {
 }
 
 #Preview {
-    ProfileView()
-} 
+    NavigationStack {
+        ProfileView()
+    }
+}

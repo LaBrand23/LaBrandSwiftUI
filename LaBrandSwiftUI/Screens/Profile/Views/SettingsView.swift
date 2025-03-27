@@ -16,7 +16,7 @@ struct SettingsView: View {
         Form {
             Section(header: Text("Personal Information")) {
                 TextField("Full name", text: $fullName)
-                    .onChange(of: fullName) { newValue in
+                    .onChange(of: fullName) { _, newValue in
                         viewModel.updateProfile(fullName: newValue, dateOfBirth: dateOfBirth)
                     }
                 
@@ -25,7 +25,7 @@ struct SettingsView: View {
                     selection: $dateOfBirth,
                     displayedComponents: .date
                 )
-                .onChange(of: dateOfBirth) { newValue in
+                .onChange(of: dateOfBirth) { _, newValue in
                     viewModel.updateProfile(fullName: fullName, dateOfBirth: newValue)
                 }
             }
