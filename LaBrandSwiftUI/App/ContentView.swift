@@ -20,51 +20,53 @@ struct MainTabView: View {
     @State private var selectedTab: TabBarTag = .home
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            NavigationStack {
-                HomeView()
+        NavigationStack {
+            TabView(selection: $selectedTab) {
+                NavigationView {
+                    HomeView()
+                }
+                .tabItem {
+                    Image(selectedTab == .home ? .homeActivated : .homeInactive)
+                    Text(TabBarTag.home.rawValue)
+                }
+                .tag(TabBarTag.home)
+                
+                NavigationView {
+                    CategoriesView()
+                }
+                .tabItem {
+                    Image(selectedTab == .shop ? .shopActivated : .shopInactive)
+                    Text(TabBarTag.shop.rawValue)
+                }
+                .tag(TabBarTag.shop)
+                
+                NavigationView {
+                    BagView()
+                }
+                .tabItem {
+                    Image(selectedTab == .bag ? .bagActivated : .bagInactive)
+                    Text(TabBarTag.bag.rawValue)
+                }
+                .tag(TabBarTag.bag)
+                
+                NavigationView {
+                    FavoritesView(favoritesManager: favoritesManager)
+                }
+                .tabItem {
+                    Image(selectedTab == .favorites ? .heartActivated : .heartInactive)
+                    Text(TabBarTag.favorites.rawValue)
+                }
+                .tag(TabBarTag.favorites)
+                
+                NavigationView {
+                    ProfileView()
+                }
+                .tabItem {
+                    Image(selectedTab == .profile ? .profileActivated : .profileInactive)
+                    Text(TabBarTag.profile.rawValue)
+                }
+                .tag(TabBarTag.profile)
             }
-            .tabItem {
-                Image(selectedTab == .home ? .homeActivated : .homeInactive)
-                Text(selectedTab.rawValue)
-            }
-            .tag(TabBarTag.home)
-            
-            NavigationStack {
-                CategoriesView()
-            }
-            .tabItem {
-                Image(selectedTab == .shop ? .shopActivated : .shopInactive)
-                Text(selectedTab.rawValue)
-            }
-            .tag(TabBarTag.shop)
-            
-            NavigationStack {
-                BagView()
-            }
-            .tabItem {
-                Image(selectedTab == .bag ? .bagActivated : .bagInactive)
-                Text(selectedTab.rawValue)
-            }
-            .tag(TabBarTag.bag)
-            
-            NavigationStack {
-                FavoritesView(favoritesManager: favoritesManager)
-            }
-            .tabItem {
-                Image(selectedTab == .favorites ? .heartActivated : .heartInactive)
-                Text(selectedTab.rawValue)
-            }
-            .tag(TabBarTag.favorites)
-            
-            NavigationStack {
-                ProfileView()
-            }
-            .tabItem {
-                Image(selectedTab == .profile ? .profileActivated : .profileInactive)
-                Text(selectedTab.rawValue)
-            }
-            .tag(TabBarTag.profile)
         }
         .accentColor(.red)
         .environmentObject(favoritesManager)

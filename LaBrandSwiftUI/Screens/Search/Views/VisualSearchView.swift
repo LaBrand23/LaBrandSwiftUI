@@ -111,7 +111,7 @@ struct VisualSearchView: View {
             .sheet(isPresented: $viewModel.showPhotoPicker) {
                 ImagePicker(sourceType: .photoLibrary, selectedImage: $viewModel.selectedImage)
             }
-            .onChange(of: viewModel.selectedImage) { _ in
+            .onChange(of: viewModel.selectedImage) { _,_ in
                 if viewModel.selectedImage != nil {
                     Task {
                         await viewModel.searchSimilarProducts()

@@ -112,7 +112,7 @@ struct ProductCard: View {
             view
                 .overlay {
                     if state != .defaultForOther {
-                        removeButton(secondaryAction)
+                        removeButton(removeAction)
                     }
                 }
         }

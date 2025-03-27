@@ -96,5 +96,6 @@ struct Promotion: Identifiable {
 #Preview {
     NavigationStack {
         HomeView()
+            .navigationTitle("La Brand")
     }
 }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FavoritesView: View {
     @StateObject private var viewModel: FavoritesViewModel
+    @State private var selectedProduct: Product?
     
     init(favoritesManager: FavoritesManager) {
         _viewModel = StateObject(wrappedValue: FavoritesViewModel(favoritesManager: favoritesManager))
@@ -75,7 +76,12 @@ struct FavoritesView: View {
                         spacing: 16
                     ) {
                         ForEach(viewModel.filteredProducts) { product in
-                            ProductCard(product: product, state: Bool.random() ? .soldOut : .defaultForFavorite)
+                            let productState: ProductCardState = Bool.random() ? .soldOut : .defaultForFavorite
+                            ProductCard(product: product, state: productState)
+                                .if(productState != .soldOut ) { view in
+                                    view
+                                        .navigateOnTap(to: product, selection: $selectedProduct)
+                                }
                         }
                     }
                     .padding()
@@ -83,7 +89,10 @@ struct FavoritesView: View {
             }
         }
         .navigationTitle("Favorites")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.automatic)
+        .navigationDestination(item: $selectedProduct) { product in
+            ProductDetailView(product: product)
+        }
     }
 }
 
