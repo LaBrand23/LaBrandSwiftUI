@@ -8,96 +8,82 @@ struct FavoritesView: View {
     }
     
     var body: some View {
-//        NavigationView {
-            VStack(spacing: 16) {
-                // Category Filter
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(viewModel.categories, id: \.self) { category in
-                            CategoryButton(
-                                title: category,
-                                isSelected: viewModel.selectedCategory == category,
-                                action: { viewModel.selectedCategory = category }
-                            )
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                
-                // Sort and View Toggle
-                HStack {
-                    // Sort Menu
-                    Menu {
-                        Button("Price: Low to High") {
-                            viewModel.sortOption = .priceLowToHigh
-                        }
-                        Button("Price: High to Low") {
-                            viewModel.sortOption = .priceHighToLow
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "arrow.up.arrow.down")
-                            Text(viewModel.sortOption.title)
-                        }
-                        .foregroundColor(.primary)
-                    }
-                    
-                    Spacer()
-                    
-                    // View Toggle
-                    Button {
-                        withAnimation {
-                            viewModel.isGridView.toggle()
-                        }
-                    } label: {
-                        Image(systemName: viewModel.isGridView ? "square.grid.2x2" : "list.bullet")
-                            .foregroundColor(.primary)
+        VStack(spacing: 0) {
+            // Category Filter
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(viewModel.categories, id: \.self) { category in
+                        CategoryButton(
+                            title: category,
+                            isSelected: viewModel.selectedCategory == category,
+                            action: { viewModel.selectedCategory = category }
+                        )
                     }
                 }
                 .padding(.horizontal)
-                
-                if viewModel.filteredProducts.isEmpty {
-                    // Empty State
-                    VStack(spacing: 16) {
-                        Image(systemName: "heart.slash")
-                            .font(.system(size: 64))
-                            .foregroundColor(.gray)
-                        Text("No favorites yet")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        Text("Items added to your favorites will appear here")
-                            .foregroundColor(.gray)
+            }
+            
+            // Sort and View Toggle
+            HStack {
+                Spacer()
+                // Sort Menu
+                Menu {
+                    Button("Price: Low to High") {
+                        viewModel.sortOption = .priceLowToHigh
                     }
-                    .frame(maxHeight: .infinity)
-                } else {
-                    // Products Grid/List
-                    ScrollView {
-                        if viewModel.isGridView {
-                            LazyVGrid(
-                                columns: [
-                                    GridItem(.flexible(), spacing: 16),
-                                    GridItem(.flexible(), spacing: 16)
-                                ],
-                                spacing: 16
-                            ) {
-                                ForEach(viewModel.filteredProducts) { product in
-                                    ProductCard(product: product)
-                                }
-                            }
-                            .padding(.horizontal)
-                        } else {
-                            LazyVStack(spacing: 16) {
-                                ForEach(viewModel.filteredProducts) { product in
-                                    FavoritesListView(product: product, viewModel: viewModel)
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
+                    Button("Price: High to Low") {
+                        viewModel.sortOption = .priceHighToLow
                     }
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.up.arrow.down")
+                        Text(viewModel.sortOption.title)
+                    }
+                    .foregroundColor(.primary)
                 }
             }
-            .navigationTitle("Favorites")
-//        }
+//            .padding(.horizontal)
+            .padding([.horizontal, .vertical], 15)
+            .background {
+                Rectangle()
+                    .fill(.white)
+                    .shadow(color: .gray.opacity(0.3), radius: 3, y: 6)
+            }
+            .zIndex(99)
+            
+            if viewModel.filteredProducts.isEmpty {
+                // Empty State
+                VStack(spacing: 16) {
+                    Image(systemName: "heart.slash")
+                        .font(.system(size: 64))
+                        .foregroundColor(.gray)
+                    Text("No favorites yet")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    Text("Items added to your favorites will appear here")
+                        .foregroundColor(.gray)
+                }
+                .frame(maxHeight: .infinity)
+            } else {
+                // Products Grid/List
+                ScrollView {
+                    LazyVGrid(
+                        columns: [
+                            GridItem(.flexible(), spacing: 16),
+                            GridItem(.flexible(), spacing: 16)
+                        ],
+                        spacing: 16
+                    ) {
+                        ForEach(viewModel.filteredProducts) { product in
+                            ProductCard(product: product, state: .defaultForFavorite)
+                        }
+                    }
+                    .padding()
+                }
+            }
+        }
+        .navigationTitle("Favorites")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -122,5 +108,7 @@ private struct CategoryButton: View {
 }
 
 #Preview {
-    FavoritesView(favoritesManager: FavoritesManager())
+    NavigationStack {
+        FavoritesView(favoritesManager: FavoritesManager())
+    }
 }

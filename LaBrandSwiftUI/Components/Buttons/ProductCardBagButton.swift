@@ -1,47 +1,42 @@
 //
-//  FavoriteButton.swift
+//  ProductCardBagButton.swift
 //  LaBrandSwiftUI
 //
-//  Created by Shaxzod on 26/03/25.
+//  Created by Shaxzod on 27/03/25.
 //
 
 import SwiftUI
 
-struct FavoriteButton: View {
+struct ProductCardBagButton: View {
     
-    @State var isSelected = false
     var action: ()->Void
     
-    init(isSelected: Bool, action: @escaping ()-> Void) {
-        self.isSelected = isSelected
+    init(action: @escaping ()-> Void) {
         self.action = action
     }
     
     var body: some View {
         Button {
-            isSelected.toggle()
             action()
         } label: {
-            Image(systemName: isSelected ? "heart.fill" : "heart")
+            Image(systemName: "handbag.fill")
                 .resizable()
                 .scaledToFit()
-                .foregroundStyle(isSelected ? .red : .gray)
+                .foregroundStyle(.white)
                 .padding(10)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .buttonStyle(FavoriteButtonStyle(isSelected: isSelected))
+        .buttonStyle(ProductCardBagButtonStyle())
     }
 }
 
-struct FavoriteButtonStyle: ButtonStyle {
-    
-    var isSelected: Bool
+struct ProductCardBagButtonStyle: ButtonStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(
                 Circle()
-                    .fill(Color.white)
+                    .fill(Color.red)
                     .shadow(color: .gray.opacity(configuration.isPressed ? 0.3 : 0.5), radius: configuration.isPressed ? 3 : 5, y: configuration.isPressed ? 3 : 5)
                     .scaleEffect(configuration.isPressed ? 0.99 : 1)
             )
@@ -49,6 +44,6 @@ struct FavoriteButtonStyle: ButtonStyle {
 }
 
 #Preview {
-    FavoriteButton(isSelected: true) {}
-    .frame(width: 40, height: 40)
+    ProductCardBagButton(action: {})
+        .frame(width: 40, height: 40)
 }

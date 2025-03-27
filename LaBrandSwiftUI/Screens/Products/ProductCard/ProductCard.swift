@@ -4,29 +4,53 @@ struct ProductCard: View {
     
     // MARK: - PROPERTIS
     let product: Product
+    var state: ProductCardState = .defaultForOther
     var imageSize: CGFloat = 160
     var showFullDetails: Bool = true
-    var favoriteAction: ()->Void = {}
+    var secondaryAction: ()->Void = {}
+    
+    // MARK: - init
+    init(
+        product: Product,
+        state: ProductCardState = .defaultForOther,
+        imageSize: CGFloat = 160,
+        showFullDetails: Bool = true,
+        secondaryAction: @escaping () -> Void = {}
+    ) {
+        self.product = product
+        self.state = state
+        self.imageSize = imageSize
+        self.showFullDetails = showFullDetails
+        self.secondaryAction = secondaryAction
+    }
     
     // MARK: - Body
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Product Image
             ZStack(alignment: .topTrailing) {
-                AsyncImage(url: URL(string: product.images.first ?? "")) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
+                
+                AsyncImageView(imageUrl: product.images.first) {
                     Image(.cardMen)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 }
                 .frame(width: 160, height: imageSize)
+                .overlay {
+                    Text("Sorry, this item is currently sold out")
+                        .font(.system(size: 11))
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            Rectangle()
+                                .fill(.white.opacity(0.5))
+                        )
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                        .if(state != .soldOut) { $0.hidden() }
+                }
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay {
-                    // Favorite button
-                    FavoriteButton(isSelected: product.isFavorite, action: favoriteAction)
+                    // Favorite / Bag Buttons
+                    secondaryButton(secondaryAction)
                         .frame(width: 36, height: 36)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                         .offset(y: 40/2)
@@ -74,6 +98,21 @@ struct ProductCard: View {
             }
         }
         .frame(width: 160)
+        .if(state == .soldOut) { view in
+            view
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(.white.opacity(0.5))
+                }
+        }
+        .if(state != .defaultForOther) { view in
+            view
+                .overlay {
+                    if state != .defaultForOther {
+                        removeButton(secondaryAction)
+                    }
+                }
+        }
     }
 }
 
@@ -120,6 +159,41 @@ private extension ProductCard {
                 .foregroundColor(.gray)
         }
     }
+    
+    func secondaryButton(_ action: @escaping ()-> Void) -> some View {
+        ZStack {
+            switch state {
+                // Favorite button
+            case .defaultForFavorite:
+                ProductCardBagButton(action: action)
+                
+                // Favorite button
+            case .defaultForOther:
+                FavoriteButton(isSelected: product.isFavorite, action: action)
+                
+                // No button
+            case .soldOut:
+                EmptyView()
+                    .hidden()
+            }
+        }
+    }
+    
+    func removeButton(_ action: @escaping ()-> Void) -> some View {
+        Button(
+            action: action,
+            label: {
+                Image(systemName: "xmark")
+                    .resizable()
+                    .scaledToFit()
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.gray)
+                    .frame(width: 15, height: 15)
+                    .padding(10)
+            }
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+    }
 }
 
 #Preview {
@@ -143,4 +217,10 @@ private extension ProductCard {
     ))
     .environmentObject(FavoritesManager())
     
+}
+
+enum ProductCardState {
+    case defaultForFavorite
+    case defaultForOther
+    case soldOut
 }

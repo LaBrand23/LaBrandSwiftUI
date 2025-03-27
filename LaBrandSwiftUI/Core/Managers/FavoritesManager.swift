@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 class FavoritesManager: ObservableObject {
-    @Published private(set) var favoriteProducts: [Product] = []
+    @Published private(set) var favoriteProducts: [Product] = Product.mockProducts
     private let favoritesKey = "com.labrand.favorites"
     
     init() {
