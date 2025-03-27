@@ -14,12 +14,12 @@ class ProductListViewModel: ObservableObject {
     @Published var selectedPriceRange: ClosedRange<Double> = 0...1000
     @Published var selectedColors: Set<String> = []
     @Published var selectedSizes: Set<String> = []
-    @Published var selectedBrands: Set<String> = []
+    @Published var selectedBrands: Set<Brand> = []
     var activeFilters: Set<String> {
         var filters: Set<String> = []
         
         if !selectedColors.isEmpty {
-            filters.formUnion(selectedColors) //append(contentsOf: selectedColors)
+            filters.formUnion(selectedColors)
         }
         
         if !selectedSizes.isEmpty {
@@ -27,7 +27,7 @@ class ProductListViewModel: ObservableObject {
         }
         
         if !selectedBrands.isEmpty {
-            filters.formUnion(selectedBrands)
+            filters.formUnion(selectedBrands.map { $0.name })
         }
         
         if selectedPriceRange != 0...1000 {
@@ -62,8 +62,8 @@ class ProductListViewModel: ObservableObject {
             selectedColors.remove(filter)
         } else if selectedSizes.contains(filter) {
             selectedSizes.remove(filter)
-        } else if selectedBrands.contains(filter) {
-            selectedBrands.remove(filter)
+        } else if let brandToRemove = selectedBrands.first(where: { $0.name == filter }) {
+            selectedBrands.remove(brandToRemove)
         }
         // Handle price range filter removal
         if filter.contains("$") {
@@ -88,7 +88,7 @@ class ProductListViewModel: ObservableObject {
                 let sizeMatch = selectedSizes.isEmpty || !selectedSizes.isDisjoint(with: product.sizes)
 
                 // Filter by brands
-                let brandMatch = selectedBrands.isEmpty || selectedBrands.contains(product.brand)
+                let brandMatch = selectedBrands.isEmpty || selectedBrands.contains(where: { $0.id == product.brand.id })
 
                 return subcategoryMatch && priceMatch && colorMatch && sizeMatch && brandMatch
             }

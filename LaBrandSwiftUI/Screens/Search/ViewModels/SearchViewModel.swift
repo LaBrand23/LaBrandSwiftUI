@@ -47,7 +47,7 @@ class SearchViewModel: ObservableObject {
         // Filter mock products based on search query
         searchResults = mockProducts.filter { product in
             product.name.localizedCaseInsensitiveContains(query) ||
-            product.brand.localizedCaseInsensitiveContains(query) ||
+            product.brand.name.localizedCaseInsensitiveContains(query) ||
             product.description.localizedCaseInsensitiveContains(query)
         }
         

@@ -27,7 +27,7 @@ struct ProductDetailView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     // Brand and Name
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(product.brand)
+                        Text(product.brand.name)
                             .font(.headline)
                             .foregroundColor(.gray)
                         

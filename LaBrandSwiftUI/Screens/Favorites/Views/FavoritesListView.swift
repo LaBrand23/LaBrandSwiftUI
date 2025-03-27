@@ -20,7 +20,7 @@ struct FavoritesListView: View {
             
             // Product Details
             VStack(alignment: .leading, spacing: 4) {
-                Text(product.brand)
+                Text(product.brand.name)
                     .font(.caption)
                     .foregroundColor(.gray)
                 

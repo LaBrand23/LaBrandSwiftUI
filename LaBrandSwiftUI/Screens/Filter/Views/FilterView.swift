@@ -4,12 +4,12 @@ struct FilterView: View {
     @Binding var selectedPriceRange: ClosedRange<Double>
     @Binding var selectedColors: Set<String>
     @Binding var selectedSizes: Set<String>
-    @Binding var selectedBrands: Set<String>
+    @Binding var selectedBrands: Set<Brand>
     @Binding var isPresented: Bool
+    @State private var showingBrandSearch = false
     
     private let colors = ["Black", "White", "Red", "Blue", "Green", "Yellow"]
     private let sizes = ["XS", "S", "M", "L", "XL"]
-    private let brands = ["Nike", "Adidas", "Puma", "New Balance", "Under Armour"]
     
     var body: some View {
         NavigationStack {
@@ -88,30 +88,22 @@ struct FilterView: View {
                 
                 // Brands Section
                 Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Brand")
-                            .font(.headline)
-                        
-                        ForEach(brands, id: \.self) { brand in
-                            Button {
-                                if selectedBrands.contains(brand) {
-                                    selectedBrands.remove(brand)
-                                } else {
-                                    selectedBrands.insert(brand)
-                                }
-                            } label: {
-                                HStack {
-                                    Text(brand)
-                                        .foregroundColor(.primary)
-                                    Spacer()
-                                    if selectedBrands.contains(brand) {
-                                        Image(systemName: "checkmark")
-                                            .foregroundColor(.red)
-                                    }
-                                }
+                    Button {
+                        showingBrandSearch = true
+                    } label: {
+                        HStack {
+                            Text("Brand")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            Spacer()
+                            if !selectedBrands.isEmpty {
+                                Text("\(selectedBrands.count) selected")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
                             }
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
                         }
-                        .buttonStyle(BorderlessButtonStyle())
                     }
                 }
             }
@@ -130,6 +122,9 @@ struct FilterView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showingBrandSearch) {
+                BrandSearchView(selectedBrands: $selectedBrands)
+            }
         }
     }
     
@@ -145,7 +140,7 @@ struct FilterView: View {
     @State var mockSelectedPriceRange: ClosedRange<Double> = 10.0...500.0
     @State var mockSelectedColors: Set<String> = ["Red", "Blue", "Green"]
     @State var mockSelectedSizes: Set<String> = ["S", "M", "L"]
-    @State var mockSelectedBrands: Set<String> = ["Nike", "Adidas", "Puma"]
+    @State var mockSelectedBrands: Set<Brand> = []
     @State var mockIsPresented: Bool = true
 
     FilterView(

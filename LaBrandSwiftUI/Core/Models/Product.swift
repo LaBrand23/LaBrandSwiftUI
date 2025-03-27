@@ -8,7 +8,7 @@ struct Product: Identifiable, Hashable {
     let originalPrice: Decimal?
     let images: [String]
     let category: Category
-    let brand: String
+    let brand: Brand
     let rating: Double
     let reviewCount: Int
     let colors: [String]
@@ -64,7 +64,7 @@ extension Product {
             originalPrice: 200.00,
             images: ["https://example.com/nike1.jpg", "https://example.com/nike2.jpg"],
             category: Category.mockCategories.first!,
-            brand: "Nike",
+            brand: Brand(id: "1", name: "Nike", category: "Sports"),
             rating: 4.8,
             reviewCount: 1200,
             colors: ["Red", "Black", "White"],
@@ -82,7 +82,7 @@ extension Product {
             originalPrice: 220.00,
             images: ["https://example.com/adidas1.jpg", "https://example.com/adidas2.jpg"],
             category: Category.mockCategories.first!,
-            brand: "Adidas",
+            brand: Brand(id: "2", name: "Adidas", category: "Sports"),
             rating: 4.7,
             reviewCount: 950,
             colors: ["Blue", "White"],
@@ -100,7 +100,7 @@ extension Product {
             originalPrice: nil,  // No discount
             images: ["https://example.com/puma1.jpg"],
             category: Category.mockCategories.first!,
-            brand: "Puma",
+            brand: Brand(id: "3", name: "Puma", category: "Sports"),
             rating: 4.5,
             reviewCount: 500,
             colors: ["Green", "Black"],

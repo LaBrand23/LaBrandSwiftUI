@@ -46,7 +46,7 @@ struct ProductCard: View {
                     ratingUI
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(product.brand)
+                        Text(product.brand.name)
                             .font(.caption)
                             .foregroundColor(.gray)
                         
@@ -131,7 +131,7 @@ private extension ProductCard {
         originalPrice: 50,
         images: ["card_men"],
         category: Category(id: UUID(), name: "T-Shirts", image: "tshirt", parentCategoryID: nil, subcategories: nil),
-        brand: "LaBrand",
+        brand: Brand(id: UUID().uuidString, name: "Adidas", category: nil),
         rating: 4.5,
         reviewCount: 128,
         colors: ["White", "Black"],
