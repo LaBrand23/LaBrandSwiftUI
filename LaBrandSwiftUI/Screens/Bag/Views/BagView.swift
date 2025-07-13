@@ -57,8 +57,10 @@ struct BagView: View {
                 PromoCodeView()
                     .environmentObject(viewModel)
             }
-            .fullScreenCover(isPresented: $showingCheckout) {
-                CheckoutView()
+            .navigationDestination(isPresented: $showingCheckout) {
+                NavigationStack {
+                    CheckoutView()
+                }
             }
         }
     }

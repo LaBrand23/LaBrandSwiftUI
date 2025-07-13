@@ -2,7 +2,6 @@ import SwiftUI
 
 struct CheckoutView: View {
     @StateObject private var viewModel = CheckoutViewModel()
-    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ScrollView {
@@ -107,13 +106,6 @@ struct CheckoutView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Checkout")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button("Back") {
-                    dismiss()
-                }
-            }
-        }
         .safeAreaInset(edge: .bottom) {
             Button(action: viewModel.submitOrder) {
                 Text("Submit Order")
@@ -128,13 +120,19 @@ struct CheckoutView: View {
             .background(Color(.systemBackground))
         }
         .sheet(isPresented: $viewModel.showingAddCardSheet) {
-            AddPaymentCardView(viewModel: viewModel)
+            NavigationStack {
+                AddPaymentCardView(viewModel: viewModel)
+            }
         }
         .sheet(isPresented: $viewModel.showingAddAddressSheet) {
-            AddShippingAddressView(viewModel: viewModel)
+            NavigationStack {
+                AddShippingAddressView(viewModel: viewModel)
+            }
         }
         .fullScreenCover(isPresented: $viewModel.showingSuccessView) {
-            OrderSuccessView()
+            NavigationStack {
+                OrderSuccessView()
+            }
         }
     }
 }

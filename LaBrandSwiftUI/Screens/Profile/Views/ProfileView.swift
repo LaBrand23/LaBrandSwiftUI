@@ -49,7 +49,9 @@ struct ProfileView: View {
                             )
                         }
                         
-                        NavigationLink(destination: Text("Promocodes")) {
+                        NavigationLink(
+                            destination: PromoCodeView().environmentObject(BagViewModel())
+                        ) {
                             ProfileOptionRow(
                                 title: "Promocodes",
                                 subtitle: "You have special promocodes",
@@ -57,7 +59,7 @@ struct ProfileView: View {
                             )
                         }
                         
-                        NavigationLink(destination: Text("My Reviews")) {
+                        NavigationLink(destination: MyReviewsView()) {
                             ProfileOptionRow(
                                 title: "My reviews",
                                 subtitle: "Reviews for 4 items",

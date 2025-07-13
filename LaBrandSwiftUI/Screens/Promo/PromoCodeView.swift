@@ -108,6 +108,7 @@ struct PromoCodeView: View {
                 }
             }
         }
+        .applyToolbarHidden()
         .onAppear {
             viewModel.fetchAvailablePromoCodes()
             isTextFieldFocused = true

@@ -54,6 +54,8 @@ struct OrderDetailsView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Order information")
                         .font(.headline)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity)
                     
                     VStack(alignment: .leading, spacing: 12) {
                         InfoRow(title: "Shipping Address", value: order.shippingAddress.formattedAddress)
