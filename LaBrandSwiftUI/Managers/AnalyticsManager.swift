@@ -212,7 +212,7 @@ public final class AnalyticsManager: ObservableObject {
     
     private func logConfigurationInfo() {
         let configEvent = AnalyticsEvent(
-            type: .debug,
+            type: .performanceMetric,
             name: "App Configuration",
             parameters: [
                 "baseURL": Config.baseURL,
