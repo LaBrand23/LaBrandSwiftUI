@@ -11,7 +11,7 @@ import Combine
 final class NetworkManager {
     static let shared = NetworkManager()
     
-    private let baseURL = URL(string: "https://your.api.com/api/v1")!
+    private let baseURL = URL(string: Config.baseURL)!
     private var cancellables = Set<AnyCancellable>()
     private let session = URLSession.shared
     private let tokenStorage = TokenStorage(storageManager: KeychainManager.shared)
