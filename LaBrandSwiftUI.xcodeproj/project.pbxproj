@@ -10,9 +10,22 @@
 		34C5D0252D917F5C00761BB5 /* LaBrandSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LaBrandSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BAB4BE382E5B2AE000A9C1BA /* Exceptions for "LaBrandSwiftUI" folder in "LaBrandSwiftUI" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 34C5D0242D917F5C00761BB5 /* LaBrandSwiftUI */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		34C5D0272D917F5C00761BB5 /* LaBrandSwiftUI */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BAB4BE382E5B2AE000A9C1BA /* Exceptions for "LaBrandSwiftUI" folder in "LaBrandSwiftUI" target */,
+			);
 			path = LaBrandSwiftUI;
 			sourceTree = "<group>";
 		};
@@ -246,6 +259,8 @@
 		};
 		34C5D0342D917F5F00761BB5 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 34C5D0272D917F5C00761BB5 /* LaBrandSwiftUI */;
+			baseConfigurationReferenceRelativePath = Resources/Configs/Debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -254,6 +269,7 @@
 				DEVELOPMENT_TEAM = 4V6HY9M86Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LaBrandSwiftUI/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -286,6 +302,7 @@
 				DEVELOPMENT_TEAM = 4V6HY9M86Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LaBrandSwiftUI/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

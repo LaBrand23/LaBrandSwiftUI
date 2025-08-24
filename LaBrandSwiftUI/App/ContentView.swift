@@ -5,7 +5,7 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-            if true /*authManager.isAuthenticated*/ {
+            if authManager.isAuthenticated {
                 MainTabView()
             } else {
                 SignInView()
