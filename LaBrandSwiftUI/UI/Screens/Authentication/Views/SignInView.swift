@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct SignInView: View {
-    @EnvironmentObject private var authManager: AuthenticationManager
     @StateObject private var viewModel = SignInViewModel()
     @Environment(\.dismiss) private var dismiss
     
@@ -58,8 +57,8 @@ struct SignInView: View {
                     .foregroundColor(.gray)
                 
                 HStack(spacing: 20) {
-                    SocialSignInButton(image: "google", action: viewModel.signInWithGoogle)
-                    SocialSignInButton(image: "facebook", action: viewModel.signInWithFacebook)
+                    SocialSignInButton(image: "google", title: "Google", action: viewModel.signInWithGoogle)
+                    SocialSignInButton(image: "facebook", title: "Facebook", action: viewModel.signInWithFacebook)
                 }
             }
             
@@ -90,61 +89,6 @@ struct SignInView: View {
     }
 }
 
-// Custom TextField with icon
-struct CustomTextField: View {
-    @Binding var text: String
-    let placeholder: String
-    let icon: String
-    
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .foregroundColor(.gray)
-            TextField(placeholder, text: $text)
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
-    }
-}
-
-// Custom SecureField with icon
-struct CustomSecureField: View {
-    @Binding var text: String
-    let placeholder: String
-    let icon: String
-    
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .foregroundColor(.gray)
-            SecureField(placeholder, text: $text)
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
-    }
-}
-
-// Social sign in button
-struct SocialSignInButton: View {
-    let image: String
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Image(image)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-                .frame(width: 60, height: 60)
-                .background(Color(.systemGray6))
-                .clipShape(Circle())
-        }
-    }
-} 
-
 #Preview {
     SignInView()
-        .environmentObject(AuthenticationManager())
 }

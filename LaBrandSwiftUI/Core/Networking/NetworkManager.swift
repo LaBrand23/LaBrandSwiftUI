@@ -11,7 +11,6 @@ import Combine
 final class NetworkManager {
     static let shared = NetworkManager()
     
-    private let baseURL = URL(string: Config.baseURL)!
     private var cancellables = Set<AnyCancellable>()
     private let session = URLSession.shared
     private let tokenStorage = TokenStorage(storageManager: KeychainManager.shared)
@@ -19,9 +18,24 @@ final class NetworkManager {
     
     private init() {}
     
+    // MARK: - Private Helper Methods
+    
+    private func configureRequestHeaders(_ urlRequest: inout URLRequest, requiresAuth: Bool) {
+        urlRequest.setValue(HTTPConstants.contentType, forHTTPHeaderField: HTTPConstants.Headers.contentType)
+        urlRequest.setValue(HTTPConstants.acceptHeader, forHTTPHeaderField: HTTPConstants.Headers.accept)
+        urlRequest.setValue(AppConstants.userAgent, forHTTPHeaderField: HTTPConstants.Headers.userAgent)
+        urlRequest.setValue(Config.apiVersion.rawValue, forHTTPHeaderField: HTTPConstants.Headers.apiVersion)
+        
+        if requiresAuth, let token = tokenStorage.getToken()?.accessToken {
+            urlRequest.setValue(HTTPConstants.bearerPrefix + token, forHTTPHeaderField: HTTPConstants.Headers.authorization)
+        }
+    }
+    
     // MARK: - Combine version
     func perform<T: APIRequest>(_ request: T) -> AnyPublisher<T.Response, Error> {
-        guard let url = URL(string: request.path.rawValue, relativeTo: baseURL) else {
+        // Construct the full URL with version
+        let fullPath = Config.apiVersion.path + request.path.rawValue
+        guard let url = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
             self.analyticsManager.logEvent(.networkError, name: "Invalid URL", level: .error)
             self.analyticsManager.logError(
                 NetworkError.invalidURL,
@@ -33,17 +47,25 @@ final class NetworkManager {
         
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method.rawValue
-        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        configureRequestHeaders(&urlRequest, requiresAuth: request.requiresAuth)
         
-        if request.requiresAuth, let token = tokenStorage.getToken()?.accessToken {
-            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
         if let encodableBody = request.body {
             urlRequest.httpBody = try? JSONEncoder().encode(AnyEncodable(encodableBody))
         }
         
         let startTime = Date()
+        
+        // Log detailed request information
+        let headers = urlRequest.allHTTPHeaderFields ?? [:]
+        analyticsManager.logDetailedNetworkRequest(
+            url: urlRequest.url?.absoluteString ?? "",
+            method: urlRequest.httpMethod ?? "",
+            headers: headers,
+            body: urlRequest.httpBody,
+            requiresAuth: request.requiresAuth
+        )
+        
+        // Also log the standard request
         analyticsManager.logNetworkRequest(request)
         
         return session.dataTaskPublisher(for: urlRequest)
@@ -52,25 +74,22 @@ final class NetworkManager {
                 
                 guard let httpResponse = response as? HTTPURLResponse else {
                     self.analyticsManager.logNetworkResponse(
-                        url: request.path.rawValue,
+                        url: urlRequest.url?.absoluteString ?? "",
                         statusCode: -1,
                         responseTime: responseTime,
                         dataSize: nil
                     )
-                    self.analyticsManager.logError(
-                        NetworkError.serverError(status: -1),
-                        context: "NetworkManager.perform",
-                        additionalInfo: ["error": "Invalid response"]
-                    )
                     throw NetworkError.serverError(status: -1)
                 }
                 
-                // Log response
-                self.analyticsManager.logNetworkResponse(
-                    url: request.path.rawValue,
+                // Log detailed response
+                let responseHeaders = httpResponse.allHeaderFields.compactMapKeys { $0 as? String }.compactMapValues { String(describing: $0) }
+                self.analyticsManager.logDetailedNetworkResponse(
+                    url: urlRequest.url?.absoluteString ?? "",
                     statusCode: httpResponse.statusCode,
                     responseTime: responseTime,
-                    dataSize: data.count
+                    headers: responseHeaders,
+                    data: data
                 )
                 
                 switch httpResponse.statusCode {
@@ -114,7 +133,9 @@ final class NetworkManager {
     // MARK: - Async/Await version
     @discardableResult
     func performAsync<T: APIRequest>(_ request: T) async throws -> T.Response {
-        guard let url = URL(string: request.path.rawValue, relativeTo: baseURL) else {
+        // Construct the full URL with version
+        let fullPath = Config.apiVersion.path + request.path.rawValue
+        guard let url = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
             self.analyticsManager.logEvent(.networkError, name: "Invalid URL", level: .error)
             self.analyticsManager.logError(
                 NetworkError.invalidURL,
@@ -126,30 +147,29 @@ final class NetworkManager {
         
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method.rawValue
-        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        if request.requiresAuth, let token = tokenStorage.getToken()?.accessToken {
-            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
+        configureRequestHeaders(&urlRequest, requiresAuth: request.requiresAuth)
         
         if let encodableBody = request.body {
             urlRequest.httpBody = try? JSONEncoder().encode(AnyEncodable(encodableBody))
         }
         
         let startTime = Date()
-        analyticsManager.logNetworkRequest(request)
-
+        
+        // Log detailed request information
+        let headers = urlRequest.allHTTPHeaderFields ?? [:]
+        analyticsManager.logDetailedNetworkRequest(
+            url: urlRequest.url?.absoluteString ?? "",
+            method: urlRequest.httpMethod ?? "",
+            headers: headers,
+            body: urlRequest.httpBody,
+            requiresAuth: request.requiresAuth
+        )
+        
         do {
             let (data, response) = try await session.data(for: urlRequest)
             let responseTime = Date().timeIntervalSince(startTime)
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                self.analyticsManager.logNetworkResponse(
-                    url: request.path.rawValue,
-                    statusCode: -1,
-                    responseTime: responseTime,
-                    dataSize: nil
-                )
                 self.analyticsManager.logError(
                     NetworkError.serverError(status: -1),
                     context: "NetworkManager.performAsync",
@@ -158,12 +178,14 @@ final class NetworkManager {
                 throw NetworkError.serverError(status: -1)
             }
             
-            // Log response
-            self.analyticsManager.logNetworkResponse(
-                url: request.path.rawValue,
+            // Log detailed response
+            let responseHeaders = httpResponse.allHeaderFields.compactMapKeys { $0 as? String }.compactMapValues { String(describing: $0) }
+            self.analyticsManager.logDetailedNetworkResponse(
+                url: urlRequest.url?.absoluteString ?? "",
                 statusCode: httpResponse.statusCode,
                 responseTime: responseTime,
-                dataSize: data.count
+                headers: responseHeaders,
+                data: data
             )
             
             switch httpResponse.statusCode {
@@ -188,15 +210,10 @@ final class NetworkManager {
         } catch {
             let responseTime = Date().timeIntervalSince(startTime)
             self.analyticsManager.logNetworkResponse(
-                url: request.path.rawValue,
+                url: urlRequest.url?.absoluteString ?? "",
                 statusCode: -1,
                 responseTime: responseTime,
                 dataSize: nil
-            )
-            self.analyticsManager.logError(
-                NetworkError.unknown(error),
-                context: "NetworkManager.performAsync",
-                additionalInfo: ["error": "Unknown error"]
             )
             throw NetworkError.unknown(error)
         }
@@ -209,10 +226,16 @@ final class NetworkManager {
             return Fail(error: NetworkError.refreshFailed).eraseToAnyPublisher()
         }
         
-        var req = URLRequest(url: baseURL.appendingPathComponent("auth/refresh"))
+        // Construct the full URL with version for refresh token
+        let fullPath = Config.apiVersion.path + APIEndpoint.refresh.rawValue
+        guard let refreshURL = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
+            return Fail(error: NetworkError.invalidURL).eraseToAnyPublisher()
+        }
+        
+        var req = URLRequest(url: refreshURL)
         req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue("Bearer \(refreshToken)", forHTTPHeaderField: "Authorization")
+        req.setValue(HTTPConstants.contentType, forHTTPHeaderField: HTTPConstants.Headers.contentType)
+        req.setValue(HTTPConstants.bearerPrefix + refreshToken, forHTTPHeaderField: HTTPConstants.Headers.authorization)
         
         return session.dataTaskPublisher(for: req)
             .tryMap { [weak self] data, response in
@@ -229,13 +252,32 @@ final class NetworkManager {
             throw NetworkError.refreshFailed
         }
         
-        var req = URLRequest(url: baseURL.appendingPathComponent("auth/refresh"))
+        // Construct the full URL with version for refresh token
+        let fullPath = Config.apiVersion.path + APIEndpoint.refresh.rawValue
+        guard let refreshURL = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
+            throw NetworkError.invalidURL
+        }
+        
+        var req = URLRequest(url: refreshURL)
         req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue("Bearer \(refreshToken)", forHTTPHeaderField: "Authorization")
+        req.setValue(HTTPConstants.contentType, forHTTPHeaderField: HTTPConstants.Headers.contentType)
+        req.setValue(HTTPConstants.bearerPrefix + refreshToken, forHTTPHeaderField: HTTPConstants.Headers.authorization)
         
         let (data, _) = try await session.data(for: req)
         let json = try JSONDecoder().decode(Token.self, from: data)
         tokenStorage.save(token: json)
+    }
+}
+
+// MARK: - Dictionary Extension for Header Conversion
+extension Dictionary where Key == AnyHashable, Value == Any {
+    func compactMapKeys<T>(_ transform: (Key) throws -> T?) rethrows -> [T: Value] {
+        var result: [T: Value] = [:]
+        for (key, value) in self {
+            if let transformedKey = try transform(key) {
+                result[transformedKey] = value
+            }
+        }
+        return result
     }
 }

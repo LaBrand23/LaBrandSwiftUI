@@ -7,104 +7,56 @@
 
 import Foundation
 
-//LaBrandSwiftUI
-//│── App
-//│   ├── AppDelegate.swift
-//│   ├── SceneDelegate.swift
-//│   └── LaBrandSwiftUIApp.swift
-//│
-//│── Core
-//│   ├── Authentication
-//│   │   ├── AuthenticationManager.swift
-//│   │   ├── AuthError.swift
-//│   │   ├── AuthNetworkService.swift
-//│   │   └── UserSession.swift
-//│   ├── Networking
-//│   │   ├── APIClient.swift
-//│   │   ├── Endpoints.swift
-//│   │   └── NetworkError.swift
-//│   ├── Persistence
-//│   │   ├── LocalStorage.swift
-//│   │   └── CacheManager.swift
-//│   └── Utilities
-//│       ├── Logger.swift
-//│       └── Constants.swift
-//│
-//│── Models
-//│   ├── User.swift
-//│   ├── Product.swift
-//│   ├── Category.swift
-//│   ├── CartItem.swift
-//│   ├── Order.swift
-//│   ├── Payment.swift
-//│   └── PromoCode.swift
-//│
-//│── Managers
-//│   ├── FavoritesManager.swift
-//│   ├── CartManager.swift
-//│   ├── OrderManager.swift
-//│   └── SessionManager.swift
-//│
-//│── Services
-//│   ├── AuthService.swift
-//│   ├── ProductService.swift
-//│   ├── CategoryService.swift
-//│   ├── CartService.swift
-//│   ├── OrderService.swift
-//│   └── PromoCodeService.swift
-//│
-//│── UI
-//│   ├── Components
-//│   │   ├── Buttons
-//│   │   │   ├── FavoriteButton.swift
-//│   │   │   ├── ProductCardBagButton.swift
-//│   │   │   └── PrimaryButton.swift
-//│   │   ├── Inputs
-//│   │   │   ├── TextField.swift
-//│   │   │   └── SearchBar.swift
-//│   │   ├── Cards
-//│   │   │   ├── ProductCard.swift
-//│   │   │   └── CategoryCard.swift
-//│   │   └── Shared
-//│   │       ├── FlowLayout.swift
-//│   │       └── RangeSlider.swift
-//│   ├── Screens
-//│   │   ├── Auth
-//│   │   │   ├── LoginView.swift
-//│   │   │   ├── SignupView.swift
-//│   │   │   └── ForgotPasswordView.swift
-//│   │   ├── Catalog
-//│   │   │   ├── ProductListView.swift
-//│   │   │   ├── ProductDetailView.swift
-//│   │   │   └── CategoryView.swift
-//│   │   ├── Cart
-//│   │   │   ├── CartView.swift
-//│   │   │   └── CheckoutView.swift
-//│   │   ├── Orders
-//│   │   │   ├── OrderHistoryView.swift
-//│   │   │   └── OrderDetailView.swift
-//│   │   ├── Profile
-//│   │   │   ├── ProfileView.swift
-//│   │   │   └── SettingsView.swift
-//│   │   └── Home
-//│   │       └── HomeView.swift
-//│   └── TabBar
-//│       └── MainTabView.swift
-//│
-//│── Extensions
-//│   ├── AsyncImage+.swift
-//│   ├── Color+.swift
-//│   ├── NavigationLink+.swift
-//│   ├── UIScreen+Size.swift
-//│   └── View+.swift
-//│
-//│── Resources
-//│   ├── Assets.xcassets
-//│   ├── LaunchScreen.storyboard
-//│   └── Strings
-//│       └── Localizable.strings
-//│
-//└── Tests
-//    ├── UnitTests
-//    └── UITests
+// MARK: - API Versioning
 
+public enum APIVersion: String, CaseIterable {
+    case v1 = "v1"
+    // case v2 = "v2"
+    
+    var path: String {
+        return "/\(rawValue)"
+    }
+}
+
+// MARK: - Environment Configuration
+
+public enum EnvironmentConfig {
+    case development
+    case staging
+    case production
+    
+    var apiVersion: APIVersion {
+        switch self {
+        case .development:
+            return .v1
+        case .staging:
+            return .v1
+        case .production:
+            return .v1
+        }
+    }
+    
+    var baseURL: String {
+        switch self {
+        case .development:
+            return "http://127.0.0.1:8000"
+        case .staging:
+            return "http://127.0.0.1:8000"
+        case .production:
+            return "http://127.0.0.1:8000"
+        }
+    }
+}
+
+// MARK: - Current Environment
+
+extension EnvironmentConfig {
+    static var current: EnvironmentConfig {
+        #if DEBUG
+        return .development
+        #else
+        // You can add logic here to determine environment based on bundle identifier or other criteria
+        return .production
+        #endif
+    }
+}

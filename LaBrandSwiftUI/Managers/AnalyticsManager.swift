@@ -301,6 +301,62 @@ public final class AnalyticsManager: ObservableObject {
         Logger.network.info("🌐 \(request.method.rawValue) \(fullURL)")
     }
     
+    /// Log detailed network request with headers and body
+    public func logDetailedNetworkRequest(
+        url: String,
+        method: String,
+        headers: [String: String],
+        body: Data?,
+        requiresAuth: Bool
+    ) {
+        // Get the full URL
+        let fullURL = URL(string: url, relativeTo: URL(string: Config.baseURL)!)?.absoluteString ?? url
+        
+        var parameters = [
+            "url": url,
+            "fullUrl": fullURL,
+            "method": method,
+            "requiresAuth": String(requiresAuth),
+            "headers": headers.description
+        ]
+        
+        // Add request body information (masking sensitive data)
+        if let body = body {
+            if let bodyString = String(data: body, encoding: .utf8) {
+                let maskedBody = maskSensitiveData(bodyString)
+                parameters["requestBody"] = maskedBody
+                parameters["bodySize"] = String(body.count)
+            }
+        }
+        
+        let event = AnalyticsEvent(
+            type: .networkRequest,
+            name: "Detailed Network Request",
+            parameters: parameters,
+            context: currentContext,
+            level: .info
+        )
+        logEvent(event)
+        
+        // Detailed console logging
+        let headerString = headers.map { "\($0.key): \($0.value)" }.joined(separator: "\n    ")
+        let bodyString = body.flatMap { String(data: $0, encoding: .utf8) } ?? "No body"
+        let maskedBodyString = maskSensitiveData(bodyString)
+        
+        let detailedLog = """
+        🌐 DETAILED REQUEST:
+        URL: \(fullURL)
+        Method: \(method)
+        Requires Auth: \(requiresAuth)
+        Headers:
+            \(headerString)
+        Body:
+        \(maskedBodyString)
+        """
+        
+        Logger.network.info("\(detailedLog)")
+    }
+    
     /// Log network response
     public func logNetworkResponse(
         url: String,
@@ -334,6 +390,68 @@ public final class AnalyticsManager: ObservableObject {
         // Also log to network category with full URL
         let statusEmoji = statusCode >= 400 ? "❌" : "✅"
         Logger.network.info("\(statusEmoji) \(statusCode) - \(fullURL) (\(String(format: "%.3fs", responseTime)))")
+    }
+    
+    /// Log detailed network response with headers and body
+    public func logDetailedNetworkResponse(
+        url: String,
+        statusCode: Int,
+        responseTime: TimeInterval,
+        headers: [String: String],
+        data: Data?,
+        error: Error? = nil
+    ) {
+        // Get the full URL if it's a relative path
+        let fullURL = url.hasPrefix("http") ? url : URL(string: url, relativeTo: URL(string: Config.baseURL)!)?.absoluteString ?? url
+        
+        var parameters = [
+            "url": url,
+            "fullUrl": fullURL,
+            "statusCode": String(statusCode),
+            "responseTime": String(format: "%.3f", responseTime),
+            "headers": headers.description
+        ]
+        
+        if let data = data {
+            parameters["dataSize"] = String(data.count)
+            if let responseString = String(data: data, encoding: .utf8) {
+                // Truncate response body if too long
+                let truncatedResponse = responseString.count > 1000 ? String(responseString.prefix(1000)) + "..." : responseString
+                parameters["responseBody"] = truncatedResponse
+            }
+        }
+        
+        if let error = error {
+            parameters["error"] = error.localizedDescription
+        }
+        
+        let event = AnalyticsEvent(
+            type: .networkResponse,
+            name: "Detailed Network Response",
+            parameters: parameters,
+            context: currentContext,
+            level: statusCode >= 400 ? .error : .info
+        )
+        logEvent(event)
+        
+        // Detailed console logging
+        let statusEmoji = statusCode >= 400 ? "❌" : "✅"
+        let headerString = headers.map { "\($0.key): \($0.value)" }.joined(separator: "\n    ")
+        let responseString = data.flatMap { String(data: $0, encoding: .utf8) } ?? "No response body"
+        let truncatedResponseString = responseString.count > 500 ? String(responseString.prefix(500)) + "..." : responseString
+        
+        let detailedLog = """
+        \(statusEmoji) DETAILED RESPONSE:
+        URL: \(fullURL)
+        Status: \(statusCode)
+        Time: \(String(format: "%.3fs", responseTime))
+        Headers:
+            \(headerString)
+        Body:
+        \(truncatedResponseString)
+        """
+        
+        Logger.network.info("\(detailedLog)")
     }
     
     /// Log screen view
@@ -616,6 +734,28 @@ public extension AnalyticsManager {
         let eventType: AnalyticsEventType = state == "background" ? .appBackground : .appForeground
         logEvent(eventType, name: "App \(state.capitalized)", level: .info)
         Logger.debug.info("📱 App \(state): \(state)")
+    }
+    
+    /// Enable/disable detailed network logging
+    func setDetailedNetworkLogging(_ enabled: Bool) {
+        enableConsoleLogging = enabled
+        Logger.analytics.info("🔧 Detailed network logging \(enabled ? "enabled" : "disabled")")
+    }
+    
+    /// Log a test network request for debugging
+    func logTestNetworkRequest() {
+        let testEvent = AnalyticsEvent(
+            type: .networkRequest,
+            name: "Test Network Request",
+            parameters: [
+                "test": "true",
+                "timestamp": String(Date().timeIntervalSince1970)
+            ],
+            context: currentContext,
+            level: .debug
+        )
+        logEvent(testEvent)
+        Logger.network.debug("🧪 Test network request logged")
     }
 }
 
