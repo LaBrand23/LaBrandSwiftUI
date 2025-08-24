@@ -34,7 +34,7 @@ final class NetworkManager {
     // MARK: - Combine version
     func perform<T: APIRequest>(_ request: T) -> AnyPublisher<T.Response, Error> {
         // Construct the full URL with version
-        let fullPath = Config.apiVersion.path + request.path.rawValue
+        let fullPath = "/api" + Config.apiVersion.path + request.path.rawValue
         guard let url = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
             self.analyticsManager.logEvent(.networkError, name: "Invalid URL", level: .error)
             self.analyticsManager.logError(
@@ -134,7 +134,7 @@ final class NetworkManager {
     @discardableResult
     func performAsync<T: APIRequest>(_ request: T) async throws -> T.Response {
         // Construct the full URL with version
-        let fullPath = Config.apiVersion.path + request.path.rawValue
+        let fullPath = "/api" + Config.apiVersion.path + request.path.rawValue
         guard let url = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
             self.analyticsManager.logEvent(.networkError, name: "Invalid URL", level: .error)
             self.analyticsManager.logError(
@@ -227,7 +227,7 @@ final class NetworkManager {
         }
         
         // Construct the full URL with version for refresh token
-        let fullPath = Config.apiVersion.path + APIEndpoint.refresh.rawValue
+        let fullPath = "/api" + Config.apiVersion.path + APIEndpoint.refresh.rawValue
         guard let refreshURL = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
             return Fail(error: NetworkError.invalidURL).eraseToAnyPublisher()
         }
@@ -253,7 +253,7 @@ final class NetworkManager {
         }
         
         // Construct the full URL with version for refresh token
-        let fullPath = Config.apiVersion.path + APIEndpoint.refresh.rawValue
+        let fullPath = "/api" + Config.apiVersion.path + APIEndpoint.refresh.rawValue
         guard let refreshURL = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
             throw NetworkError.invalidURL
         }

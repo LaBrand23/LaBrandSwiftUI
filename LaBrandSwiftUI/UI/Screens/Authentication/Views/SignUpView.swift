@@ -236,6 +236,7 @@ struct SignUpView: View {
         }
         .alert("Success", isPresented: .constant(viewModel.state.isSuccess)) {
             Button("Continue") {
+                viewModel.clearForm()
                 dismiss()
             }
         } message: {

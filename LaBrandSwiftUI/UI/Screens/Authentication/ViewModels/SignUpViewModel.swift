@@ -151,8 +151,6 @@ final class SignUpViewModel: ObservableObject {
             message: "Welcome, \(client.fullName)! Your account has been created successfully.",
             client: client
         ))
-        
-        clearForm()
     }
     
     private func handleSignUpError(_ error: Error) async {
