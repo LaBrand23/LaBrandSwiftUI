@@ -205,6 +205,26 @@ public final class AnalyticsManager: ObservableObject {
             level: .info
         )
         logEvent(event)
+        
+        // Log configuration information
+        logConfigurationInfo()
+    }
+    
+    private func logConfigurationInfo() {
+        let configEvent = AnalyticsEvent(
+            type: .debug,
+            name: "App Configuration",
+            parameters: [
+                "baseURL": Config.baseURL,
+                "appVersion": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown",
+                "buildNumber": Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
+            ],
+            context: currentContext,
+            level: .debug
+        )
+        logEvent(configEvent)
+        
+        Logger.debug.debug("🔧 App Configuration - Base URL: \(Config.baseURL)")
     }
     
     // MARK: - Public API
@@ -252,11 +272,21 @@ public final class AnalyticsManager: ObservableObject {
     
     /// Log network request
     public func logNetworkRequest(_ request: any APIRequest) {
-        let parameters = [
+        // Get the full URL
+        let fullURL = URL(string: request.path.rawValue, relativeTo: URL(string: Config.baseURL)!)?.absoluteString ?? request.path.rawValue
+        
+        var parameters = [
             "url": request.path.rawValue,
+            "fullUrl": fullURL,
             "method": request.method.rawValue,
             "requiresAuth": String(request.requiresAuth)
         ]
+        
+        // Add request body information (masking sensitive data)
+        if let encodableBody = request.body {
+            let bodyParameters = extractBodyParameters(from: encodableBody)
+            parameters["requestBody"] = bodyParameters
+        }
         
         let event = AnalyticsEvent(
             type: .networkRequest,
@@ -267,8 +297,8 @@ public final class AnalyticsManager: ObservableObject {
         )
         logEvent(event)
         
-        // Also log to network category
-        Logger.network.info("🌐 \(request.method.rawValue) \(request.path.rawValue)")
+        // Also log to network category with full URL
+        Logger.network.info("🌐 \(request.method.rawValue) \(fullURL)")
     }
     
     /// Log network response
@@ -278,8 +308,12 @@ public final class AnalyticsManager: ObservableObject {
         responseTime: TimeInterval,
         dataSize: Int?
     ) {
+        // Get the full URL if it's a relative path
+        let fullURL = url.hasPrefix("http") ? url : URL(string: url, relativeTo: URL(string: Config.baseURL)!)?.absoluteString ?? url
+        
         var parameters = [
             "url": url,
+            "fullUrl": fullURL,
             "statusCode": String(statusCode),
             "responseTime": String(format: "%.3f", responseTime)
         ]
@@ -297,9 +331,9 @@ public final class AnalyticsManager: ObservableObject {
         )
         logEvent(event)
         
-        // Also log to network category
+        // Also log to network category with full URL
         let statusEmoji = statusCode >= 400 ? "❌" : "✅"
-        Logger.network.info("\(statusEmoji) \(statusCode) - \(url) (\(String(format: "%.3fs", responseTime)))")
+        Logger.network.info("\(statusEmoji) \(statusCode) - \(fullURL) (\(String(format: "%.3fs", responseTime)))")
     }
     
     /// Log screen view
@@ -474,6 +508,41 @@ public final class AnalyticsManager: ObservableObject {
         formatter.dateFormat = "HH:mm:ss.SSS"
         formatter.timeZone = TimeZone.current
         return formatter.string(from: date)
+    }
+    
+    /// Extract and mask sensitive data from request body
+    private func extractBodyParameters(from encodableBody: Encodable) -> String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        
+        do {
+            let data = try encoder.encode(AnyEncodable(encodableBody))
+            if let jsonString = String(data: data, encoding: .utf8) {
+                // Mask sensitive fields
+                return maskSensitiveData(jsonString)
+            }
+        } catch {
+            return "Failed to encode body: \(error.localizedDescription)"
+        }
+        
+        return "Failed to extract body parameters"
+    }
+    
+    /// Mask sensitive data in JSON string
+    private func maskSensitiveData(_ jsonString: String) -> String {
+        var maskedString = jsonString
+        
+        // Define sensitive fields to mask
+        let sensitiveFields = ["password", "token", "access_token", "refresh_token", "secret", "key"]
+        
+        for field in sensitiveFields {
+            // Pattern to match field names in JSON
+            let pattern = "\"\(field)\"\\s*:\\s*\"[^\"]*\""
+            let replacement = "\"\(field)\": \"***MASKED***\""
+            maskedString = maskedString.replacingOccurrences(of: pattern, with: replacement, options: .regularExpression)
+        }
+        
+        return maskedString
     }
 }
 

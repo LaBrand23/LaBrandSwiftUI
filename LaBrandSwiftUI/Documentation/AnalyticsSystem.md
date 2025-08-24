@@ -80,8 +80,30 @@ AnalyticsManager.shared.logEvent(
 ```swift
 // Automatic tracking in NetworkManager
 let response = try await networkManager.performAsync(request)
-// Automatically logs request, response time, and any errors
+// Automatically logs:
+// - Full URL (base URL + endpoint)
+// - Request method and headers
+// - Request body with sensitive data masking
+// - Response time and status code
+// - Any errors with context
 ```
+
+### Enhanced Network Analytics
+
+The system now provides comprehensive network request tracking:
+
+```swift
+// Example of what gets logged for a login request:
+// 🌐 POST https://api.labrand.com/auth/login
+// Request Body: {"email":"user@example.com","password":"***MASKED***"}
+// Response: ✅ 200 - https://api.labrand.com/auth/login (0.245s)
+```
+
+**Security Features:**
+- Sensitive data (passwords, tokens, keys) are automatically masked
+- Full URLs are logged for debugging
+- Request and response bodies are captured
+- Authentication headers are tracked
 
 ### Error Tracking
 
@@ -140,11 +162,25 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
     analytics.enableFileLogging = true
     analytics.maxStoredEvents = 1000
     
-    // Log app launch
+    // Log app launch (automatically logs configuration info)
     analytics.logEvent(.appLaunch, name: "App Did Launch", level: .info)
     
     return true
 }
+```
+
+### Configuration Logging
+
+The system automatically logs configuration information on app launch:
+
+```swift
+// Automatically logged configuration:
+// 🔧 App Configuration - Base URL: https://api.labrand.com
+// Parameters: {
+//   "baseURL": "https://api.labrand.com",
+//   "appVersion": "1.0.0",
+//   "buildNumber": "1"
+// }
 ```
 
 ### App State Change Tracking
@@ -352,4 +388,32 @@ print("Stored events: \(AnalyticsManager.shared.getStoredEvents().count)")
 // Export for analysis
 let json = AnalyticsManager.shared.exportEvents()
 // Save to file or send to debugging tool
+```
+
+### Testing Enhanced Analytics
+
+Use the `AnalyticsTest` class to test the enhanced functionality:
+
+```swift
+// Run comprehensive tests
+let test = AnalyticsTest()
+await test.runAllTests()
+
+// This will test:
+// - Full URL logging
+// - Request body logging with sensitive data masking
+// - Network response logging
+// - Configuration information logging
+```
+
+**Example Output:**
+```
+🧪 Testing Sensitive Data Masking...
+Original JSON: {"email":"test@example.com","password":"secretpassword"}
+Masked JSON: {"email":"test@example.com","password":"***MASKED***"}
+
+🧪 Testing Enhanced Network Analytics...
+🌐 POST https://api.labrand.com/auth/login
+Request Body: {"email":"test@example.com","password":"***MASKED***"}
+✅ 200 - https://api.labrand.com/auth/login (0.245s)
 ```

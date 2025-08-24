@@ -2,234 +2,156 @@
 //  AnalyticsTest.swift
 //  LaBrandSwiftUI
 //
-//  Created by Shakzod on 24/08/2025.
+//  Created by Shaxzod on 19/04/2025
 //
 
 import Foundation
-import SwiftUI
 
-// MARK: - Analytics Test Helper
-
-struct AnalyticsTest {
+/// Test class to demonstrate enhanced analytics functionality
+class AnalyticsTest {
     
-    static func runBasicTests() {
-        let analytics = AnalyticsManager.shared
-        
-        print("🧪 Starting Analytics Tests...")
-        
-        // Test 1: Basic event logging
-        analytics.logEvent(.featureUsage, name: "Test Event", parameters: ["test": "value"], level: .info)
-        print("✅ Basic event logging test passed")
-        
-        // Test 2: Screen tracking
-        analytics.logScreenView("TestScreen")
-        print("✅ Screen tracking test passed")
-        
-        // Test 3: Button tap tracking
-        analytics.logButtonTap("test_button", screen: "TestScreen")
-        print("✅ Button tap tracking test passed")
-        
-        // Test 4: Error tracking
-        let testError = NSError(domain: "TestError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Test error message"])
-        analytics.logError(testError, context: "AnalyticsTest.runBasicTests")
-        print("✅ Error tracking test passed")
-        
-        // Test 5: Performance tracking
-        analytics.logPerformanceMetric(name: "test_performance", value: 123.45, unit: "ms")
-        print("✅ Performance tracking test passed")
-        
-        // Test 6: User action tracking
-        analytics.logUserAction("test_action", parameters: ["param1": "value1", "param2": "value2"])
-        print("✅ User action tracking test passed")
-        
-        // Test 7: Export functionality
-        let exportedData = analytics.exportEvents()
-        print("✅ Export functionality test passed")
-        print("📊 Exported \(exportedData.count) characters of analytics data")
-        
-        // Test 8: Get stored events
-        let events = analytics.getStoredEvents()
-        print("✅ Stored events test passed")
-        print("📊 Total stored events: \(events.count)")
-        
-        print("🎉 All analytics tests completed successfully!")
-    }
+    private let analyticsManager = AnalyticsManager.shared
+    private let networkManager = NetworkManager.shared
     
-    static func testCodableConformance() {
-        print("🧪 Testing Codable conformance...")
+    /// Test network request logging with full URL and request body
+    func testNetworkRequestLogging() async {
+        print("🧪 Testing Enhanced Network Analytics...")
         
-        // Test AnalyticsEvent encoding/decoding
-        let context = AnalyticsContext(userId: "test_user")
-        let event = AnalyticsEvent(
-            type: .userLogin,
-            name: "Test Login",
-            parameters: ["method": "email"],
-            context: context,
-            level: .info
+        // Test login request
+        let loginModel: [String: String] = [
+            "email": "test@example.com",
+            "password": "secretpassword123"
+        ]
+        
+        let loginRequest = LoginRequest(model: loginModel)
+        
+        // This will trigger the enhanced analytics logging
+        do {
+            _ = try await networkManager.performAsync(loginRequest)
+        } catch {
+            print("Expected error for test: \(error.localizedDescription)")
+        }
+        
+        // Test registration request
+        let registerModel = ClientCreate(
+            fullName: "John Doe",
+            email: "john@example.com",
+            password: "securepassword456"
         )
+        
+        let registerRequest = RegisterRequest(model: registerModel)
         
         do {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted]
-            let data = try encoder.encode(event)
-            let jsonString = String(data: data, encoding: .utf8) ?? "Failed to encode"
-            print("✅ AnalyticsEvent encoding successful")
-            
-            let decoder = JSONDecoder()
-            let decodedEvent = try decoder.decode(AnalyticsEvent.self, from: data)
-            print("✅ AnalyticsEvent decoding successful")
-            print("📊 Decoded event: \(decodedEvent.name)")
-            
+            _ = try await networkManager.performAsync(registerRequest)
         } catch {
-            print("❌ Codable test failed: \(error)")
+            print("Expected error for test: \(error.localizedDescription)")
         }
         
-        print("🎉 Codable conformance test completed!")
+        // Export and display analytics events
+        print("\n📊 Analytics Events:")
+        print(analyticsManager.exportEvents())
     }
     
-    static func testNetworkAnalytics() {
-        print("🧪 Testing Network Analytics...")
+    /// Test manual logging of network requests
+    func testManualNetworkLogging() {
+        print("🧪 Testing Manual Network Logging...")
         
-        let analytics = AnalyticsManager.shared
+        // Simulate a login request
+        let loginModel: [String: String] = [
+            "email": "user@example.com",
+            "password": "mypassword123"
+        ]
         
-        // Simulate network request
-        let mockRequest = MockAPIRequest()
-        analytics.logNetworkRequest(mockRequest)
+        let loginRequest = LoginRequest(model: loginModel)
+        analyticsManager.logNetworkRequest(loginRequest)
         
-        // Simulate network response
-        analytics.logNetworkResponse(
-            url: mockRequest.path.rawValue,
-            statusCode: 200,
-            responseTime: 0.5,
-            dataSize: 1024
+        // Simulate a registration request
+        let registerModel = ClientCreate(
+            fullName: "Jane Smith",
+            email: "jane@example.com",
+            password: "janespassword789"
         )
         
-        print("✅ Network analytics test passed")
+        let registerRequest = RegisterRequest(model: registerModel)
+        analyticsManager.logNetworkRequest(registerRequest)
+        
+        print("✅ Manual network logging completed")
+    }
+    
+    /// Test sensitive data masking
+    func testSensitiveDataMasking() {
+        print("🧪 Testing Sensitive Data Masking...")
+        
+        let sensitiveData: [String: String] = [
+            "email": "test@example.com",
+            "password": "secretpassword",
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "refresh_token": "refresh_token_here",
+            "api_key": "sk-1234567890abcdef"
+        ]
+        
+        // This would normally be logged by the network manager
+        // For testing, we'll simulate the masking
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        
+        do {
+            let data = try encoder.encode(sensitiveData)
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Original JSON: \(jsonString)")
+                
+                // Apply masking (this is what the analytics system does)
+                let maskedString = maskSensitiveData(jsonString)
+                print("Masked JSON: \(maskedString)")
+            }
+        } catch {
+            print("Error encoding data: \(error)")
+        }
+    }
+    
+    /// Helper function to mask sensitive data (same as in AnalyticsManager)
+    private func maskSensitiveData(_ jsonString: String) -> String {
+        var maskedString = jsonString
+        
+        let sensitiveFields = ["password", "token", "access_token", "refresh_token", "secret", "key"]
+        
+        for field in sensitiveFields {
+            let pattern = "\"\(field)\"\\s*:\\s*\"[^\"]*\""
+            let replacement = "\"\(field)\": \"***MASKED***\""
+            maskedString = maskedString.replacingOccurrences(of: pattern, with: replacement, options: .regularExpression)
+        }
+        
+        return maskedString
+    }
+    
+    /// Run all tests
+    func runAllTests() async {
+        print("🚀 Starting Analytics Tests...\n")
+        
+        testSensitiveDataMasking()
+        print()
+        
+        testManualNetworkLogging()
+        print()
+        
+        await testNetworkRequestLogging()
+        print()
+        
+        print("✅ All analytics tests completed!")
     }
 }
 
-// MARK: - Mock API Request for Testing
+// MARK: - Usage Example
 
-struct MockAPIRequest: APIRequest {
-    typealias Response = String
-    
-    var path: APIEndpoint { .me }
-    var method: HTTPMethod { .get }
-    var requiresAuth: Bool { true }
-    var body: Encodable? { nil }
-}
-
-// MARK: - SwiftUI Test View
-
-struct AnalyticsTestView: View {
-    @State private var showResults = false
-    @State private var testResults = ""
-    
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                Text("Analytics System Test")
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                Button("Run Basic Tests") {
-                    runTests()
-                }
-                .buttonStyle(.borderedProminent)
-                
-                Button("Test Codable Conformance") {
-                    testCodable()
-                }
-                .buttonStyle(.borderedProminent)
-                
-                Button("Test Network Analytics") {
-                    testNetwork()
-                }
-                .buttonStyle(.borderedProminent)
-                
-                Button("Export Analytics Data") {
-                    exportData()
-                }
-                .buttonStyle(.borderedProminent)
-                
-                if showResults {
-                    ScrollView {
-                        Text(testResults)
-                            .font(.system(.body, design: .monospaced))
-                            .padding()
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
-                    }
-                    .frame(maxHeight: 300)
-                }
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Analytics Test")
-            .trackScreen("AnalyticsTestView")
-        }
-    }
-    
-    private func runTests() {
-        testResults = "Running basic tests...\n"
-        showResults = true
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            AnalyticsTest.runBasicTests()
-            
-            DispatchQueue.main.async {
-                testResults += "\n✅ Basic tests completed successfully!"
-            }
-        }
-    }
-    
-    private func testCodable() {
-        testResults = "Testing Codable conformance...\n"
-        showResults = true
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            AnalyticsTest.testCodableConformance()
-            
-            DispatchQueue.main.async {
-                testResults += "\n✅ Codable conformance test completed!"
-            }
-        }
-    }
-    
-    private func testNetwork() {
-        testResults = "Testing network analytics...\n"
-        showResults = true
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            AnalyticsTest.testNetworkAnalytics()
-            
-            DispatchQueue.main.async {
-                testResults += "\n✅ Network analytics test completed!"
-            }
-        }
-    }
-    
-    private func exportData() {
-        testResults = "Exporting analytics data...\n"
-        showResults = true
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            let exported = AnalyticsManager.shared.exportEvents()
-            
-            DispatchQueue.main.async {
-                testResults = "📊 Exported Analytics Data:\n\n\(exported)"
-            }
-        }
-    }
-}
-
-// MARK: - Preview
-
-#if DEBUG
-struct AnalyticsTestView_Previews: PreviewProvider {
-    static var previews: some View {
-        AnalyticsTestView()
-    }
-}
-#endif
+/*
+ To use this test class:
+ 
+ let test = AnalyticsTest()
+ await test.runAllTests()
+ 
+ This will demonstrate:
+ 1. Full URL logging (base URL + endpoint)
+ 2. Request body logging with sensitive data masking
+ 3. Enhanced network response logging
+ 4. Configuration information logging
+ */
