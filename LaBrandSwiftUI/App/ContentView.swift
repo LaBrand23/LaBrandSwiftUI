@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject private var authManager: AuthenticationManager
+    @StateObject private var clientStorage = UserStorage()
     
     var body: some View {
         Group {
-            if authManager.isAuthenticated {
+            if clientStorage.client != nil {
                 MainTabView()
             } else {
                 SignInView()
@@ -78,5 +78,4 @@ struct MainTabView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(AuthenticationManager())
 }

@@ -39,6 +39,7 @@ struct SignInView: View {
             Button {
                 Task {
                     await viewModel.signIn()
+                    await viewModel.getClient()
                 }
             } label: {
                 Text("Sign in")
@@ -85,6 +86,12 @@ struct SignInView: View {
         }
         .fullScreenCover(isPresented: $viewModel.showSignUp) {
             SignUpView()
+        }
+        .task {
+            #if DEBUG
+                $viewModel.email.wrappedValue = "test123@example.com"
+                $viewModel.password.wrappedValue = "Password123!"
+            #endif
         }
     }
 }

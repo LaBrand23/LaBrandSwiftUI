@@ -13,6 +13,7 @@ final class SignInViewModel: ObservableObject {
     private var authService: AuthNetworkServiceProtocol
     private var analyticsManager = AnalyticsManager.shared
     private var tokenStorage = TokenStorage(storageManager: KeychainManager.shared)
+    private var clientStorage: UserStorage = UserStorage()
 
     // Dependency injection for testability and flexibility
     init(authService: AuthNetworkServiceProtocol = AuthNetworkService()) {
@@ -36,7 +37,6 @@ final class SignInViewModel: ObservableObject {
             let token = try await authService.login(email: email, password: password)
             tokenStorage.save(token: token)
             analyticsManager.logEvent(.userLogin, name: "Login Success", model: token, level: .info)
-            showSignUp = true
             
         } catch let error as NetworkError {
             showError = true
@@ -54,6 +54,29 @@ final class SignInViewModel: ObservableObject {
                 context: "SignInViewModel.signIn",
                 additionalInfo: ["email": email, "error": "An unexpected error occurred"]
             )      
+        }
+    }
+
+    func getClient() async {
+        do {
+            let client = try await authService.loginByToken()
+            clientStorage.createClient(client: client)
+        } catch let error as NetworkError {
+            analyticsManager.logError(
+                error,
+                context: "SignInViewModel.getClient",
+                additionalInfo: ["error": error.localizedDescription]
+            )
+            showError = true
+            errorMessage = error.localizedDescription
+        } catch {
+            analyticsManager.logError(
+                error,
+                context: "SignInViewModel.getClient",
+                additionalInfo: ["error": "An unexpected error occurred"]
+            )
+            showError = true
+            errorMessage = "An unexpected error occurred"
         }
     }
 

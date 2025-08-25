@@ -10,6 +10,7 @@ import Foundation
 protocol AuthNetworkServiceProtocol {
     func register(fullName: String, email: String, password: String) async throws -> Client
     func login(email: String, password: String) async throws -> Token
+    func loginByToken() async throws -> Client
     func logout(refreshToken: String) async throws
 }
 
@@ -40,6 +41,18 @@ final class AuthNetworkService: AuthNetworkServiceProtocol {
             "password": password
         ]
         let request = LoginRequest(model: loginModel)
+        let response = try await networkManager.performAsync(request)
+        return response
+    }
+
+    func loginByToken() async throws -> Client {
+        struct LoginByTokenRequest: APIRequest {
+            typealias Response = Client
+            var path: APIEndpoint { .me }
+            var method: HTTPMethod { .get }
+            var requiresAuth: Bool { true } // Token will be set automatically
+        }
+        let request = LoginByTokenRequest()
         let response = try await networkManager.performAsync(request)
         return response
     }
