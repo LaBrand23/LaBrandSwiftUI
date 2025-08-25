@@ -8,6 +8,7 @@ import SwiftUI
 
 struct SignUpView: View {
     @StateObject private var viewModel = SignUpViewModel()
+    @EnvironmentObject var clientStorage: UserStorage
     @Environment(\.dismiss) private var dismiss
     
     // MARK: - Computed Properties
@@ -237,13 +238,11 @@ struct SignUpView: View {
         .alert("Success", isPresented: .constant(viewModel.state.isSuccess)) {
             Button("Continue") {
                 viewModel.clearForm()
+                clientStorage.getClient() // Trigger for update ContentView
                 dismiss()
             }
         } message: {
             Text(successMessage)
-        }
-        .onAppear {
-            // Analytics are automatically set up in the view model init
         }
     }
 }
@@ -333,6 +332,7 @@ struct SocialSignInButton: View {
 // MARK: - Preview
 #Preview {
     SignUpView()
+        .environmentObject(UserStorage())
 }
 
 

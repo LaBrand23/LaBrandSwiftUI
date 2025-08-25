@@ -26,26 +26,28 @@ class UserStorage: ObservableObject {
     // MARK: - Methods
 
     func createClient(client: Client) {
-        analyticsManager.logEvent(.userLogin, name: "ClientCreated", model: client, level: .info)
         self.client = client
         storageManager.save(data: client, forKey: key)
+        analyticsManager.logEvent(.userLogin, name: "ClientCreated", model: client, level: .info)
     }
 
     func getClient() -> Client? {
+        let storedClient: Client? = storageManager.get(forKey: key)
+        self.client = storedClient
         analyticsManager.logEvent(.userLogin, name: "ClientRetrieved", model: client, level: .info)
-        return storageManager.get(forKey: key)
+        return storedClient
     }
     
     func updateClient(client: Client) {
-        analyticsManager.logEvent(.userLogin, name: "ClientUpdated", model: client, level: .info)
         self.client = client
         storageManager.update(data: client, forKey: key)
+        analyticsManager.logEvent(.userLogin, name: "ClientUpdated", model: client, level: .info)
     }
 
     func deleteClient() {
-        analyticsManager.logEvent(.userLogin, name: "ClientDeleted", model: client, level: .info)
         client = nil
         storageManager.clear()
+        analyticsManager.logEvent(.userLogin, name: "ClientDeleted", model: client, level: .info)
     }
     
 }
