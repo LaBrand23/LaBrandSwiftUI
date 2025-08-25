@@ -2,19 +2,28 @@ import Foundation
 
 import Foundation
 
-struct Category: Identifiable, Codable {
+struct Category: Identifiable, Codable, Hashable {
     let id: UUID
     let name: String
     let image: String
     let parentCategoryID: UUID?  // ✅ FIXED: Use UUID instead of Category
     let subcategories: [Category]?
+    
+    // MARK: - Hashable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: Category, rhs: Category) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 // MARK: - Equatable
 extension Category: Equatable {
-    static func == (lhs: Category, rhs: Category) -> Bool {
-        return lhs.id == rhs.id
-    }
+//    static func == (lhs: Category, rhs: Category) -> Bool {
+//        return lhs.id == rhs.id
+//    }
 }
 
 // MARK: - MainCategory

@@ -12,13 +12,9 @@ struct PromotionBannerView: View {
     
     var body: some View {
         ZStack(alignment: .leading) {
-            AsyncImage(url: URL(string: promotion.backgroundImage)) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Image(.mockImage1)
-            }
+            Image(promotion.backgroundImage)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(promotion.title)
