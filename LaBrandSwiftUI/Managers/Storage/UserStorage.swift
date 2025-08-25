@@ -20,7 +20,7 @@ class UserStorage: ObservableObject {
     // MARK: - Init
     init(storageManager: StorageManagerProtocol = KeychainManager.shared) {
         self.storageManager = storageManager
-        
+        getClient()
     }
     
     // MARK: - Methods
