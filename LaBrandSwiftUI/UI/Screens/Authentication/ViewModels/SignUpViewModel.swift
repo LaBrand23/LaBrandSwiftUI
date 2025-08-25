@@ -14,6 +14,7 @@ final class SignUpViewModel: ObservableObject {
     
     // MARK: - Dependencies
     private let authService: AuthNetworkServiceProtocol
+    private let clientStorage = UserStorage()
     private let analyticsManager: AnalyticsManager
     private let validator: SignUpValidator
     
@@ -29,7 +30,7 @@ final class SignUpViewModel: ObservableObject {
     init(
         authService: AuthNetworkServiceProtocol = AuthNetworkService(),
         analyticsManager: AnalyticsManager = .shared,
-        validator: SignUpValidator = SignUpValidator()
+        validator: SignUpValidator = SignUpValidator(),
     ) {
         self.authService = authService
         self.analyticsManager = analyticsManager
@@ -151,6 +152,8 @@ final class SignUpViewModel: ObservableObject {
             message: "Welcome, \(client.fullName)! Your account has been created successfully.",
             client: client
         ))
+
+        clientStorage.createClient(client: client)
     }
     
     private func handleSignUpError(_ error: Error) async {

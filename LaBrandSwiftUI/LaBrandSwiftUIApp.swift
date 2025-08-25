@@ -9,12 +9,10 @@ import SwiftUI
 
 @main
 struct LaBrandSwiftUIApp: App {
-    @StateObject private var authManager = AuthenticationManager()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(authManager)
         }
     }
 }

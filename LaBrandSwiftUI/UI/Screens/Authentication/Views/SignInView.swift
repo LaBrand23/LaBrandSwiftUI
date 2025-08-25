@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
+    @EnvironmentObject var clientStorage: UserStorage
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -39,6 +40,9 @@ struct SignInView: View {
             Button {
                 Task {
                     await viewModel.signIn()
+                    if let client = await viewModel.getClient() {
+                        clientStorage.createClient(client: client)
+                    }
                 }
             } label: {
                 Text("Sign in")
@@ -85,10 +89,18 @@ struct SignInView: View {
         }
         .fullScreenCover(isPresented: $viewModel.showSignUp) {
             SignUpView()
+                .environmentObject(clientStorage)
+        }
+        .task {
+            #if DEBUG
+                $viewModel.email.wrappedValue = "test123@example.com"
+                $viewModel.password.wrappedValue = "Password123!"
+            #endif
         }
     }
 }
 
 #Preview {
     SignInView()
+        .environmentObject(UserStorage())
 }
