@@ -46,12 +46,12 @@ struct HomeView: View {
         .navigationBarTitleDisplayMode(.large)
         .searchable(text: $searchText, prompt: "Search for products, brands...")
         .onChange(of: searchText) { _, newValue in
-            // Handle search text changes
-            if !newValue.isEmpty {
-                // TODO: Implement search functionality
-                // For now, we can show search results in a sheet
-                showingSearch = true
-            }
+//            // Handle search text changes
+//            if !newValue.isEmpty {
+//                // TODO: Implement search functionality
+//                // For now, we can show search results in a sheet
+//            }
+            showingSearch = true
         }
         .sheet(isPresented: $showingSearch) {
             SearchView()
