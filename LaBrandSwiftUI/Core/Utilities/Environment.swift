@@ -39,11 +39,11 @@ public enum EnvironmentConfig {
     var baseURL: String {
         switch self {
         case .development:
-            return "http://127.0.0.1:8000/api"
+            return "http://192.168.1.114:8000/api"
         case .staging:
-            return "http://127.0.0.1:8000/api"
+            return "http://192.168.1.114:8000/api"
         case .production:
-            return "http://127.0.0.1:8000/api"
+            return "http://192.168.1.114:8000/api"
         }
     }
 }
