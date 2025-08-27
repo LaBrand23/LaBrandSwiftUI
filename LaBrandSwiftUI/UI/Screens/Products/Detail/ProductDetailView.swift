@@ -1,3 +1,10 @@
+//
+//  ProductDetailView.swift
+//  LaBrandSwiftUI
+//
+//  Created by Shaxzod on 19/04/25
+//
+
 import SwiftUI
 
 struct ProductDetailView: View {
@@ -5,168 +12,171 @@ struct ProductDetailView: View {
     @StateObject private var viewModel = ProductDetailViewModel()
     @Environment(\.dismiss) private var dismiss
     @State var selectedProduct: Product?
+    @State var showReviews = false
     
     var body: some View {
-//        NavigationStack {
-            ScrollView {
+        ScrollView {
+            VStack(spacing: 0) {
+
+                // Product Images with improved gallery
+                ProductImageGallery(
+                    images: product.images,
+                    selectedImageIndex: $viewModel.currentImageIndex,
+                    onImageTap: { imageUrl in
+                        viewModel.selectedImageForFullScreen = imageUrl
+                    }
+                )
+                
                 VStack(spacing: 20) {
-    //                 Product Images
-                    TabView {
-                        ForEach(product.images, id: \.self) { imageUrl in
-                            AsyncImageView(imageUrl: imageUrl) {
-                                Rectangle()
-                                    .foregroundColor(Color(.systemGray6))
-                            }
-                            .onTapGesture {
-                                viewModel.selectedImageForFullScreen = imageUrl
-                            }
-                        }
-                    }
-                    .frame(height: UIScreen.screenHeight/2.5)
-                    .tabViewStyle(.page)
-                    
-                    VStack(alignment: .leading, spacing: 16) {
-                        // Brand and Name
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(product.brand.name)
-                                .font(.headline)
-                                .foregroundColor(.gray)
-                            
-                            Text(product.name)
-                                .font(.title2)
-                                .fontWeight(.bold)
-                        }
-                        .padding(.horizontal)
-                        
-                        // Price
-                        HStack(alignment: .firstTextBaseline) {
-                            Text("$\(String(format: "%.2f", Double(truncating: product.price as NSNumber)))")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                            
-                            if let originalPrice = product.originalPrice {
-                                Text("$\(String(format: "%.2f", Double(truncating: originalPrice as NSNumber)))")
-                                    .font(.subheadline)
-                                    .strikethrough()
-                                    .foregroundColor(.gray)
-                            }
-                            
-                            Spacer()
-                            
-                            // Rating
-                            HStack {
-                                Image(systemName: "star.fill")
-                                    .foregroundColor(.yellow)
-                                Text(String(format: "%.1f", product.rating))
-                                Text("(\(product.reviewCount))")
-                                    .foregroundColor(.gray)
-                            }
-                            .font(.subheadline)
-                        }
-                        .padding(.horizontal)
-                        
-                        // Size Selection
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Select size")
-                                .font(.headline)
-                            
-                            HStack(spacing: 12) {
-                                ForEach(product.sizes, id: \.self) { size in
-                                    SizeButton(
-                                        size: size,
-                                        isSelected: viewModel.selectedSize == size,
-                                        action: { viewModel.selectedSize = size }
-                                    )
-                                }
-                            }
-                        }
-                        .padding(.horizontal)
-                        
-                        // Color Selection
-                        if !product.colors.isEmpty {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("Available colors")
-                                    .font(.headline)
-                                
-                                HStack(spacing: 12) {
-                                    ForEach(product.colors, id: \.self) { color in
-                                        ColorButton(
-                                            color: color,
-                                            isSelected: viewModel.selectedColor == color,
-                                            action: { viewModel.selectedColor = color }
-                                        )
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                        
-                        
-                        // Description
-                        Text(product.description)
+                    // Brand and Name
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(product.brand.name)
+                            .font(.headline)
                             .foregroundColor(.gray)
-                            .padding(.vertical)
-                            .padding(.horizontal)
                         
-                        // Reviews Section
-                        NavigationLink {
-                            ReviewsView(product: product)
-                                .environmentObject(viewModel)
-                        } label: {
-                            HStack {
-                                Text("Reviews")
-                                    .font(.headline)
-                                Spacer()
-                                Text("See all")
-                                    .foregroundColor(.red)
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
+                        Text(product.name)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
+                    
+                    // Trust Badges
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(viewModel.trustBadges, id: \.title) { badge in
+                                TrustBadgeView(badge: badge)
                             }
-                            .padding(.horizontal)
                         }
-                        
-                        // Recommended Products Section
-                        if !viewModel.recommendedProducts.isEmpty {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("You may also like")
-                                    .font(.headline)
-                                    .padding(.horizontal)
-                                
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    LazyHStack(spacing: 16) {
-                                        ForEach(viewModel.recommendedProducts) { product in
-                                            ProductCard(product: product)
-                                                .navigateOnTap(to: product, selection: $selectedProduct)
-                                        }
-                                    }
-                                    .padding(.horizontal)
-                                }
-                            }
-                        } else if viewModel.isLoadingRecommendations {
-                            HStack {
-                                Spacer()
-                                ProgressView()
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                        }
+                        .padding(.horizontal)
                     }
                     
-                }
-                .padding(.bottom)
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        viewModel.toggleFavorite()
-                    } label: {
-                        Image(systemName: product.isFavorite ? "heart.fill" : "heart")
-                            .foregroundColor(product.isFavorite ? .red : .primary)
+                    // Social Proof
+                    SocialProofView(socialProof: viewModel.socialProof)
+                        .padding(.horizontal)
+                    
+                    // Stock Info & Urgency
+                    if viewModel.stockInfo.isLowStock {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.orange)
+                            Text(viewModel.stockInfo.stockMessage)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.orange)
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        .background(Color.orange.opacity(0.1))
+                        .cornerRadius(8)
+                        .padding(.horizontal)
+                    }
+                    
+                    // Improved Price Display
+                    ProductPriceView(product: product)
+                    
+                    // Shipping Progress
+//                    ShippingProgressView(shippingInfo: viewModel.shippingInfo)
+//                        .padding(.horizontal)
+                    
+                    // Size Selection with Grid Layout
+                    SizeSelectionView(
+                        sizes: product.sizes,
+                        selectedSize: $viewModel.selectedSize,
+                        onSizeGuideTap: {
+                            viewModel.showSizeGuide = true
+                        }
+                    )
+                    .padding(.horizontal)
+                    
+                    // Color Selection
+                    if !product.colors.isEmpty {
+                        ColorSelectionView(
+                            colors: product.colors,
+                            selectedColor: $viewModel.selectedColor
+                        )
+                    }
+                    
+                    // Expandable Description
+                    ExpandableDescriptionView(
+                        description: product.description,
+                        isExpanded: $viewModel.isDescriptionExpanded
+                    )
+                    .padding(.horizontal)
+                    
+                    // Reviews Preview
+                    ReviewsPreviewView(
+                        product: product,
+                        onSeeAllReviews: {
+                            showReviews = true
+                        }
+                    )
+                    
+                    // Complete the Look (Cross-selling)
+                    if !viewModel.recommendedProducts.isEmpty {
+//                        CompleteTheLookView(
+//                            products: viewModel.recommendedProducts,
+                        //                            onProductTap: { product in
+                        //                                selectedProduct = product
+                        //                            }
+                        //                        )
+                        
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("You may also like")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 16) {
+                                    ForEach(viewModel.recommendedProducts) { product in
+                                        ProductCard(product: product)
+                                            .navigateOnTap(to: product, selection: $selectedProduct)
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
+                        }
+                    } else if viewModel.isLoadingRecommendations {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                            Spacer()
+                        }
+                        .padding()
                     }
                 }
+                .padding(.bottom, 100) // Space for sticky CTA
             }
-            .safeAreaInset(edge: .bottom) {
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(product.name)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    viewModel.toggleFavorite()
+                } label: {
+                    Image(systemName: product.isFavorite ? "heart.fill" : "heart")
+                        .foregroundColor(product.isFavorite ? .red : .primary)
+                }
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            // Sticky Add to Cart Button
+            VStack(spacing: 0) {
+                // Delivery info
+                HStack {
+                    Image(systemName: "truck")
+                        .foregroundColor(.green)
+                    Text(viewModel.stockInfo.deliveryMessage)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .background(Color(.systemGray6))
+                
                 AddToCartButton(
                     price: Decimal(product.price),
                     isEnabled: viewModel.selectedSize != nil,
@@ -175,18 +185,25 @@ struct ProductDetailView: View {
                 .padding()
                 .background(.regularMaterial)
             }
-    //        .applyToolbarHidden()
-            .navigationDestination(item: $selectedProduct, destination: { ProductDetailView(product: $0) })
-            .fullScreenCover(item: .init(
-                get: { viewModel.selectedImageForFullScreen.map { ImageSource(url: $0) } },
-                set: { viewModel.selectedImageForFullScreen = $0?.url }
-            )) { imageSource in
-                ImageFullScreenView(imageUrl: imageSource.url)
-            }
-            .onAppear {
-                viewModel.fetchRecommendedProducts(for: product.id)
-            }
-//        }
+        }
+        .navigationDestination(item: $selectedProduct, destination: { ProductDetailView(product: $0) })
+        .navigationDestination(isPresented: $showReviews, destination: { ReviewsView(product: product) })
+        .fullScreenCover(item: .init(
+            get: { viewModel.selectedImageForFullScreen.map { ImageSource(url: $0) } },
+            set: { viewModel.selectedImageForFullScreen = $0?.url }
+        )) { imageSource in
+            ImageFullScreenView(imageUrl: imageSource.url)
+        }
+        .sheet(isPresented: $viewModel.showSizeGuide) {
+            SizeGuideSheet(
+                isPresented: $viewModel.showSizeGuide,
+                productName: product.name,
+                category: product.category.name
+            )
+        }
+        .onAppear {
+            viewModel.fetchRecommendedProducts(for: product.id)
+        }
     }
 }
 

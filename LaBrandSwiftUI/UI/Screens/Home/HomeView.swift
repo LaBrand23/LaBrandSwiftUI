@@ -36,9 +36,6 @@ struct HomeView: View {
                 
                 // 6. Brand Highlights
                 brandHighlightsSection
-                
-                // 7. Footer Zone
-                footerSection
             }
         }
         .background(Color(.systemGroupedBackground))
@@ -270,32 +267,6 @@ struct HomeView: View {
         .background(Color(.systemBackground))
     }
     
-    // MARK: - Footer Section
-    private var footerSection: some View {
-        VStack(spacing: 16) {
-            // Promo banners
-            HStack(spacing: 12) {
-                PromoBannerSmall(
-                    icon: "truck",
-                    title: "Free Shipping",
-                    subtitle: "On orders over $50"
-                )
-                
-                PromoBannerSmall(
-                    icon: "arrow.clockwise",
-                    title: "Easy Returns",
-                    subtitle: "14 days to return"
-                )
-            }
-            .padding(.horizontal, 20)
-            
-            // Bottom spacing
-            Color.clear
-                .frame(height: 20)
-        }
-        .background(Color(.systemBackground))
-    }
-    
     // MARK: - Helper Methods
     private func productCarouselSection(
         title: String,
@@ -396,36 +367,6 @@ struct BrandCard: View {
                 .lineLimit(2)
         }
         .frame(width: 80)
-    }
-}
-
-struct PromoBannerSmall: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(.blue)
-                .frame(width: 24)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                Text(subtitle)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(Color.blue.opacity(0.1))
-        .cornerRadius(12)
     }
 }
 

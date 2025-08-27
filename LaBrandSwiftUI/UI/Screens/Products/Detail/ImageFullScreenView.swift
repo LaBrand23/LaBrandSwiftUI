@@ -11,7 +11,7 @@ struct ImageFullScreenView: View {
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-//            Color.black.edgesIgnoringSafeArea(.all)
+            Color.black.edgesIgnoringSafeArea(.all)
             
             AsyncImageView(imageUrl: imageUrl, .fit, placeholder: {})
                 .scaleEffect(scale)

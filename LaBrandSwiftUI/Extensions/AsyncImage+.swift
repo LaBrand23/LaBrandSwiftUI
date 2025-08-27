@@ -32,3 +32,11 @@ struct AsyncImageView<Placeholder: View>: View {
         }
     }
 }
+
+#Preview {
+    AsyncImageView(imageUrl: "https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif") {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(.red)
+            .frame(width: 100, height: 100)
+    }
+}
