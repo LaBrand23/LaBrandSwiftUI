@@ -62,7 +62,7 @@ extension Product {
             description: "A stylish and comfortable sneaker with Air cushioning.",
             price: 150.00,
             originalPrice: 200.00,
-            images: ["https://media-hosting.imagekit.io/f3a97739790f4304/heather-ford-5gkYsrH_ebY-unsplash.jpg?Expires=1837687387&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=R9agrybBaIZPuOjBLGqpynrAxL1sPQBN2D1TSI3wfPY~RPpCi9-mQHcqhDHdJMliBrdOd2jaFwOjf4DRuA9Lalko-7oWwq7rCZXtUy56oS1upwKT5OlrpHBiBC1fnTG8z-2A52IW4sIXOxeTDi8CH39~aCY~gSIK40v9yi6jWY2MxQ3zSwHFSz6Yt8jHmZj1TEbSHldIMlnNwa4fJSSIRRiiRotIrgtRvhbzdB--su5BdRuYyt~GzFwWM4IVega4yuGYbPe~6gQcZGGwIuCiWdwW4Sd3YV3mZQmd~5Yq4Oax6S3Dama~B92kkDEEih8V1J8QmospNye-mzxouC5vqA__", "https://example.com/nike2.jpg"],
+            images: ["https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif","https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif","https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif"],
             category: Category.mockCategories.first!,
             brand: Brand(id: "1", name: "Nike", category: "Sports"),
             rating: 4.8,
@@ -80,12 +80,17 @@ extension Product {
             description: "A performance running shoe with great energy return.",
             price: 180.00,
             originalPrice: 220.00,
-            images: ["https://media-hosting.imagekit.io/f3a97739790f4304/heather-ford-5gkYsrH_ebY-unsplash.jpg?Expires=1837687387&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=R9agrybBaIZPuOjBLGqpynrAxL1sPQBN2D1TSI3wfPY~RPpCi9-mQHcqhDHdJMliBrdOd2jaFwOjf4DRuA9Lalko-7oWwq7rCZXtUy56oS1upwKT5OlrpHBiBC1fnTG8z-2A52IW4sIXOxeTDi8CH39~aCY~gSIK40v9yi6jWY2MxQ3zSwHFSz6Yt8jHmZj1TEbSHldIMlnNwa4fJSSIRRiiRotIrgtRvhbzdB--su5BdRuYyt~GzFwWM4IVega4yuGYbPe~6gQcZGGwIuCiWdwW4Sd3YV3mZQmd~5Yq4Oax6S3Dama~B92kkDEEih8V1J8QmospNye-mzxouC5vqA__", "https://example.com/adidas2.jpg"],
+            images: [
+                "https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif",
+                "https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif",
+                "https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif"
+            ],
             category: Category.mockCategories.first!,
             brand: Brand(id: "2", name: "Adidas", category: "Sports"),
             rating: 4.7,
             reviewCount: 950,
-            colors: ["#0000FF", "#FFFFFF"], // Blue, White
+            colors: ["#0000FF", "#FFFFFF"],
+            // Blue, White
             sizes: ["8", "9", "10", "12"],
             isNew: false,
             isFavorite: true,
@@ -97,13 +102,19 @@ extension Product {
             name: "Puma Running Shoes",
             description: "Lightweight and comfortable for daily runs.",
             price: 120.00,
-            originalPrice: nil,  // No discount
-            images: ["https://media-hosting.imagekit.io/f3a97739790f4304/heather-ford-5gkYsrH_ebY-unsplash.jpg?Expires=1837687387&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=R9agrybBaIZPuOjBLGqpynrAxL1sPQBN2D1TSI3wfPY~RPpCi9-mQHcqhDHdJMliBrdOd2jaFwOjf4DRuA9Lalko-7oWwq7rCZXtUy56oS1upwKT5OlrpHBiBC1fnTG8z-2A52IW4sIXOxeTDi8CH39~aCY~gSIK40v9yi6jWY2MxQ3zSwHFSz6Yt8jHmZj1TEbSHldIMlnNwa4fJSSIRRiiRotIrgtRvhbzdB--su5BdRuYyt~GzFwWM4IVega4yuGYbPe~6gQcZGGwIuCiWdwW4Sd3YV3mZQmd~5Yq4Oax6S3Dama~B92kkDEEih8V1J8QmospNye-mzxouC5vqA__"],
+            originalPrice: nil,
+            // No discount
+            images: [
+                "https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif",
+                "https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif",
+                "https://i.postimg.cc/t4MZKRvK/premium-photo-1689371952452-c88c72464115.avif"
+            ],
             category: Category.mockCategories.first!,
             brand: Brand(id: "3", name: "Puma", category: "Sports"),
             rating: 4.5,
             reviewCount: 500,
-            colors: ["#008000", "#000000"], // Green, Black
+            colors: ["#008000", "#000000"],
+            // Green, Black
             sizes: ["6", "7", "8", "9"],
             isNew: false,
             isFavorite: false,

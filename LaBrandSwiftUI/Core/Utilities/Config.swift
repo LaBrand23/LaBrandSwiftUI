@@ -19,6 +19,14 @@ struct Config {
         return environment.baseURL
     }()
     
+    static let baseURLMedia: String = {
+        // First try to get from Info.plist, fallback to environment configuration
+        if let infoPlistURL = Bundle.main.object(forInfoDictionaryKey: "BASE_URL_MEDIA") as? String, !infoPlistURL.isEmpty {
+            return infoPlistURL
+        }
+        return environment.baseURLMedia
+    }()
+    
     // MARK: - API Version Configuration
     static let apiVersion: APIVersion = environment.apiVersion
     

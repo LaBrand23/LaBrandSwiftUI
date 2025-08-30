@@ -4,7 +4,6 @@ struct ReviewsView: View {
     let product: Product
     @StateObject private var viewModel = ReviewsViewModel()
     @State private var showAddReview = false
-    @EnvironmentObject private var productDetailViewModel: ProductDetailViewModel
     
     var body: some View {
         ScrollView {
@@ -100,7 +99,6 @@ struct ReviewsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showAddReview) {
             AddReviewView(product: product)
-                .environmentObject(productDetailViewModel)
         }
         .onAppear {
             viewModel.loadReviews(for: product)

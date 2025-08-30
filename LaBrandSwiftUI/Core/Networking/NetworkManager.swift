@@ -34,13 +34,23 @@ final class NetworkManager {
     // MARK: - Combine version
     func perform<T: APIRequest>(_ request: T) -> AnyPublisher<T.Response, Error> {
         // Construct the full URL with version
-        let fullPath = "/api" + Config.apiVersion.path + request.path.rawValue
-        guard let url = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
-            self.analyticsManager.logEvent(.networkError, name: "Invalid URL", level: .error)
+        let baseURLWithVersion = Config.baseURL + Config.apiVersion.path
+        let fullPath = request.path.rawValue
+        
+        // Create URL components from the full URL (base + path)
+        let fullURLString = baseURLWithVersion + fullPath
+        var urlComponents = URLComponents(string: fullURLString)
+        
+        // Add query parameters if provided
+        if let queryParams = request.queryParameters {
+            urlComponents?.queryItems = queryParams.map { URLQueryItem(name: $0.key, value: $0.value) }
+        }
+        
+        guard let url = urlComponents?.url else {
             self.analyticsManager.logError(
                 NetworkError.invalidURL,
                 context: "NetworkManager.perform",
-                additionalInfo: ["error": "Invalid URL"]
+                additionalInfo: ["baseURL": baseURLWithVersion, "fullPath": fullPath]
             )
             return Fail(error: NetworkError.invalidURL).eraseToAnyPublisher()
         }
@@ -57,16 +67,17 @@ final class NetworkManager {
         
         // Log detailed request information
         let headers = urlRequest.allHTTPHeaderFields ?? [:]
-        analyticsManager.logDetailedNetworkRequest(
-            url: urlRequest.url?.absoluteString ?? "",
-            method: urlRequest.httpMethod ?? "",
-            headers: headers,
-            body: urlRequest.httpBody,
-            requiresAuth: request.requiresAuth
-        )
+        let headerString = headers.map { "    \($0.key): \($0.value)" }.joined(separator: "\n")
+        let bodyString = urlRequest.httpBody.flatMap { String(data: $0, encoding: .utf8) } ?? "No body"
         
-        // Also log the standard request
-        analyticsManager.logNetworkRequest(request)
+        print("🌐 DETAILED REQUEST:")
+        print("URL: \(urlRequest.url?.absoluteString ?? "")")
+        print("Method: \(urlRequest.httpMethod ?? "")")
+        print("Requires Auth: \(request.requiresAuth)")
+        print("Headers:")
+        print(headerString)
+        print("Body:")
+        print(bodyString)
         
         return session.dataTaskPublisher(for: urlRequest)
             .tryMap { data, response -> Data in
@@ -84,13 +95,18 @@ final class NetworkManager {
                 
                 // Log detailed response
                 let responseHeaders = httpResponse.allHeaderFields.compactMapKeys { $0 as? String }.compactMapValues { String(describing: $0) }
-                self.analyticsManager.logDetailedNetworkResponse(
-                    url: urlRequest.url?.absoluteString ?? "",
-                    statusCode: httpResponse.statusCode,
-                    responseTime: responseTime,
-                    headers: responseHeaders,
-                    data: data
-                )
+                let headerString = responseHeaders.map { "    \($0.key): \($0.value)" }.joined(separator: "\n")
+                let responseString = String(data: data, encoding: .utf8) ?? "No response body"
+                let statusEmoji = httpResponse.statusCode >= 400 ? "❌" : "✅"
+                
+                print("\(statusEmoji) DETAILED RESPONSE:")
+                print("URL: \(urlRequest.url?.absoluteString ?? "")")
+                print("Status: \(httpResponse.statusCode)")
+                print("Time: \(String(format: "%.3fs", responseTime))")
+                print("Headers:")
+                print(headerString)
+                print("Body:")
+                print(responseString)
                 
                 switch httpResponse.statusCode {
                 case 200...299:
@@ -114,11 +130,10 @@ final class NetworkManager {
             .decode(type: T.Response.self, decoder: JSONDecoder())
             .catch { [weak self] error -> AnyPublisher<T.Response, Error> in
                 guard case NetworkError.unauthorized = error else {
-                    self?.analyticsManager.logEvent(.networkError, name: "Unauthorized", level: .error)
                     self?.analyticsManager.logError(
-                        NetworkError.unauthorized,
+                        error,
                         context: "NetworkManager.perform",
-                        additionalInfo: ["error": "Unauthorized"]
+                        additionalInfo: ["error": String(describing: error)]
                     )
                     return Fail(error: error).eraseToAnyPublisher()
                 }
@@ -134,13 +149,23 @@ final class NetworkManager {
     @discardableResult
     func performAsync<T: APIRequest>(_ request: T) async throws -> T.Response {
         // Construct the full URL with version
-        let fullPath = "/api" + Config.apiVersion.path + request.path.rawValue
-        guard let url = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
-            self.analyticsManager.logEvent(.networkError, name: "Invalid URL", level: .error)
+        let baseURLWithVersion = Config.baseURL + Config.apiVersion.path
+        let fullPath = request.path.rawValue
+        
+        // Create URL components from the full URL (base + path)
+        let fullURLString = baseURLWithVersion + fullPath
+        var urlComponents = URLComponents(string: fullURLString)
+        
+        // Add query parameters if provided
+        if let queryParams = request.queryParameters {
+            urlComponents?.queryItems = queryParams.map { URLQueryItem(name: $0.key, value: $0.value) }
+        }
+        
+        guard let url = urlComponents?.url else {
             self.analyticsManager.logError(
                 NetworkError.invalidURL,
                 context: "NetworkManager.performAsync",
-                additionalInfo: ["error": "Invalid URL"]
+                additionalInfo: ["baseURL": baseURLWithVersion, "fullPath": fullPath]
             )
             throw NetworkError.invalidURL
         }
@@ -157,13 +182,17 @@ final class NetworkManager {
         
         // Log detailed request information
         let headers = urlRequest.allHTTPHeaderFields ?? [:]
-        analyticsManager.logDetailedNetworkRequest(
-            url: urlRequest.url?.absoluteString ?? "",
-            method: urlRequest.httpMethod ?? "",
-            headers: headers,
-            body: urlRequest.httpBody,
-            requiresAuth: request.requiresAuth
-        )
+        let headerString = headers.map { "    \($0.key): \($0.value)" }.joined(separator: "\n")
+        let bodyString = urlRequest.httpBody.flatMap { String(data: $0, encoding: .utf8) } ?? "No body"
+        
+        print("🌐 DETAILED REQUEST:")
+        print("URL: \(urlRequest.url?.absoluteString ?? "")")
+        print("Method: \(urlRequest.httpMethod ?? "")")
+        print("Requires Auth: \(request.requiresAuth)")
+        print("Headers:")
+        print(headerString)
+        print("Body:")
+        print(bodyString)
         
         do {
             let (data, response) = try await session.data(for: urlRequest)
@@ -180,13 +209,18 @@ final class NetworkManager {
             
             // Log detailed response
             let responseHeaders = httpResponse.allHeaderFields.compactMapKeys { $0 as? String }.compactMapValues { String(describing: $0) }
-            self.analyticsManager.logDetailedNetworkResponse(
-                url: urlRequest.url?.absoluteString ?? "",
-                statusCode: httpResponse.statusCode,
-                responseTime: responseTime,
-                headers: responseHeaders,
-                data: data
-            )
+            let headerString = responseHeaders.map { "    \($0.key): \($0.value)" }.joined(separator: "\n")
+            let responseString = String(data: data, encoding: .utf8) ?? "No response body"
+            let statusEmoji = httpResponse.statusCode >= 400 ? "❌" : "✅"
+            
+            print("\(statusEmoji) DETAILED RESPONSE:")
+            print("URL: \(urlRequest.url?.absoluteString ?? "")")
+            print("Status: \(httpResponse.statusCode)")
+            print("Time: \(String(format: "%.3fs", responseTime))")
+            print("Headers:")
+            print(headerString)
+            print("Body:")
+            print(responseString)
             
             switch httpResponse.statusCode {
             case 200...299:
@@ -209,12 +243,11 @@ final class NetworkManager {
             }
         } catch {
             let responseTime = Date().timeIntervalSince(startTime)
-            self.analyticsManager.logNetworkResponse(
-                url: urlRequest.url?.absoluteString ?? "",
-                statusCode: -1,
-                responseTime: responseTime,
-                dataSize: nil
-            )
+            print("❌ DETAILED RESPONSE:")
+            print("URL: \(urlRequest.url?.absoluteString ?? "")")
+            print("Status: -1")
+            print("Time: \(String(format: "%.3fs", responseTime))")
+            print("Error: \(error)")
             throw NetworkError.unknown(error)
         }
     }
@@ -227,8 +260,11 @@ final class NetworkManager {
         }
         
         // Construct the full URL with version for refresh token
-        let fullPath = "/api" + Config.apiVersion.path + APIEndpoint.refresh.rawValue
-        guard let refreshURL = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
+        let baseURLWithVersion = Config.baseURL + Config.apiVersion.path
+        let fullPath = APIEndpoint.refresh.rawValue
+        let fullURLString = baseURLWithVersion + fullPath
+        
+        guard let refreshURL = URL(string: fullURLString) else {
             return Fail(error: NetworkError.invalidURL).eraseToAnyPublisher()
         }
         
@@ -253,8 +289,11 @@ final class NetworkManager {
         }
         
         // Construct the full URL with version for refresh token
-        let fullPath = "/api" + Config.apiVersion.path + APIEndpoint.refresh.rawValue
-        guard let refreshURL = URL(string: fullPath, relativeTo: URL(string: Config.baseURL)) else {
+        let baseURLWithVersion = Config.baseURL + Config.apiVersion.path
+        let fullPath = APIEndpoint.refresh.rawValue
+        let fullURLString = baseURLWithVersion + fullPath
+        
+        guard let refreshURL = URL(string: fullURLString) else {
             throw NetworkError.invalidURL
         }
         

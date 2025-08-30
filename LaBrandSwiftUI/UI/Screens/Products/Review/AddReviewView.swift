@@ -5,7 +5,6 @@ struct AddReviewView: View {
     let product: Product
     @StateObject private var viewModel = AddReviewViewModel()
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var productDetailViewModel: ProductDetailViewModel
     
     var body: some View {
 //        NavigationView {
