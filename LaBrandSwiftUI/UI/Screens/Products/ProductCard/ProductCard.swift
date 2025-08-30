@@ -207,7 +207,7 @@ private extension ProductCard {
         price: 29.99,
         originalPrice: 50,
         images: ["card_men"],
-        category: Category(id: UUID(), name: "T-Shirts", image: "tshirt", parentCategoryID: nil, subcategories: nil),
+        category: Category(id: 1, name: "T-Shirts", parentId: nil, description: nil, slug: nil, position: 0, imageUrl: "tshirt"),
         brand: Brand(id: UUID().uuidString, name: "Adidas", category: nil),
         rating: 4.5,
         reviewCount: 128,

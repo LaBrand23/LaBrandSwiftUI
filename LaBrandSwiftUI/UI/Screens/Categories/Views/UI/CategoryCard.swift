@@ -18,15 +18,11 @@ struct CategoryCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
             
-            AsyncImage(url: URL(string: category.image)) { image in
-                image
+            AsyncImageView(imageUrl: category.displayImage, placeholder: {
+                Image(category.displayImage)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Image(category.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            }
+            })
             .frame(maxWidth: .infinity)
         }
         .frame(height: 100)
@@ -35,18 +31,39 @@ struct CategoryCard: View {
             RoundedRectangle(cornerRadius: 14)
         )
         .shadow(color: .gray.opacity(0.3), radius: 8)
+        .contentShape(Rectangle()) // Ensures the entire card is tappable
     }
 }
 
 #Preview {
-    CategoryCard(
-        category: Category(
-            id: UUID(),
-            name: "String",
-            image: "cat_women_clothes",
-            parentCategoryID: nil,
-            subcategories: nil
+    LazyVGrid(
+        columns: [
+            GridItem(.flexible(), spacing: 16)
+        ],
+        spacing: 16
+    ) {
+        CategoryCard(
+            category: Category(
+                id: 1,
+                name: "Clothes",
+                parentId: nil,
+                description: "All clothing items",
+                slug: "clothes",
+                position: 0,
+                imageUrl: "cat_women_clothes"
+            )
         )
-    )
-    .padding(.horizontal)
+        CategoryCard(
+            category: Category(
+                id: 2,
+                name: "Shoes",
+                parentId: nil,
+                description: "Footwear collection",
+                slug: "shoes",
+                position: 1,
+                imageUrl: "cat_women_shoes"
+            )
+        )
+    }
+    .padding()
 }

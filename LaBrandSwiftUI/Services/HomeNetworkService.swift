@@ -246,11 +246,13 @@ extension MobileProductResponse {
             originalPrice: originalPrice.map { Decimal($0) },
             images: imageUrl.map { [$0] } ?? [],
             category: Category(
-                id: UUID(),
+                id: id,
                 name: categoryName,
-                image: imageUrl ?? "",
-                parentCategoryID: nil,
-                subcategories: nil
+                parentId: nil,
+                description: nil,
+                slug: nil,
+                position: 0,
+                imageUrl: imageUrl
             ),
             brand: Brand(
                 id: String(id),
@@ -272,11 +274,13 @@ extension MobileProductResponse {
 extension QuickCategoryResponse {
     func toCategory() -> Category {
         return Category(
-            id: UUID(uuidString: String(id)) ?? UUID(),
+            id: id,
             name: name,
-            image: imageUrl ?? "",
-            parentCategoryID: nil,
-            subcategories: subcategories.map { $0.toCategory() }
+            parentId: nil,
+            description: nil,
+            slug: nil,
+            position: position,
+            imageUrl: imageUrl
         )
     }
 }

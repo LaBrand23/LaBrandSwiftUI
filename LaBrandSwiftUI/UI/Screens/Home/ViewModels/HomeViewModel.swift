@@ -134,11 +134,11 @@ class HomeViewModel: ObservableObject {
 //        ]
 //        
 //        quickCategories = [
-//            Category(id: UUID(), name: "Clothing", image: "cat_women_clothes", parentCategoryID: nil, subcategories: nil),
-//            Category(id: UUID(), name: "Jeans", image: "cat_women_new", parentCategoryID: nil, subcategories: nil),
-//            Category(id: UUID(), name: "Shoes", image: "cat_women_shoes", parentCategoryID: nil, subcategories: nil),
-//            Category(id: UUID(), name: "Accessories", image: "Kids", parentCategoryID: nil, subcategories: nil),
-//            Category(id: UUID(), name: "Premium", image: "Men", parentCategoryID: nil, subcategories: nil)
+//            Category(id: 1, name: "Clothing", parentId: nil, description: nil, slug: nil, position: 0, imageUrl: "cat_women_clothes"),
+//            Category(id: 2, name: "Jeans", parentId: nil, description: nil, slug: nil, position: 1, imageUrl: "cat_women_new"),
+//            Category(id: 3, name: "Shoes", parentId: nil, description: nil, slug: nil, position: 2, imageUrl: "cat_women_shoes"),
+//            Category(id: 4, name: "Accessories", parentId: nil, description: nil, slug: nil, position: 3, imageUrl: "Kids"),
+//            Category(id: 5, name: "Premium", parentId: nil, description: nil, slug: nil, position: 4, imageUrl: "Men")
 //        ]
 //        
 //        newArrivals = Product.mockProducts

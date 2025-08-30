@@ -17,6 +17,10 @@ public enum APIEndpoint: String, CaseIterable {
     case me = "/auth/me"
     case logout = "/auth/logout"
     
+    // MARK: - Categories
+    
+    case categories = "/categories"
+    
     // MARK: - Mobile API
     
     case mobileQuickCategories = "/mobile/quick-categories"

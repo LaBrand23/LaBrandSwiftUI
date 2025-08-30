@@ -15,12 +15,12 @@ extension HomeView {
         
         var body: some View {
             VStack {
-                AsyncImage(url: URL(string: category.image)) { image in
+                AsyncImage(url: URL(string: category.displayImage)) { image in
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 } placeholder: {
-                    Image(category.name)
+                    Image(category.displayImage)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .padding(15)

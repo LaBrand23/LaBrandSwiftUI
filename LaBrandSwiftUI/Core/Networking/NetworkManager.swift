@@ -35,7 +35,7 @@ final class NetworkManager {
     func perform<T: APIRequest>(_ request: T) -> AnyPublisher<T.Response, Error> {
         // Construct the full URL with version
         let baseURLWithVersion = Config.baseURL + Config.apiVersion.path
-        let fullPath = request.path.rawValue
+        let fullPath = request.customPath ?? request.path.rawValue
         
         // Create URL components from the full URL (base + path)
         let fullURLString = baseURLWithVersion + fullPath
@@ -150,7 +150,7 @@ final class NetworkManager {
     func performAsync<T: APIRequest>(_ request: T) async throws -> T.Response {
         // Construct the full URL with version
         let baseURLWithVersion = Config.baseURL + Config.apiVersion.path
-        let fullPath = request.path.rawValue
+        let fullPath = request.customPath ?? request.path.rawValue
         
         // Create URL components from the full URL (base + path)
         let fullURLString = baseURLWithVersion + fullPath

@@ -377,7 +377,7 @@ struct QuickCategoryCard: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            AsyncImageView(imageUrl: category.image) {
+            AsyncImageView(imageUrl: category.displayImage) {
                 Image(systemName: "photo")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
