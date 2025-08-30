@@ -34,7 +34,7 @@ struct ProductCard: View {
             ZStack(alignment: .topTrailing) {
                 
                 AsyncImageView(imageUrl: product.images.first) {
-                    Image(.cardMen)
+                    Image(systemName: "photo")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 }

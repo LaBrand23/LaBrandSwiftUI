@@ -4,6 +4,8 @@
 <dict>
 	<key>BASE_URL</key>
 	<string>$(BASE_URL)</string>
+	<key>BASE_URL_MEDIA</key>
+	<string>$(BASE_URL_MEDIA)</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

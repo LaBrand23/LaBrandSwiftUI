@@ -46,6 +46,17 @@ public enum EnvironmentConfig {
             return "http://192.168.1.114:8000/api"
         }
     }
+
+    var baseURLMedia: String {
+        switch self {
+        case .development:
+            return "http://192.168.1.114:8000"
+        case .staging:
+            return "http://192.168.1.114:8000"
+        case .production:
+            return "http://192.168.1.114:8000"
+        }
+    }
 }
 
 // MARK: - Current Environment

@@ -12,6 +12,8 @@ struct AsyncImageView<Placeholder: View>: View {
     let contentMode: ContentMode
     let placeholder: Placeholder
     
+    private let baseURL = Config.baseURLMedia
+
     init(imageUrl: String?, _ contentMode: ContentMode = .fill, @ViewBuilder placeholder: () -> Placeholder) {
         self.imageUrl = imageUrl
         self.contentMode = contentMode
@@ -19,7 +21,7 @@ struct AsyncImageView<Placeholder: View>: View {
     }
     
     var body: some View {
-        if let urlString = imageUrl, let url = URL(string: urlString) {
+        if let urlString = imageUrl, let url = URL(string: baseURL + urlString) {
             AsyncImage(url: url) { image in
                 image
                     .resizable()

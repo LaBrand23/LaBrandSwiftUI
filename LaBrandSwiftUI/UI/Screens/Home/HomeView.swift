@@ -91,11 +91,6 @@ struct HomeView: View {
         .refreshable {
             await viewModel.fetchData()
         }
-        .overlay {
-            if viewModel.isLoading {
-                LoadingView()
-            }
-        }
         .alert("Error", isPresented: .constant(viewModel.error != nil)) {
             Button("OK") {
                 viewModel.error = nil
@@ -197,25 +192,6 @@ struct HomeView: View {
                 isLoading: viewModel.isLoading && viewModel.newArrivals.isEmpty
             )
             
-            // Back in Stock
-            if !viewModel.backInStock.isEmpty {
-                productCarouselSection(
-                    title: "Back in Stock",
-                    subtitle: "Recently restocked",
-                    products: viewModel.backInStock,
-                    showViewAll: false,
-                    isLoading: false
-                )
-            }
-            
-            // For You (Personalized)
-            productCarouselSection(
-                title: "For You",
-                subtitle: "Based on your preferences",
-                products: viewModel.forYouProducts,
-                showViewAll: true,
-                isLoading: viewModel.isLoading && viewModel.forYouProducts.isEmpty
-            )
         }
         .padding(.vertical, 16)
         .background(Color(.systemBackground))
@@ -394,31 +370,6 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Loading View
-struct LoadingView: View {
-    var body: some View {
-        ZStack {
-            Color.black.opacity(0.3)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 16) {
-                ProgressView()
-                    .scaleEffect(1.5)
-                    .tint(.white)
-                
-                Text("Loading...")
-                    .font(.headline)
-                    .foregroundColor(.white)
-            }
-            .padding(24)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.7))
-            )
-        }
-    }
-}
-
 // MARK: - Supporting Views
 
 struct QuickCategoryCard: View {
@@ -426,16 +377,17 @@ struct QuickCategoryCard: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            Image(category.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 60, height: 60)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                )
-                .accessibilityHidden(true)
+            AsyncImageView(imageUrl: category.image) {
+                Image(systemName: "photo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            }
+            .frame(width: 60, height: 60)
+            .clipShape(Circle())
+            .overlay(
+                Circle()
+                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+            )
             
             Text(category.name)
                 .font(.caption)
@@ -447,32 +399,6 @@ struct QuickCategoryCard: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(category.name) category")
         .accessibilityHint("Double tap to browse \(category.name) products")
-    }
-}
-
-struct BrandCard: View {
-    let brand: Brand
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            // Brand logo placeholder
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.1))
-                .frame(width: 80, height: 60)
-                .overlay(
-                    Text(brand.name.prefix(2).uppercased())
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.gray)
-                )
-            
-            Text(brand.name)
-                .font(.caption)
-                .fontWeight(.medium)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-        }
-        .frame(width: 80)
     }
 }
 

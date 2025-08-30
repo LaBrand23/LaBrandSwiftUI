@@ -9,3 +9,4 @@
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
 BASE_URL = http:/$()/192.168.1.114:8000/api
+BASE_URL_MEDIA = http:/$()/192.168.1.114:8000
