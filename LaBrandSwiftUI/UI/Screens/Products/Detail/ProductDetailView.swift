@@ -166,7 +166,7 @@ struct ProductDetailView: View {
             VStack(spacing: 0) {
                 // Delivery info
                 HStack {
-                    Image(systemName: "truck")
+                    Image(systemName: "truck.box.fill")
                         .foregroundColor(.green)
                     Text(viewModel.stockInfo.deliveryMessage)
                         .font(.caption)

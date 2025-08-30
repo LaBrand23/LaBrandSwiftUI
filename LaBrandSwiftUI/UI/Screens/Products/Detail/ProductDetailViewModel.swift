@@ -33,7 +33,7 @@ class ProductDetailViewModel: ObservableObject {
     let trustBadges = [
         TrustBadge(title: "Free Returns", icon: "arrow.uturn.backward", color: .green),
         TrustBadge(title: "100% Authentic", icon: "checkmark.shield", color: .blue),
-        TrustBadge(title: "Fast Delivery", icon: "truck", color: .orange)
+        TrustBadge(title: "Fast Delivery", icon: "truck.box.fill", color: .orange)
     ]
     
     let socialProof = SocialProof(

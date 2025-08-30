@@ -33,9 +33,6 @@ struct HomeView: View {
                 
                 // 5. Best Sellers / Trending
                 bestSellersSection
-                
-                // 6. Brand Highlights
-                brandHighlightsSection
             }
         }
         .background(Color(.systemGroupedBackground))
@@ -43,11 +40,6 @@ struct HomeView: View {
         .navigationBarTitleDisplayMode(.large)
         .searchable(text: $searchText, prompt: "Search for products, brands...")
         .onChange(of: searchText) { _, newValue in
-//            // Handle search text changes
-//            if !newValue.isEmpty {
-//                // TODO: Implement search functionality
-//                // For now, we can show search results in a sheet
-//            }
             showingSearch = true
         }
         .sheet(isPresented: $showingSearch) {
@@ -99,22 +91,55 @@ struct HomeView: View {
         .refreshable {
             await viewModel.fetchData()
         }
+        .overlay {
+            if viewModel.isLoading {
+                LoadingView()
+            }
+        }
+        .alert("Error", isPresented: .constant(viewModel.error != nil)) {
+            Button("OK") {
+                viewModel.error = nil
+            }
+            Button("Retry") {
+                Task {
+                    await viewModel.fetchData()
+                }
+            }
+        } message: {
+            if let error = viewModel.error {
+                Text(error.localizedDescription)
+            }
+        }
     }
     
     // MARK: - Banner Section
     private var bannerSection: some View {
-        TabView {
-            ForEach(viewModel.promotions) { promotion in
-                PromotionBannerView(promotion: promotion)
-                    .onTapGesture {
-                        // TODO: Navigate to promotion
+        Group {
+            if viewModel.isLoading && viewModel.promotions.isEmpty {
+                // Loading placeholder
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.gray.opacity(0.1))
+                    .frame(height: 220)
+                    .overlay(
+                        ProgressView()
+                            .scaleEffect(1.2)
+                    )
+                    .padding(.top, 16)
+            } else {
+                TabView {
+                    ForEach(viewModel.promotions) { promotion in
+                        PromotionBannerView(promotion: promotion)
+                            .onTapGesture {
+                                // TODO: Navigate to promotion
+                            }
                     }
+                }
+                .frame(height: 220)
+                .tabViewStyle(.page)
+                .indexViewStyle(.page(backgroundDisplayMode: .always))
+                .padding(.top, 16)
             }
         }
-        .frame(height: 220)
-        .tabViewStyle(.page)
-        .indexViewStyle(.page(backgroundDisplayMode: .always))
-        .padding(.top, 16)
     }
     
     // MARK: - Quick Actions Section
@@ -126,16 +151,34 @@ struct HomeView: View {
                 .dynamicTypeSize(.large ... .accessibility3)
                 .padding(.horizontal, 20)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 20) {
-                    ForEach(viewModel.quickCategories) { category in
-                        QuickCategoryCard(category: category)
-                            .onTapGesture {
-                                selectedCategory = category
-                            }
+            if viewModel.isLoading && viewModel.quickCategories.isEmpty {
+                // Loading placeholder
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(0..<5, id: \.self) { _ in
+                            RoundedRectangle(cornerRadius: 30)
+                                .fill(Color.gray.opacity(0.1))
+                                .frame(width: 60, height: 60)
+                                .overlay(
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                )
+                        }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(viewModel.quickCategories) { category in
+                            QuickCategoryCard(category: category)
+                                .onTapGesture {
+                                    selectedCategory = category
+                                }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                }
             }
         }
         .padding(.vertical, 16)
@@ -150,7 +193,8 @@ struct HomeView: View {
                 title: "New Arrivals",
                 subtitle: "Fresh styles this week",
                 products: viewModel.newArrivals,
-                showViewAll: true
+                showViewAll: true,
+                isLoading: viewModel.isLoading && viewModel.newArrivals.isEmpty
             )
             
             // Back in Stock
@@ -159,7 +203,8 @@ struct HomeView: View {
                     title: "Back in Stock",
                     subtitle: "Recently restocked",
                     products: viewModel.backInStock,
-                    showViewAll: false
+                    showViewAll: false,
+                    isLoading: false
                 )
             }
             
@@ -168,7 +213,8 @@ struct HomeView: View {
                 title: "For You",
                 subtitle: "Based on your preferences",
                 products: viewModel.forYouProducts,
-                showViewAll: true
+                showViewAll: true,
+                isLoading: viewModel.isLoading && viewModel.forYouProducts.isEmpty
             )
         }
         .padding(.vertical, 16)
@@ -178,13 +224,44 @@ struct HomeView: View {
     // MARK: - Category Collections Section
     private var categoryCollectionsSection: some View {
         VStack(spacing: 20) {
-            ForEach(viewModel.categoryCollections) { collection in
-                productCarouselSection(
-                    title: collection.name,
-                    subtitle: "Top picks in \(collection.name.lowercased())",
-                    products: collection.products,
-                    showViewAll: true
-                )
+            if viewModel.isLoading && viewModel.categoryCollections.isEmpty {
+                // Loading placeholder
+                ForEach(0..<2, id: \.self) { _ in
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.gray.opacity(0.1))
+                                .frame(width: 120, height: 20)
+                            Spacer()
+                        }
+                        .padding(.horizontal, 20)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                ForEach(0..<3, id: \.self) { _ in
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.gray.opacity(0.1))
+                                        .frame(width: 160, height: 200)
+                                        .overlay(
+                                            ProgressView()
+                                                .scaleEffect(0.8)
+                                        )
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                        }
+                    }
+                }
+            } else {
+                ForEach(viewModel.categoryCollections) { collection in
+                    productCarouselSection(
+                        title: collection.name,
+                        subtitle: "Top picks in \(collection.name.lowercased())",
+                        products: collection.products,
+                        showViewAll: true,
+                        isLoading: false
+                    )
+                }
             }
         }
         .padding(.vertical, 16)
@@ -218,49 +295,34 @@ struct HomeView: View {
             }
             .padding(.horizontal, 20)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(viewModel.trendingProducts) { product in
-                        ProductCard(product: product)
-                            .onTapGesture {
-                                selectedProduct = product
-                            }
+            if viewModel.isLoading && viewModel.trendingProducts.isEmpty {
+                // Loading placeholder
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(0..<3, id: \.self) { _ in
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray.opacity(0.1))
+                                .frame(width: 160, height: 200)
+                                .overlay(
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                )
+                        }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
-            }
-        }
-        .padding(.vertical, 16)
-        .background(Color(.systemBackground))
-    }
-    
-    // MARK: - Brand Highlights Section
-    private var brandHighlightsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("Featured Brands")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .dynamicTypeSize(.large ... .accessibility3)
-                Spacer()
-                Button("View All") {
-                    // TODO: Navigate to brands
-                }
-                .font(.caption)
-                .foregroundColor(.blue)
-            }
-            .padding(.horizontal, 20)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(viewModel.featuredBrands) { brand in
-                        BrandCard(brand: brand)
-                            .onTapGesture {
-                                // TODO: Navigate to brand detail
-                            }
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(viewModel.trendingProducts) { product in
+                            ProductCard(product: product)
+                                .onTapGesture {
+                                    selectedProduct = product
+                                }
+                        }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
             }
         }
         .padding(.vertical, 16)
@@ -272,7 +334,8 @@ struct HomeView: View {
         title: String,
         subtitle: String,
         products: [Product],
-        showViewAll: Bool
+        showViewAll: Bool,
+        isLoading: Bool
     ) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -298,17 +361,60 @@ struct HomeView: View {
             }
             .padding(.horizontal, 20)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(products) { product in
-                        ProductCard(product: product)
-                            .onTapGesture {
-                                selectedProduct = product
-                            }
+            if isLoading {
+                // Loading placeholder
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(0..<3, id: \.self) { _ in
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray.opacity(0.1))
+                                .frame(width: 160, height: 200)
+                                .overlay(
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                )
+                        }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(products) { product in
+                            ProductCard(product: product)
+                                .onTapGesture {
+                                    selectedProduct = product
+                                }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                }
             }
+        }
+    }
+}
+
+// MARK: - Loading View
+struct LoadingView: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.3)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 16) {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .tint(.white)
+                
+                Text("Loading...")
+                    .font(.headline)
+                    .foregroundColor(.white)
+            }
+            .padding(24)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black.opacity(0.7))
+            )
         }
     }
 }

@@ -38,7 +38,7 @@ struct TrustBadgeView: View {
     VStack(spacing: 10) {
         TrustBadgeView(badge: TrustBadge(title: "Free Returns", icon: "arrow.uturn.backward", color: .green))
         TrustBadgeView(badge: TrustBadge(title: "100% Authentic", icon: "checkmark.shield", color: .blue))
-        TrustBadgeView(badge: TrustBadge(title: "Fast Delivery", icon: "truck", color: .orange))
+        TrustBadgeView(badge: TrustBadge(title: "Fast Delivery", icon: "truck.box.fill", color: .orange))
     }
     .padding()
 }

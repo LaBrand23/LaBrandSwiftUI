@@ -495,8 +495,21 @@ public final class AnalyticsManager: ObservableObject {
         )
         logEvent(event)
         
+        // Enhanced error logging with additional context
+        var errorMessage = "❌ Error in \(context): \(error.localizedDescription)"
+        
+        if !additionalInfo.isEmpty {
+            errorMessage += "\n   Additional Info:"
+            for (key, value) in additionalInfo {
+                errorMessage += "\n     \(key): \(value)"
+            }
+        }
+        
         // Also log to error category
-        Logger.error.error("❌ Error in \(context): \(error.localizedDescription)")
+        Logger.error.error("\(errorMessage)")
+        
+        // Log to console for immediate visibility
+        print("🚨 \(errorMessage)")
     }
     
     /// Log performance metric
@@ -740,6 +753,47 @@ public extension AnalyticsManager {
     func setDetailedNetworkLogging(_ enabled: Bool) {
         enableConsoleLogging = enabled
         Logger.analytics.info("🔧 Detailed network logging \(enabled ? "enabled" : "disabled")")
+    }
+    
+    /// Enable debug logging for network URL construction
+    func enableNetworkDebugLogging() {
+        logEvent(
+            .performanceMetric,
+            name: "Network Debug Logging Enabled",
+            parameters: [
+                "baseURL": Config.baseURL,
+                "apiVersion": Config.apiVersion.rawValue,
+                "apiVersionPath": Config.apiVersion.path
+            ],
+            level: .debug
+        )
+    }
+    
+    /// Log network URL construction details
+    func logNetworkURLConstruction(
+        baseURL: String,
+        apiVersionPath: String,
+        requestPath: String,
+        fullPath: String,
+        finalURL: String? = nil
+    ) {
+        var parameters = [
+            "baseURL": baseURL,
+            "apiVersionPath": apiVersionPath,
+            "requestPath": requestPath,
+            "fullPath": fullPath
+        ]
+        
+        if let finalURL = finalURL {
+            parameters["finalURL"] = finalURL
+        }
+        
+        logEvent(
+            .networkRequest,
+            name: "Network URL Construction",
+            parameters: parameters,
+            level: .debug
+        )
     }
     
     /// Log a test network request for debugging
