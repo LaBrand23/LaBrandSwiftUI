@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "Слой 2.pdf",
-      "idiom" : "universal"
+      "filename" : "FedEx_Express.svg 2.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "FedEx_Express.svg.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "FedEx_Express.svg 1.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {
