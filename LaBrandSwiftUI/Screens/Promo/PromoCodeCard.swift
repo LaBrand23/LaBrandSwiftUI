@@ -8,92 +8,135 @@
 import SwiftUI
 
 struct PromoCodeCard: View {
+    
     let promoCode: PromoCode
     let isApplied: Bool
     let action: () -> Void
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 0) {
             // Discount Badge
+            discountBadge
+            
+            // Details & Button
+            HStack(spacing: 16) {
+                // Promo Details
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(promoCode.title)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(AppColors.Text.primary)
+                    
+                    Text(promoCode.code.uppercased())
+                        .font(.system(size: 11, weight: .medium))
+                        .tracking(1)
+                        .foregroundStyle(AppColors.Text.muted)
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 10))
+                        Text("\(promoCode.daysRemaining) days remaining")
+                            .font(.system(size: 11))
+                    }
+                    .foregroundStyle(promoCode.daysRemaining <= 3 ? AppColors.Accent.sale : AppColors.Text.tertiary)
+                }
+                
+                Spacer()
+                
+                // Apply Button
+                Button(action: action) {
+                    Text(isApplied ? "Applied" : "Apply")
+                        .font(.system(size: 12, weight: .semibold))
+                        .tracking(1)
+                        .foregroundStyle(isApplied ? AppColors.Text.muted : AppColors.Button.primaryText)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(isApplied ? AppColors.Background.secondary : AppColors.Button.primaryBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                }
+                .disabled(isApplied)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+        }
+        .background(AppColors.Background.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .overlay(
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(isApplied ? AppColors.Accent.gold.opacity(0.3) : AppColors.Border.subtle, lineWidth: 1)
+        )
+    }
+    
+    private var discountBadge: some View {
+        ZStack {
+            // Background
             AsyncImage(url: URL(string: promoCode.background)) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
             } placeholder: {
-                ZStack {
-                    Rectangle()
-                        .fill(Color.red)
-                    
-                    VStack(spacing: 0) {
-                        Text("\(promoCode.discountPercentage)")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        Text("%")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                        Text("OFF")
-                            .font(.caption2)
-                            .fontWeight(.bold)
-                    }
-                    .foregroundColor(.white)
-                }
-            }
-            .frame(width: 80)
-            
-            // Promo Details
-            VStack(alignment: .leading, spacing: 4) {
-                Text(promoCode.title)
-                    .font(.headline)
-                Text(promoCode.code.lowercased())
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                
-                HStack(spacing: 4) {
-                    Image(systemName: "clock")
-                        .font(.caption2)
-                    Text("\(promoCode.daysRemaining) days remaining")
-                        .font(.caption2)
-                }
-                .foregroundColor(.gray)
+                LinearGradient(
+                    colors: [AppColors.Accent.sale, AppColors.Accent.sale.opacity(0.8)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             }
             
-            Spacer()
+            // Overlay
+            Color.black.opacity(0.3)
             
-            // Apply Button
-            Button(action: action) {
-                Text(isApplied ? "Applied" : "Apply")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(isApplied ? .gray : .white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
-                    .background(isApplied ? Color.gray.opacity(0.2) : Color.red)
-                    .clipShape(Capsule())
+            // Discount Text
+            VStack(spacing: 0) {
+                Text("\(promoCode.discountPercentage)")
+                    .font(.system(size: 28, weight: .bold))
+                Text("% OFF")
+                    .font(.system(size: 10, weight: .bold))
+                    .tracking(1)
             }
-            .disabled(isApplied)
-            .padding(.trailing)
+            .foregroundStyle(.white)
         }
-//        .padding()
-        .frame(height: 80)
-        .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .gray.opacity(0.4), radius: 5)
+        .frame(width: 80)
+        .clipShape(
+            .rect(
+                topLeadingRadius: 4,
+                bottomLeadingRadius: 4,
+                bottomTrailingRadius: 0,
+                topTrailingRadius: 0
+            )
+        )
     }
 }
 
+// MARK: - Preview
 #Preview {
-    PromoCodeCard(
-        promoCode: PromoCode(
-            code: "asds",
-            title: "asdasd",
-            description: "asdasdas",
-            background: "card_men",
-            discountPercentage: 123,
-            daysRemaining: 4,
-            isApplied: false
-        ),
-        isApplied: false,
-        action: {}
-    )
+    VStack(spacing: 16) {
+        PromoCodeCard(
+            promoCode: PromoCode(
+                code: "SUMMER25",
+                title: "Summer Sale Special",
+                description: "Get 25% off on all summer collection",
+                background: "",
+                discountPercentage: 25,
+                daysRemaining: 4,
+                isApplied: false
+            ),
+            isApplied: false,
+            action: {}
+        )
+        
+        PromoCodeCard(
+            promoCode: PromoCode(
+                code: "NEW10",
+                title: "New User Discount",
+                description: "Welcome offer",
+                background: "",
+                discountPercentage: 10,
+                daysRemaining: 2,
+                isApplied: true
+            ),
+            isApplied: true,
+            action: {}
+        )
+    }
     .padding()
+    .background(AppColors.Background.primary)
 }

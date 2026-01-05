@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SizeButton: View {
+    
     let size: String
     let isSelected: Bool
     let action: () -> Void
@@ -15,12 +16,27 @@ struct SizeButton: View {
     var body: some View {
         Button(action: action) {
             Text(size)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .frame(width: 44, height: 44)
-                .background(isSelected ? Color.black : Color(.systemGray6))
-                .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(12)
+                .font(.system(size: 14, weight: .medium))
+                .frame(width: 48, height: 48)
+                .background(isSelected ? AppColors.Button.primaryBackground : AppColors.Background.secondary)
+                .foregroundStyle(isSelected ? AppColors.Button.primaryText : AppColors.Text.primary)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(isSelected ? Color.clear : AppColors.Border.primary, lineWidth: 1)
+                )
         }
     }
 }
+
+// MARK: - Preview
+#Preview {
+    HStack(spacing: 10) {
+        SizeButton(size: "S", isSelected: false) {}
+        SizeButton(size: "M", isSelected: true) {}
+        SizeButton(size: "L", isSelected: false) {}
+    }
+    .padding()
+    .background(AppColors.Background.primary)
+}
+

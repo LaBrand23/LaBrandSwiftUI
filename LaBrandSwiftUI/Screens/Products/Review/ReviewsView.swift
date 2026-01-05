@@ -1,113 +1,179 @@
+//
+//  ReviewsView.swift
+//  LaBrandSwiftUI
+//
+//  Created by Shaxzod on 27/03/25.
+//
+
 import SwiftUI
 
 struct ReviewsView: View {
+    
+    // MARK: - Properties
     let product: Product
     @StateObject private var viewModel = ReviewsViewModel()
     @State private var showAddReview = false
+    @State private var hasAppeared = false
     @EnvironmentObject private var productDetailViewModel: ProductDetailViewModel
     
+    // MARK: - Body
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
                 // Rating Summary
-                VStack(spacing: 16) {
-                    Text("Rating & Reviews")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    
-                    HStack(spacing: 24) {
-                        // Average Rating
-                        VStack(spacing: 8) {
-                            Text(String(format: "%.1f", product.rating))
-                                .font(.system(size: 48, weight: .bold))
-                            
-                            HStack {
-                                ForEach(0..<5) { index in
-                                    Image(systemName: "star.fill")
-                                        .foregroundColor(index < Int(product.rating) ? .yellow : .gray)
-                                }
-                            }
-                            
-                            Text("\(product.reviewCount) reviews")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-                        
-                        // Rating Bars
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach((1...5).reversed(), id: \.self) { rating in
-                                RatingBar(
-                                    rating: rating,
-                                    count: viewModel.ratingCounts[rating - 1],
-                                    total: product.reviewCount
-                                )
-                            }
-                        }
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
-                }
+                ratingSummarySection
                 
                 // Add Review Button
-                Button {
-                    showAddReview = true
-                } label: {
-                    HStack {
-                        Image(systemName: "square.and.pencil")
-                        Text("Write a Review")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.red)
-                    .foregroundColor(.white)
-                    .cornerRadius(25)
-                }
+                addReviewButton
                 
                 // Reviews List
-                LazyVStack(spacing: 16, pinnedViews: .sectionHeaders) {
-                    Section {
-                        ForEach(viewModel.reviews) { review in
-                            ReviewCell(review: review)
-                        }
-                    } header: {
-                        HStack {
-                            Text("\(viewModel.reviews.count) Reviews")
-                                .font(.headline)
-                            Spacer()
-                            Menu {
-                                Button("Most Recent") {
-                                    viewModel.sortBy = .recent
-                                }
-                                Button("Highest Rating") {
-                                    viewModel.sortBy = .highestRating
-                                }
-                                Button("Lowest Rating") {
-                                    viewModel.sortBy = .lowestRating
-                                }
-                            } label: {
-                                Label("Sort", systemImage: "arrow.up.arrow.down")
-                            }
-                        }
-                        .padding(.vertical, 8)
-                        .background(Color.white)
-                    }
-                }
+                reviewsListSection
             }
-            .padding()
+            .padding(.horizontal, 20)
+            .padding(.vertical, 20)
         }
-        .navigationTitle("Reviews")
+        .background(AppColors.Background.primary)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("REVIEWS")
+                    .font(.custom("Georgia", size: 18))
+                    .fontWeight(.medium)
+                    .tracking(4)
+            }
+        }
         .sheet(isPresented: $showAddReview) {
             AddReviewView(product: product)
                 .environmentObject(productDetailViewModel)
         }
         .onAppear {
             viewModel.loadReviews(for: product)
+            withAnimation(.easeOut(duration: 0.6)) {
+                hasAppeared = true
+            }
         }
     }
 }
 
+// MARK: - Subviews
+private extension ReviewsView {
+    
+    var ratingSummarySection: some View {
+        VStack(spacing: 20) {
+            Text("RATING & REVIEWS")
+                .font(.system(size: 12, weight: .semibold))
+                .tracking(2)
+                .foregroundStyle(AppColors.Text.tertiary)
+            
+            HStack(spacing: 32) {
+                // Average Rating
+                VStack(spacing: 8) {
+                    Text(String(format: "%.1f", product.rating))
+                        .font(.system(size: 48, weight: .bold))
+                        .foregroundStyle(AppColors.Text.primary)
+                    
+                    HStack(spacing: 4) {
+                        ForEach(0..<5) { index in
+                            Image(systemName: index < Int(product.rating) ? "star.fill" : "star")
+                                .font(.system(size: 14))
+                                .foregroundStyle(index < Int(product.rating) ? AppColors.Accent.gold : AppColors.Border.primary)
+                        }
+                    }
+                    
+                    Text("\(product.reviewCount) reviews")
+                        .font(.system(size: 13))
+                        .foregroundStyle(AppColors.Text.muted)
+                }
+                
+                // Rating Bars
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach((1...5).reversed(), id: \.self) { rating in
+                        RatingBar(
+                            rating: rating,
+                            count: viewModel.ratingCounts[rating - 1],
+                            total: product.reviewCount
+                        )
+                    }
+                }
+            }
+            .padding(24)
+            .background(AppColors.Background.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(AppColors.Border.subtle, lineWidth: 1)
+            )
+        }
+        .opacity(hasAppeared ? 1 : 0)
+        .offset(y: hasAppeared ? 0 : 20)
+        .animation(.easeOut(duration: 0.5).delay(0.1), value: hasAppeared)
+    }
+    
+    var addReviewButton: some View {
+        Button {
+            showAddReview = true
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "square.and.pencil")
+                    .font(.system(size: 14))
+                Text("WRITE A REVIEW")
+                    .font(.system(size: 14, weight: .semibold))
+                    .tracking(2)
+            }
+            .foregroundStyle(AppColors.Button.primaryText)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(AppColors.Button.primaryBackground)
+        }
+        .opacity(hasAppeared ? 1 : 0)
+        .offset(y: hasAppeared ? 0 : 20)
+        .animation(.easeOut(duration: 0.5).delay(0.2), value: hasAppeared)
+    }
+    
+    var reviewsListSection: some View {
+        VStack(spacing: 16) {
+            // Header
+            HStack {
+                Text("\(viewModel.reviews.count) REVIEWS")
+                    .font(.system(size: 12, weight: .semibold))
+                    .tracking(2)
+                    .foregroundStyle(AppColors.Text.tertiary)
+                
+                Spacer()
+                
+                Menu {
+                    Button("Most Recent") { viewModel.sortBy = .recent }
+                    Button("Highest Rating") { viewModel.sortBy = .highestRating }
+                    Button("Lowest Rating") { viewModel.sortBy = .lowestRating }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text("Sort")
+                            .font(.system(size: 13, weight: .medium))
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 10, weight: .medium))
+                    }
+                    .foregroundStyle(AppColors.Text.primary)
+                }
+            }
+            
+            // Reviews
+            LazyVStack(spacing: 16) {
+                ForEach(Array(viewModel.reviews.enumerated()), id: \.element.id) { index, review in
+                    ReviewCell(review: review)
+                        .opacity(hasAppeared ? 1 : 0)
+                        .offset(y: hasAppeared ? 0 : 20)
+                        .animation(
+                            .easeOut(duration: 0.5).delay(0.3 + Double(index) * 0.1),
+                            value: hasAppeared
+                        )
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Rating Bar
 struct RatingBar: View {
     let rating: Int
     let count: Int
@@ -116,74 +182,93 @@ struct RatingBar: View {
     var body: some View {
         HStack(spacing: 8) {
             Text("\(rating)")
-                .font(.subheadline)
-                .frame(width: 24)
+                .font(.system(size: 12))
+                .foregroundStyle(AppColors.Text.muted)
+                .frame(width: 16)
             
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     Rectangle()
-                        .fill(Color(.systemGray5))
+                        .fill(AppColors.Background.secondary)
                     
                     Rectangle()
-                        .fill(Color.yellow)
-                        .frame(width: geometry.size.width * CGFloat(count) / CGFloat(total))
+                        .fill(AppColors.Accent.gold)
+                        .frame(width: total > 0 ? geometry.size.width * CGFloat(count) / CGFloat(total) : 0)
                 }
             }
-            .frame(height: 8)
-            .cornerRadius(4)
+            .frame(height: 6)
+            .clipShape(Capsule())
             
             Text("\(count)")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .frame(width: 40)
+                .font(.system(size: 11))
+                .foregroundStyle(AppColors.Text.muted)
+                .frame(width: 30, alignment: .trailing)
         }
     }
 }
 
+// MARK: - Review Cell
 struct ReviewCell: View {
     let review: Review
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                // User Avatar
+        VStack(alignment: .leading, spacing: 16) {
+            // Header
+            HStack(spacing: 12) {
+                // Avatar
                 Circle()
-                    .fill(Color(.systemGray5))
-                    .frame(width: 40, height: 40)
+                    .fill(AppColors.Background.secondary)
+                    .frame(width: 44, height: 44)
                     .overlay(
-                        Text(review.userId.uuidString.prefix(2))
-                            .foregroundColor(.gray)
+                        Text(String(review.userId.uuidString.prefix(2)))
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(AppColors.Text.tertiary)
                     )
                 
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text("User \(review.userId.uuidString.prefix(6))")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(AppColors.Text.primary)
                     
-                    HStack {
-                        ForEach(0..<5) { index in
-                            Image(systemName: "star.fill")
-                                .foregroundColor(index < review.rating ? .yellow : .gray)
-                                .font(.caption)
+                    HStack(spacing: 8) {
+                        // Stars
+                        HStack(spacing: 2) {
+                            ForEach(0..<5) { index in
+                                Image(systemName: index < review.rating ? "star.fill" : "star")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(index < review.rating ? AppColors.Accent.gold : AppColors.Border.primary)
+                            }
                         }
                         
+                        Text("•")
+                            .foregroundStyle(AppColors.Text.muted)
+                        
                         Text(review.date.formatted(date: .abbreviated, time: .omitted))
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                            .font(.system(size: 11))
+                            .foregroundStyle(AppColors.Text.muted)
                     }
                 }
                 
                 Spacer()
                 
                 if review.isVerifiedPurchase {
-                    Image(systemName: "checkmark.seal.fill")
-                        .foregroundColor(.green)
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 12))
+                        Text("Verified")
+                            .font(.system(size: 10, weight: .medium))
+                    }
+                    .foregroundStyle(AppColors.Accent.success)
                 }
             }
             
+            // Comment
             Text(review.comment)
-                .font(.subheadline)
+                .font(.system(size: 14))
+                .foregroundStyle(AppColors.Text.secondary)
+                .lineSpacing(4)
             
+            // Images
             if let images = review.images, !images.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -194,63 +279,62 @@ struct ReviewCell: View {
                                     .aspectRatio(contentMode: .fill)
                             } placeholder: {
                                 Rectangle()
-                                    .fill(Color(.systemGray6))
+                                    .fill(AppColors.Background.secondary)
                             }
-                            .frame(width: 80, height: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .frame(width: 72, height: 72)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
                         }
                     }
                 }
             }
             
-            HStack {
+            // Actions
+            HStack(spacing: 24) {
                 Button {
-                    // TODO: Implement helpful
+                    // Helpful action
                 } label: {
-                    Label("Helpful (\(review.helpfulCount))", systemImage: "hand.thumbsup")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
+                    HStack(spacing: 6) {
+                        Image(systemName: "hand.thumbsup")
+                            .font(.system(size: 12))
+                        Text("Helpful (\(review.helpfulCount))")
+                            .font(.system(size: 12))
+                    }
+                    .foregroundStyle(AppColors.Text.tertiary)
                 }
                 
                 Spacer()
-                
-                Button {
-                    // TODO: Implement report
-                } label: {
-                    Label("Report", systemImage: "flag")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .padding(16)
+        .background(AppColors.Background.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .overlay(
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(AppColors.Border.subtle, lineWidth: 1)
+        )
     }
 }
 
+// MARK: - ViewModel
 class ReviewsViewModel: ObservableObject {
     enum SortOption {
         case recent, highestRating, lowestRating
     }
     
     @Published var reviews: [Review] = []
-    @Published var ratingCounts: [Int] = [10, 15, 25, 30, 20] // Mock data
+    @Published var ratingCounts: [Int] = [10, 15, 25, 30, 20]
     @Published var sortBy: SortOption = .recent {
-        didSet {
-            sortReviews()
-        }
+        didSet { sortReviews() }
     }
     
     func loadReviews(for product: Product) {
-        // TODO: Load reviews from backend
-        // For now, using mock data
         reviews = [
             Review(
                 id: UUID(),
-                productId: product.id, userId: UUID(),
+                productId: product.id,
+                userId: UUID(),
                 rating: 5,
-                comment: "Great product! Love the quality and fit.",
+                comment: "Great product! Love the quality and fit. The material feels premium and the stitching is excellent.",
                 images: nil,
                 date: Date(),
                 helpfulCount: 12,
@@ -258,9 +342,10 @@ class ReviewsViewModel: ObservableObject {
             ),
             Review(
                 id: UUID(),
-                productId: product.id, userId: UUID(),
+                productId: product.id,
+                userId: UUID(),
                 rating: 4,
-                comment: "Good product but shipping took longer than expected.",
+                comment: "Good product but shipping took longer than expected. Overall satisfied with the purchase.",
                 images: nil,
                 date: Date().addingTimeInterval(-86400),
                 helpfulCount: 8,
@@ -282,6 +367,11 @@ class ReviewsViewModel: ObservableObject {
     }
 }
 
+// MARK: - Preview
 #Preview {
-    ReviewsView(product: .mockProducts.first!)
+    NavigationStack {
+        ReviewsView(product: .mockProducts.first!)
+            .environmentObject(ProductDetailViewModel())
+    }
 }
+

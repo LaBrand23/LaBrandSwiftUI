@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-// MARK: - Category Tag View
 struct SubCategoryTag: View {
+    
     let title: String
     let isSelected: Bool
     let action: () -> Void
@@ -16,13 +16,24 @@ struct SubCategoryTag: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .foregroundColor(isSelected ? .white : .black)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(isSelected ? AppColors.Button.primaryText : AppColors.Text.primary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.black : Color.clear)
-                .cornerRadius(20)
+                .background(isSelected ? AppColors.Button.primaryBackground : AppColors.Background.secondary)
+                .clipShape(Capsule())
         }
     }
 }
+
+// MARK: - Preview
+#Preview {
+    HStack(spacing: 10) {
+        SubCategoryTag(title: "All", isSelected: true) {}
+        SubCategoryTag(title: "T-Shirts", isSelected: false) {}
+        SubCategoryTag(title: "Shirts", isSelected: false) {}
+    }
+    .padding()
+    .background(AppColors.Background.primary)
+}
+

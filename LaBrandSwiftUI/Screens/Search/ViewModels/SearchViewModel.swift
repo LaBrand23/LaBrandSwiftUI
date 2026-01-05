@@ -66,6 +66,11 @@ class SearchViewModel: ObservableObject {
         saveRecentSearches()
     }
     
+    func clearAllRecentSearches() {
+        recentSearches.removeAll()
+        saveRecentSearches()
+    }
+    
     private func loadRecentSearches() {
         recentSearches = UserDefaults.standard.stringArray(forKey: "RecentSearches") ?? []
     }

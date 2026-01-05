@@ -72,6 +72,14 @@ class ProductListViewModel: ObservableObject {
         filterProducts()
     }
     
+    func clearAllFilters() {
+        selectedColors.removeAll()
+        selectedSizes.removeAll()
+        selectedBrands.removeAll()
+        selectedPriceRange = 0...1000
+        filterProducts()
+    }
+    
     private func filterProducts() {
         filteredProducts = products
             .filter { product in
