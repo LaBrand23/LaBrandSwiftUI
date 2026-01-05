@@ -1,0 +1,146 @@
+---
+alwaysApply: true
+---
+
+# LaBrand SwiftUI - Color Pattern System
+
+**IMPORTANT**: All colors MUST be accessed through `AppColors` enum. Never use `Color(hex:)` directly in views.
+
+---
+
+## 📍 Color File Location
+
+```
+Core/Theme/AppColors.swift
+```
+
+---
+
+## 🎨 HOW TO USE COLORS
+
+### ✅ CORRECT - Use AppColors
+
+```swift
+// Text colors
+Text("Hello")
+    .foregroundStyle(AppColors.Text.primary)
+
+// Background colors
+.background(AppColors.Background.primary)
+
+// Accent colors
+.foregroundStyle(AppColors.Accent.gold)
+
+// Button colors
+.background(AppColors.Button.primaryBackground)
+.foregroundStyle(AppColors.Button.primaryText)
+```
+
+### ❌ WRONG - Direct hex usage
+
+```swift
+// DO NOT do this in views!
+.foregroundStyle(Color(hex: "1A1A1A"))
+.background(Color(hex: "FAFAFA"))
+```
+
+---
+
+## 🌗 DARK MODE SUPPORT
+
+All colors automatically adapt to dark/light mode. The `adaptiveColor()` helper handles this:
+
+```swift
+// Light mode: #1A1A1A, Dark mode: #FFFFFF
+static let primary = adaptiveColor(light: "1A1A1A", dark: "FFFFFF")
+```
+
+---
+
+## 📋 COLOR REFERENCE
+
+### Text Colors (`AppColors.Text`)
+| Name | Light | Dark | Usage |
+|------|-------|------|-------|
+| `.primary` | #1A1A1A | #FAFAFA | Headlines, body text |
+| `.secondary` | #333333 | #E0E0E0 | Subheadings |
+| `.tertiary` | #666666 | #A0A0A0 | Descriptions |
+| `.muted` | #999999 | #808080 | Placeholders, meta |
+| `.inverted` | #FFFFFF | #1A1A1A | Text on dark bg |
+
+### Background Colors (`AppColors.Background`)
+| Name | Light | Dark | Usage |
+|------|-------|------|-------|
+| `.primary` | #FAFAFA | #0D0D0D | Main app background |
+| `.surface` | #FFFFFF | #1A1A1A | Cards, sheets |
+| `.secondary` | #F5F5F5 | #2D2D2D | Input fields, tags |
+| `.editorial` | #1A1A1A | #0D0D0D | Feature banners |
+
+### Accent Colors (`AppColors.Accent`)
+| Name | Color | Usage |
+|------|-------|-------|
+| `.gold` | #C4A77D | Premium highlights, badges |
+| `.sale` | #C41E3A | Sale tags, promotions |
+| `.success` | #2E7D32 | Success states |
+| `.error` | #C41E3A | Error states |
+
+### Border Colors (`AppColors.Border`)
+| Name | Light | Dark | Usage |
+|------|-------|------|-------|
+| `.primary` | #E8E8E8 | #333333 | Standard borders |
+| `.subtle` | #F0F0F0 | #2D2D2D | Subtle dividers |
+| `.focus` | #1A1A1A | #FFFFFF | Focus states |
+
+### Button Colors (`AppColors.Button`)
+| Name | Light | Dark |
+|------|-------|------|
+| `.primaryBackground` | #1A1A1A | #FFFFFF |
+| `.primaryText` | #FFFFFF | #1A1A1A |
+| `.secondaryBackground` | #FFFFFF | #1A1A1A |
+| `.secondaryText` | #1A1A1A | #FFFFFF |
+
+---
+
+## 🎯 GRADIENTS
+
+Pre-defined gradients available:
+
+```swift
+// Editorial dark gradient
+AppColors.Gradient.editorial
+
+// Gold accent gradient
+AppColors.Gradient.gold
+
+// Image overlay gradient
+AppColors.Gradient.imageOverlay
+```
+
+---
+
+## 🔧 ADDING NEW COLORS
+
+When adding new colors:
+
+1. Add to appropriate category in `AppColors.swift`
+2. Use `adaptiveColor(light:dark:)` for dark mode support
+3. Document in this rule file
+4. Use semantic naming (by purpose, not appearance)
+
+```swift
+// ✅ Good: Named by purpose
+static let cardBackground = adaptiveColor(light: "FFFFFF", dark: "1A1A1A")
+
+// ❌ Bad: Named by appearance
+static let whiteColor = Color(hex: "FFFFFF")
+```
+
+---
+
+## ⚠️ RULES
+
+1. **NEVER** use `Color(hex:)` directly in views
+2. **ALWAYS** use `AppColors.*` for all colors
+3. **ALWAYS** provide dark mode variant for new colors
+4. **USE** semantic names (purpose-based, not color-based)
+5. **UPDATE** this documentation when adding colors
