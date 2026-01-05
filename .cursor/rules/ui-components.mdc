@@ -1,0 +1,427 @@
+---
+alwaysApply: true
+---
+
+# LaBrand SwiftUI - Component Architecture (DRY Principle)
+
+Guidelines for when to extract UI components vs keeping them local. Follow these rules to maintain clean, reusable code without over-engineering.
+
+---
+
+## 🎯 THE GOLDEN RULE
+
+Before creating ANY UI component, ask yourself:
+
+> **"Will this component be used in more than one place?"**
+
+If YES → Extract to shared `/Components/` folder
+If NO → Keep it local or inline
+
+---
+
+## 🌳 DECISION TREE
+
+```
+Is this UI element used in multiple screens/views?
+│
+├─ YES → Create a SHARED component in `/Components/`
+│        Make it configurable with parameters
+│
+└─ NO → Is it a complex subview (50+ lines)?
+        │
+        ├─ YES → Extract as `private extension` in same file
+        │
+        └─ NO → Keep inline in the view body
+```
+
+---
+
+## ✅ WHEN TO CREATE A SHARED COMPONENT
+
+Extract to `/Components/` folder when:
+
+1. **Used in 2+ screens** (e.g., `ProductCard`, `SectionHeader`, `FavoriteButton`)
+2. **Represents a design system element** (buttons, badges, inputs)
+3. **Has configurable behavior** (different states, actions, styles)
+
+### Examples of Good Shared Components
+
+```swift
+// ✅ GOOD: Shared component in Components/Buttons/
+// Used in ProductCard, ProductDetail, FavoritesList
+struct FavoriteButton: View {
+    @State var isSelected: Bool
+    var action: () -> Void
+    
+    var body: some View {
+        Button {
+            isSelected.toggle()
+            action()
+        } label: {
+            Image(systemName: isSelected ? "heart.fill" : "heart")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(isSelected ? Color(hex: "C41E3A") : Color(hex: "666666"))
+        }
+        .buttonStyle(FavoriteButtonStyle())
+    }
+}
+
+// ✅ GOOD: Shared component in Components/Headers/
+// Used in Home, Categories, ProductList, Favorites
+struct SectionHeader: View {
+    let title: String
+    var subtitle: String? = nil
+    var showViewAll: Bool = false
+    var onViewAllTapped: (() -> Void)? = nil
+    
+    var body: some View {
+        HStack(alignment: .bottom) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.custom("Georgia", size: 20))
+                    .fontWeight(.medium)
+                    .tracking(2)
+                
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(hex: "666666"))
+                }
+            }
+            
+            Spacer()
+            
+            if showViewAll {
+                Button { onViewAllTapped?() } label: {
+                    HStack(spacing: 4) {
+                        Text("View All")
+                            .font(.system(size: 13, weight: .medium))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundStyle(Color(hex: "1A1A1A"))
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+    }
+}
+```
+
+---
+
+## 📍 WHEN TO KEEP AS LOCAL SUBVIEW
+
+Keep as `private extension` in the same file when:
+
+1. **Screen-specific** - Only used within one view
+2. **Tightly coupled** - Depends heavily on parent's state
+3. **Not generalizable** - Too specific to extract meaningfully
+
+### Examples of Good Local Subviews
+
+```swift
+// ✅ GOOD: Local subview for HomeView only
+private extension HomeView {
+    var editorialBanner: some View {
+        ZStack {
+            // Complex but specific to HomeView
+            LinearGradient(...)
+            // ... 40+ lines of HomeView-specific layout
+        }
+    }
+    
+    struct TrendingProductCard: View {
+        let product: Product
+        // Only used in HomeView's trending section
+        // Different layout than regular ProductCard
+    }
+}
+
+// ✅ GOOD: Namespaced local component
+// Allows different CategoryCard for different screens
+extension HomeView {
+    struct CategoryCard: View {
+        let category: Category
+        // Circular style for HomeView
+    }
+}
+
+extension CategoriesView {
+    struct CategoryCard: View {
+        let category: Category
+        // List row style for CategoriesView
+    }
+}
+```
+
+---
+
+## 📝 WHEN TO KEEP INLINE
+
+Keep in the body when:
+
+1. **Simple** - Under 15-20 lines
+2. **One-off** - Truly unique, won't repeat
+3. **Readable** - Doesn't hurt parent readability
+
+```swift
+// ✅ GOOD: Simple inline, no extraction needed
+var body: some View {
+    VStack {
+        Text("Title")
+            .font(.custom("Georgia", size: 20))
+        
+        // Simple divider - no need to extract
+        Rectangle()
+            .fill(Color(hex: "E8E8E8"))
+            .frame(height: 1)
+        
+        Text("Subtitle")
+            .font(.system(size: 13))
+    }
+}
+```
+
+---
+
+## ⚙️ COMPONENT CONFIGURATION GUIDELINES
+
+When creating shared components, make them **configurable but not over-engineered**:
+
+### ✅ GOOD: Essential Parameters Only
+
+```swift
+struct ProductCard: View {
+    // Required
+    let product: Product
+    
+    // Optional with sensible defaults
+    var imageSize: CGFloat = 200
+    var showFullDetails: Bool = true
+    var onFavoriteTapped: () -> Void = {}
+    
+    var body: some View {
+        // Uses design system colors/fonts internally
+        // No need to expose titleFont, titleColor, etc.
+    }
+}
+```
+
+### ❌ BAD: Over-Engineered
+
+```swift
+struct ProductCard: View {
+    let product: Product
+    var imageSize: CGFloat
+    var imageCornerRadius: CGFloat    // Too granular
+    var titleFont: Font               // Should use design system
+    var titleColor: Color             // Should use design system
+    var subtitleFont: Font            // Should use design system
+    var showRating: Bool
+    var showBrand: Bool
+    var showPrice: Bool
+    var showFavoriteButton: Bool
+    var favoriteButtonSize: CGFloat   // Way too specific
+    // ... 20 more parameters
+}
+```
+
+### Configuration Rules
+
+1. **Use design system defaults** - Don't expose colors/fonts as parameters
+2. **Keep required parameters minimal** - Usually just the data model
+3. **Use sensible defaults** - Most callers shouldn't need to customize
+4. **Use enums for variants** - Instead of multiple booleans
+
+```swift
+// ✅ GOOD: Enum for variants
+struct ProductCard: View {
+    let product: Product
+    var variant: Variant = .standard
+    
+    enum Variant {
+        case standard      // Full details
+        case compact       // Just image + price
+        case horizontal    // Row layout
+    }
+}
+```
+
+---
+
+## 📁 FOLDER STRUCTURE
+
+```
+Components/
+├── Buttons/
+│   ├── FavoriteButton.swift        # Heart button for favorites
+│   ├── ProductCardBagButton.swift  # Add to bag on cards
+│   ├── PrimaryButton.swift         # Main CTA button
+│   └── SecondaryButton.swift       # Outline style button
+│
+├── Cards/
+│   ├── ProductCard.swift           # Universal product card
+│   └── CategoryCard.swift          # Category list card (if shared)
+│
+├── Headers/
+│   └── SectionHeader.swift         # Section titles with "View All"
+│
+├── Inputs/
+│   ├── SearchBar.swift             # Search input field
+│   ├── QuantitySelector.swift      # +/- quantity control
+│   └── RatingInput.swift           # Star rating selector
+│
+├── Badges/
+│   ├── SaleBadge.swift             # -XX% sale badge
+│   ├── NewBadge.swift              # NEW badge
+│   └── TrendingBadge.swift         # TRENDING badge
+│
+└── Layout/
+    ├── FlowLayout.swift            # Tags/chips flow layout
+    └── RangeSlider.swift           # Price range slider
+```
+
+---
+
+## ✅ CHECKLIST BEFORE EXTRACTION
+
+Before creating a new component file, verify:
+
+- [ ] Will it be used in **at least 2 different places**?
+- [ ] Does it have a **clear, single responsibility**?
+- [ ] Can it work with **different data** (not hardcoded)?
+- [ ] Does it follow the **design system** (colors, fonts, spacing)?
+- [ ] Is the **API simple** (minimal required parameters)?
+- [ ] Would extracting it **improve readability**?
+
+If you answered NO to any of these, consider keeping it local.
+
+---
+
+## ❌ ANTI-PATTERNS TO AVOID
+
+### 1. Extracting Every Tiny Piece
+
+```swift
+// ❌ BAD: Unnecessary wrapper
+struct MyTitleText: View {
+    let text: String
+    var body: some View {
+        Text(text)
+            .font(.headline)
+    }
+}
+
+// ✅ GOOD: Just use Text directly
+Text("Title")
+    .font(.custom("Georgia", size: 20))
+```
+
+### 2. Screen-Specific Logic in Shared Components
+
+```swift
+// ❌ BAD: Component knows about screens
+struct ProductCard: View {
+    var body: some View {
+        VStack {
+            // ...
+            if isHomeScreen {              // Don't do this!
+                TrendingBadge()
+            } else if isFavoritesScreen {  // Component shouldn't know
+                RemoveButton()
+            }
+        }
+    }
+}
+
+// ✅ GOOD: Use configuration or composition
+struct ProductCard: View {
+    var badge: AnyView? = nil
+    var trailing: AnyView? = nil
+    
+    var body: some View {
+        VStack {
+            // ...
+            badge
+            trailing
+        }
+    }
+}
+```
+
+### 3. Duplicate Components
+
+```swift
+// ❌ BAD: Same component in two places
+// Screens/Home/Views/CategoryCard.swift
+// Screens/Categories/Views/CategoryCard.swift
+// (with identical implementations)
+
+// ✅ GOOD: Extract to shared if identical
+// Components/Cards/CategoryCard.swift
+
+// OR use namespacing if intentionally different
+// HomeView.CategoryCard (circular)
+// CategoriesView.CategoryCard (list row)
+```
+
+### 4. Over-Parameterized Components
+
+```swift
+// ❌ BAD: Too many knobs
+struct Button: View {
+    var title: String
+    var font: Font
+    var textColor: Color
+    var backgroundColor: Color
+    var cornerRadius: CGFloat
+    var paddingH: CGFloat
+    var paddingV: CGFloat
+    var hasShadow: Bool
+    var shadowColor: Color
+    var shadowRadius: CGFloat
+    // ... this is madness
+}
+
+// ✅ GOOD: Predefined styles from design system
+struct PrimaryButton: View {
+    let title: String
+    var action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .tracking(2)
+                .foregroundStyle(Color(hex: "1A1A1A"))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
+                .background(Color.white)
+        }
+    }
+}
+```
+
+---
+
+## 📊 QUICK REFERENCE TABLE
+
+| Scenario | Action | Location |
+|----------|--------|----------|
+| Used in 2+ screens | **Extract** | `/Components/{Type}/` |
+| Screen-specific, complex (50+ lines) | **Extract locally** | `private extension` in same file |
+| Screen-specific, simple (<20 lines) | **Keep inline** | In `body` |
+| Design system element (button, badge) | **Extract** | `/Components/` with variants |
+| One-off decoration | **Keep inline** | In `body` |
+| Same UI duplicated in 2 files | **Extract immediately** | `/Components/` - DRY violation! |
+
+---
+
+## 💡 TIPS
+
+1. **Start local, extract later** - It's easier to extract than to merge back
+2. **Name by purpose, not appearance** - `FavoriteButton` not `HeartButton`
+3. **Keep components pure** - No side effects, no global state access
+4. **Document variants** - Add `#Preview` for each configuration
+5. **Review before adding parameters** - Each new param adds complexity

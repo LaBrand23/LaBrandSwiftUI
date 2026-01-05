@@ -13,7 +13,7 @@ struct LaBrandSwiftUIApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppRootView()
                 .environmentObject(authManager)
         }
     }

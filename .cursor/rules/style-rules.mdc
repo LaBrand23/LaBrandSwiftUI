@@ -1,0 +1,499 @@
+---
+alwaysApply: true
+---
+
+# LaBrand SwiftUI - Fashion E-Commerce Design System
+
+This is a luxury fashion e-commerce iOS app built with SwiftUI. Follow these design guidelines strictly to maintain visual consistency across all screens.
+
+---
+
+## 🎨 DESIGN PHILOSOPHY
+
+This app follows a **minimalist luxury aesthetic** inspired by high-end fashion retailers like Net-a-Porter, SSENSE, and Farfetch. The design prioritizes:
+
+- **Editorial feel**: Large imagery, generous whitespace, magazine-like layouts
+- **Sophisticated typography**: Serif headlines, clean sans-serif body text
+- **Restrained color palette**: Mostly monochromatic with subtle gold accents
+- **Smooth animations**: Subtle, elegant micro-interactions
+- **Premium feel**: Every element should feel intentional and refined
+
+---
+
+## 🔤 TYPOGRAPHY SYSTEM
+
+### Font Families
+- **Headlines & Titles**: `Georgia` (serif) - elegant, editorial feel
+- **Body & UI**: System font (San Francisco) - clean, readable
+
+### Font Hierarchy
+
+```swift
+// Navigation Title / Brand Name
+.font(.custom("Georgia", size: 22))
+.fontWeight(.medium)
+.tracking(6)
+
+// Section Headlines (H1)
+.font(.custom("Georgia", size: 36))
+.fontWeight(.regular)
+.lineSpacing(4)
+
+// Section Headers (H2)
+.font(.custom("Georgia", size: 24))
+.fontWeight(.medium)
+.tracking(4)
+
+// Subsection Headers (H3)
+.font(.custom("Georgia", size: 20))
+.fontWeight(.medium)
+.tracking(2)
+
+// Category Labels / Badges
+.font(.custom("Georgia", size: 13))
+.fontWeight(.medium)
+.tracking(3)
+
+// Small Labels / Tags
+.font(.system(size: 11, weight: .medium))
+.tracking(1.5)
+
+// Body Text
+.font(.system(size: 15))
+
+// Caption / Subtitle
+.font(.system(size: 13))
+
+// Micro Text (badges, tags)
+.font(.system(size: 10, weight: .semibold))
+.tracking(3)
+
+// Button Text
+.font(.system(size: 13, weight: .semibold))
+.tracking(2)
+```
+
+### Typography Rules
+- Use `.tracking()` (letter-spacing) on uppercase text for elegance
+- Headlines often use line breaks for dramatic effect
+- Avoid bold weights on serif fonts - use regular or medium
+- Product names: `.font(.system(size: 14))` single line
+- Brand names: UPPERCASE with tracking
+- Prices: `.font(.system(size: 14, weight: .semibold))`
+
+---
+
+## 🎨 COLOR PALETTE
+
+### Core Colors
+
+```swift
+// Primary Text
+Color(hex: "1A1A1A")  // Almost black - primary text, buttons
+
+// Secondary Text
+Color(hex: "333333")  // Dark gray - secondary headings
+Color(hex: "666666")  // Medium gray - subtitles, descriptions
+Color(hex: "999999")  // Light gray - meta text, brand names
+
+// Backgrounds
+Color(hex: "FAFAFA")  // Off-white - main background
+Color(hex: "F5F5F5")  // Light gray - card backgrounds
+Color(hex: "E8E8E8")  // Border gray
+
+// Accent - Gold (Use sparingly)
+Color(hex: "C4A77D")  // Primary gold - badges, accents, highlights
+
+// Accent - Sale Red
+Color(hex: "C41E3A")  // Cardinal red - sale tags, promotional
+
+// Dark Backgrounds
+Color(hex: "1A1A1A")  // Primary dark
+Color(hex: "2D2D2D")  // Secondary dark
+Color(hex: "2C3E50")  // Editorial dark blue
+Color(hex: "1A1A2E")  // Deep navy
+```
+
+### Color Usage Rules
+- **Gold accent**: Only for premium highlights, badges, decorative elements
+- **Red**: Reserved ONLY for sale items and promotional content
+- **Backgrounds**: Use subtle off-whites, never pure white (#FFFFFF)
+- **Text hierarchy**: Use gray scale to create visual hierarchy
+- **Dark sections**: Use for editorial/feature banners only
+
+---
+
+## 📐 SPACING SYSTEM
+
+### Standard Spacing Values
+
+```swift
+// Horizontal padding (screen edges)
+.padding(.horizontal, 20)
+
+// Between sections
+.padding(.top, 40)  // Standard section gap
+.padding(.top, 48)  // After feature sections
+
+// Within sections
+spacing: 16  // Between product cards
+spacing: 20  // Between category cards
+spacing: 12  // Within card content
+
+// Card internal padding
+.padding(10)  // Badge padding from edge
+.padding(.horizontal, 24)  // CTA button horizontal
+.padding(.vertical, 14)   // CTA button vertical
+
+// Banner content padding
+.padding(.horizontal, 24)
+.padding(.bottom, 48)
+```
+
+### Layout Guidelines
+- Hero banners: 480pt height
+- Product cards: 160pt width
+- Trending cards: 200pt width, 260pt image height
+- Category circles: 70pt image, 78pt ring
+- Editorial banners: 220pt height
+
+---
+
+## 🧩 COMPONENT PATTERNS
+
+### Section Headers
+
+```swift
+struct SectionHeader: View {
+    let title: String
+    var subtitle: String? = nil
+    var showViewAll: Bool = false
+    
+    var body: some View {
+        HStack(alignment: .bottom) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.custom("Georgia", size: 20))
+                    .fontWeight(.medium)
+                    .tracking(2)
+                
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(hex: "666666"))
+                }
+            }
+            
+            Spacer()
+            
+            if showViewAll {
+                Button { } label: {
+                    HStack(spacing: 4) {
+                        Text("View All")
+                            .font(.system(size: 13, weight: .medium))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundStyle(Color(hex: "1A1A1A"))
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+    }
+}
+```
+
+### Badges & Tags
+
+```swift
+// NEW badge (dark)
+Text("NEW")
+    .font(.system(size: 9, weight: .bold))
+    .tracking(1)
+    .foregroundStyle(.white)
+    .padding(.horizontal, 10)
+    .padding(.vertical, 6)
+    .background(Color(hex: "1A1A1A"))
+
+// SALE badge (red)
+Text("-25%")
+    .font(.caption)
+    .fontWeight(.bold)
+    .foregroundColor(.white)
+    .padding(.horizontal, 8)
+    .padding(.vertical, 4)
+    .background(Color(hex: "C41E3A"))
+    .clipShape(Capsule())
+
+// Premium badge (gold outline)
+Text("NEW COLLECTION")
+    .font(.system(size: 10, weight: .semibold))
+    .tracking(3)
+    .foregroundStyle(Color(hex: "C4A77D"))
+    .padding(.horizontal, 12)
+    .padding(.vertical, 6)
+    .background(
+        Capsule()
+            .fill(Color.black.opacity(0.4))
+    )
+```
+
+### Buttons
+
+```swift
+// Primary CTA (Light background context)
+Button { } label: {
+    HStack(spacing: 8) {
+        Text("SHOP NOW")
+            .font(.system(size: 13, weight: .semibold))
+            .tracking(2)
+        Image(systemName: "arrow.right")
+            .font(.system(size: 12, weight: .semibold))
+    }
+    .foregroundStyle(.black)
+    .padding(.horizontal, 28)
+    .padding(.vertical, 14)
+    .background(Color.white)
+}
+
+// Secondary CTA (Dark background context)
+Button { } label: {
+    Text("EXPLORE")
+        .font(.system(size: 12, weight: .semibold))
+        .tracking(2)
+        .foregroundStyle(.white)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 0)
+                .stroke(Color.white.opacity(0.5), lineWidth: 1)
+        )
+}
+
+// Text link button
+Button { } label: {
+    HStack(spacing: 6) {
+        Text("Shop Sale")
+            .font(.system(size: 13, weight: .medium))
+        Image(systemName: "arrow.right")
+            .font(.system(size: 11, weight: .medium))
+    }
+    .foregroundStyle(Color(hex: "C41E3A"))
+}
+```
+
+### Card Patterns
+
+```swift
+// Product cards use sharp corners (cornerRadius: 4 or 12)
+// NEVER use cornerRadius > 12 for product images
+// Category cards are circular
+// Buttons are rectangular (cornerRadius: 0) for luxury feel
+```
+
+---
+
+## ✨ ANIMATION GUIDELINES
+
+### Entrance Animations
+
+```swift
+// Staggered list entrance
+ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+    ItemView(item: item)
+        .opacity(hasAppeared ? 1 : 0)
+        .offset(y: hasAppeared ? 0 : 20)
+        .animation(
+            .spring(response: 0.6, dampingFraction: 0.8)
+            .delay(Double(index) * 0.1),
+            value: hasAppeared
+        )
+}
+
+// Section fade in
+.opacity(hasAppeared ? 1 : 0)
+.animation(.easeOut(duration: 0.8).delay(0.5), value: hasAppeared)
+```
+
+### Interactive Animations
+
+```swift
+// Press state
+@State private var isPressed = false
+
+.scaleEffect(isPressed ? 0.95 : 1.0)
+.animation(.spring(response: 0.3), value: isPressed)
+.onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
+    isPressed = pressing
+}, perform: {})
+```
+
+### Animation Rules
+- Use `.spring(response: 0.6, dampingFraction: 0.8)` for natural feel
+- Stagger delays: 0.08-0.1 seconds between items
+- Keep animations subtle (20-30pt offset, not 50+)
+- Fade + translate for entrances
+- Scale for press states (0.95-0.98)
+- Duration 0.3-0.8 seconds max
+
+---
+
+## 📱 SCREEN PATTERNS
+
+### List Screens (Products, Categories)
+```
+┌─────────────────────────┐
+│     Navigation Bar      │
+├─────────────────────────┤
+│   Filter/Sort Bar       │
+├─────────────────────────┤
+│                         │
+│   ┌───┐  ┌───┐         │
+│   │   │  │   │  Grid   │
+│   └───┘  └───┘         │
+│   ┌───┐  ┌───┐         │
+│   │   │  │   │         │
+│   └───┘  └───┘         │
+│                         │
+└─────────────────────────┘
+```
+
+### Detail Screens
+```
+┌─────────────────────────┐
+│    Large Image/Hero     │
+│                         │
+├─────────────────────────┤
+│ Brand (caps, tracking)  │
+│ Product Name            │
+│ Price     Original      │
+├─────────────────────────┤
+│ Description             │
+├─────────────────────────┤
+│ Size Selection          │
+├─────────────────────────┤
+│ Color Selection         │
+├─────────────────────────┤
+│   [ ADD TO BAG ]        │
+└─────────────────────────┘
+```
+
+---
+
+## 🖼️ IMAGE GUIDELINES
+
+### Aspect Ratios
+- Hero banners: Fill width, 480pt height
+- Product thumbnails: 1:1 or 4:5
+- Trending cards: 200x260 (roughly 3:4)
+- Category icons: 1:1 (circular)
+
+### Image Styling
+```swift
+// Product images
+.clipShape(RoundedRectangle(cornerRadius: 4))
+
+// Or slightly more rounded
+.clipShape(RoundedRectangle(cornerRadius: 12))
+
+// Category images
+.clipShape(Circle())
+
+// Hero images - no corner radius, edge-to-edge
+```
+
+### Loading States
+- Use subtle shimmer or solid gray placeholder
+- Never show broken image icons
+- Provide elegant fallback backgrounds with decorative elements
+
+---
+
+## 📝 SWIFTUI CODE CONVENTIONS
+
+### File Structure
+```swift
+struct ScreenView: View {
+    // MARK: - Properties
+    @StateObject private var viewModel = ViewModel()
+    @State private var localState: Type
+    
+    // MARK: - Body
+    var body: some View {
+        // Main content
+    }
+}
+
+// MARK: - Subviews
+private extension ScreenView {
+    var sectionName: some View { }
+    
+    func helperView() -> some View { }
+}
+
+// MARK: - Preview
+#Preview {
+    ScreenView()
+}
+```
+
+### Naming Conventions
+- Views: `{Feature}View.swift` (e.g., `ProductDetailView.swift`)
+- ViewModels: `{Feature}ViewModel.swift`
+- Sections within views: `var {name}Section: some View`
+- Subcomponents: `{Parent}.{Child}` (e.g., `HomeView.CategoryCard`)
+
+### Common Extensions Used
+```swift
+Color(hex: String)  // Initialize color from hex
+.navigateOnTap(to:selection:)  // Navigation helper
+.if(condition) { }  // Conditional modifier
+AsyncImageView  // Custom async image with placeholder
+```
+
+---
+
+## ⚠️ ANTI-PATTERNS TO AVOID
+
+1. **Don't use pure white (#FFFFFF)** - Always use off-white (#FAFAFA)
+2. **Don't use bold on Georgia** - Stick to regular or medium
+3. **Don't use large corner radius** - Max 12pt, prefer 0-4pt
+4. **Don't use colored backgrounds on cards** - Keep neutral
+5. **Don't use emoji or playful icons** - Keep it sophisticated
+6. **Don't overuse gold accent** - It's for highlights only
+7. **Don't use system blue** - Stay within the palette
+8. **Don't use heavy shadows** - Prefer subtle borders or elevation
+9. **Don't use Inter, Roboto, or SF Pro Display explicitly** - Use Georgia for display, system for body
+10. **Don't animate everything** - Be selective and subtle
+
+---
+
+## 🔧 QUICK REFERENCE
+
+### Colors
+| Use | Hex |
+|-----|-----|
+| Primary Text | #1A1A1A |
+| Secondary Text | #666666 |
+| Meta Text | #999999 |
+| Background | #FAFAFA |
+| Gold Accent | #C4A77D |
+| Sale Red | #C41E3A |
+
+### Spacing
+| Element | Value |
+|---------|-------|
+| Screen padding | 20pt |
+| Section gap | 40pt |
+| Card gap | 16pt |
+| Inner spacing | 12pt |
+
+### Typography
+| Element | Font | Size |
+|---------|------|------|
+| Brand/Nav Title | Georgia Medium | 22pt |
+| Section Header | Georgia Medium | 20pt |
+| Product Name | System Regular | 14pt |
+| Price | System Semibold | 14pt |
+| Brand Name | System Medium | 10pt |
+| Button | System Semibold | 13pt |

@@ -2,21 +2,23 @@ import SwiftUI
 
 struct ProductCard: View {
     
-    // MARK: - PROPERTIS
+    // MARK: - Properties
     let product: Product
     var state: ProductCardState = .defaultForOther
     var imageSize: CGFloat
     var showFullDetails: Bool
-    var secondaryAction: ()->Void
-    var removeAction: ()->Void
+    var secondaryAction: () -> Void
+    var removeAction: () -> Void
     
-    // MARK: - init
+    @State private var isPressed = false
+    
+    // MARK: - Init
     init(
         product: Product,
         state: ProductCardState = .defaultForOther,
-        imageSize: CGFloat = 160,
+        imageSize: CGFloat = 200,
         showFullDetails: Bool = true,
-        removeAction: @escaping ()-> Void = {},
+        removeAction: @escaping () -> Void = {},
         secondaryAction: @escaping () -> Void = {}
     ) {
         self.product = product
@@ -29,10 +31,9 @@ struct ProductCard: View {
     
     // MARK: - Body
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             // Product Image
-            ZStack(alignment: .topTrailing) {
-                
+            ZStack(alignment: .topLeading) {
                 AsyncImageView(imageUrl: product.images.first) {
                     Image(.cardMen)
                         .resizable()
@@ -40,186 +41,211 @@ struct ProductCard: View {
                 }
                 .frame(width: 160, height: imageSize)
                 .overlay {
-                    Text("Sorry, this item is currently sold out")
-                        .font(.system(size: 11))
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            Rectangle()
-                                .fill(.white.opacity(0.5))
-                        )
-                        .frame(maxHeight: .infinity, alignment: .bottom)
-                        .if(state != .soldOut) { $0.hidden() }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay {
-                    // Favorite / Bag Buttons
-                    secondaryButton(secondaryAction)
-                        .frame(width: 36, height: 36)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                        .offset(y: 40/2)
-                }
-                
-                // Discount badge
-                tagView
-                    .clipShape(Capsule())
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(8)
-            }
-            
-            if showFullDetails {
-                // Brand & Name
-                VStack(alignment: .leading, spacing: 4) {
-                    // Rating
-                    ratingUI
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(product.brand.name)
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        
-                        Text(product.name)
-                            .font(.subheadline)
-                            .foregroundStyle(.black)
-                            .lineLimit(2)
-                    }
-                    
-                    // Price
-                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                        Text("$\(String(format: "%.2f", Double(truncating: product.price as NSNumber)))")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.black)
-                        
-                        if let originalPrice = product.originalPrice {
-                            Text("$\(String(format: "%.2f", Double(truncating: originalPrice as NSNumber)))")
-                                .font(.caption)
-                                .strikethrough()
-                                .foregroundColor(.gray)
+                    // Sold out overlay
+                    if state == .soldOut {
+                        VStack {
+                            Spacer()
+                            Text("SOLD OUT")
+                                .font(.system(size: 10, weight: .semibold))
+                                .tracking(2)
+                                .foregroundStyle(Color(hex: "1A1A1A"))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 8)
+                                .background(.white.opacity(0.9))
                         }
                     }
                 }
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                
+                // Tag badge
+                tagView
+                    .padding(10)
+                
+                // Secondary action button (favorite/bag)
+                secondaryButton(secondaryAction)
+                    .frame(width: 36, height: 36)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .offset(x: -8, y: 18)
+            }
+            
+            if showFullDetails {
+                // Product Info
+                VStack(alignment: .leading, spacing: 6) {
+                    // Brand name
+                    Text(product.brand.name.uppercased())
+                        .font(.system(size: 10, weight: .medium))
+                        .tracking(1.5)
+                        .foregroundStyle(Color(hex: "999999"))
+                    
+                    // Product name
+                    Text(product.name)
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color(hex: "1A1A1A"))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    
+                    // Rating
+                    ratingView
+                    
+                    // Price
+                    priceView
+                }
+                .padding(.top, 4)
             }
         }
         .frame(width: 160)
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.spring(response: 0.3), value: isPressed)
+        .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
+            isPressed = pressing
+        }, perform: {})
         .if(state == .soldOut) { view in
-            view
-                .overlay {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(.white.opacity(0.5))
-                }
+            view.opacity(0.7)
         }
-        .if(state != .defaultForOther) { view in
-            view
-                .overlay {
-                    if state != .defaultForOther {
-                        removeButton(removeAction)
-                    }
-                }
+        .overlay(alignment: .topTrailing) {
+            if state != .defaultForOther {
+                removeButton(removeAction)
+            }
         }
     }
 }
 
-// MARK: - UI
-
+// MARK: - Subviews
 private extension ProductCard {
     
+    @ViewBuilder
     var tagView: some View {
-        HStack {
-            switch product.tag {
-            case .sale:
-                Text("-\(product.discountPercentage ?? 0)%")
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.red)
-                
-            case .new:
-                Text("New")
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.black)
-                
-            case .default:
-                EmptyView()
-            }
+        switch product.tag {
+        case .sale:
+            Text("-\(product.discountPercentage ?? 0)%")
+                .font(.system(size: 10, weight: .bold))
+                .tracking(0.5)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Color(hex: "C41E3A"))
+                .clipShape(Capsule())
+            
+        case .new:
+            Text("NEW")
+                .font(.system(size: 9, weight: .bold))
+                .tracking(1)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Color(hex: "1A1A1A"))
+                .clipShape(Capsule())
+            
+        case .default:
+            EmptyView()
         }
     }
     
-    var ratingUI: some View {
+    var ratingView: some View {
         HStack(spacing: 4) {
-            Image(systemName: "star.fill")
-                .foregroundColor(.yellow)
-            Text(String(format: "%.1f", product.rating))
-                .font(.caption)
-                .foregroundStyle(.black)
+            HStack(spacing: 2) {
+                ForEach(0..<5) { index in
+                    Image(systemName: index < Int(product.rating) ? "star.fill" : "star")
+                        .font(.system(size: 9))
+                        .foregroundStyle(index < Int(product.rating) ? Color(hex: "C4A77D") : Color(hex: "E8E8E8"))
+                }
+            }
+            
             Text("(\(product.reviewCount))")
-                .font(.caption)
-                .foregroundColor(.gray)
+                .font(.system(size: 11))
+                .foregroundStyle(Color(hex: "999999"))
         }
     }
     
-    func secondaryButton(_ action: @escaping ()-> Void) -> some View {
-        ZStack {
-            switch state {
-                // Favorite button
-            case .defaultForFavorite:
-                ProductCardBagButton(action: action)
-                
-                // Favorite button
-            case .defaultForOther:
-                FavoriteButton(isSelected: product.isFavorite, action: action)
-                
-                // No button
-            case .soldOut:
-                EmptyView()
-                    .hidden()
+    var priceView: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Text("$\(String(format: "%.0f", product.price))")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(product.originalPrice != nil ? Color(hex: "C41E3A") : Color(hex: "1A1A1A"))
+            
+            if let originalPrice = product.originalPrice {
+                Text("$\(String(format: "%.0f", Double(truncating: originalPrice as NSNumber)))")
+                    .font(.system(size: 12))
+                    .strikethrough()
+                    .foregroundStyle(Color(hex: "999999"))
             }
         }
     }
     
-    func removeButton(_ action: @escaping ()-> Void) -> some View {
-        Button(
-            action: action,
-            label: {
-                Image(systemName: "xmark")
-                    .resizable()
-                    .scaledToFit()
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.gray)
-                    .frame(width: 15, height: 15)
-                    .padding(10)
-            }
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+    @ViewBuilder
+    func secondaryButton(_ action: @escaping () -> Void) -> some View {
+        switch state {
+        case .defaultForFavorite:
+            ProductCardBagButton(action: action)
+            
+        case .defaultForOther:
+            FavoriteButton(isSelected: product.isFavorite, action: action)
+            
+        case .soldOut:
+            EmptyView()
+        }
+    }
+    
+    func removeButton(_ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: "xmark")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Color(hex: "666666"))
+                .frame(width: 28, height: 28)
+                .background(
+                    Circle()
+                        .fill(Color.white)
+                        .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+                )
+        }
+        .padding(8)
     }
 }
 
+// MARK: - Preview
 #Preview {
-    ProductCard(product: Product(
-        id: UUID(),
-        name: "Classic White T-Shirt",
-        description: "A comfortable and stylish basic tee",
-        price: 29.99,
-        originalPrice: 50,
-        images: ["card_men"],
-        category: Category(id: UUID(), name: "T-Shirts", image: "tshirt", parentCategoryID: nil, subcategories: nil),
-        brand: Brand(id: UUID().uuidString, name: "Adidas", category: nil),
-        rating: 4.5,
-        reviewCount: 128,
-        colors: ["White", "Black"],
-        sizes: ["S", "M", "L", "XL"],
-        isNew: false,
-        isFavorite: false,
-        createdAt: .now,
-        subcategory: .tshirts
-    ))
+    HStack(spacing: 16) {
+        ProductCard(product: Product(
+            id: UUID(),
+            name: "Classic White T-Shirt",
+            description: "A comfortable and stylish basic tee",
+            price: 29.99,
+            originalPrice: 50,
+            images: ["card_men"],
+            category: Category(id: UUID(), name: "T-Shirts", image: "tshirt", parentCategoryID: nil, subcategories: nil),
+            brand: Brand(id: UUID().uuidString, name: "Adidas", category: nil),
+            rating: 4.5,
+            reviewCount: 128,
+            colors: ["White", "Black"],
+            sizes: ["S", "M", "L", "XL"],
+            isNew: false,
+            isFavorite: false,
+            createdAt: .now,
+            subcategory: .tshirts
+        ))
+        
+        ProductCard(product: Product(
+            id: UUID(),
+            name: "Premium Wool Blazer",
+            description: "Elegant wool blazer for formal occasions",
+            price: 299,
+            originalPrice: nil,
+            images: ["card_men"],
+            category: Category(id: UUID(), name: "Blazers", image: "blazer", parentCategoryID: nil, subcategories: nil),
+            brand: Brand(id: UUID().uuidString, name: "Hugo Boss", category: nil),
+            rating: 4.8,
+            reviewCount: 56,
+            colors: ["Navy", "Black"],
+            sizes: ["S", "M", "L"],
+            isNew: true,
+            isFavorite: true,
+            createdAt: .now,
+            subcategory: .sweaters
+        ))
+    }
+    .padding()
+    .background(Color(hex: "FAFAFA"))
     .environmentObject(FavoritesManager())
-    
 }
 
 enum ProductCardState {
