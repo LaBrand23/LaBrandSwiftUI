@@ -19,16 +19,22 @@ struct DeliveryMethodButton: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 30)
                 .padding()
-                .background(isSelected ? Color.red.opacity(0.1) : Color(.systemGray6))
-                .cornerRadius(8)
+                .background(isSelected ? AppColors.Accent.gold.opacity(0.1) : AppColors.Background.secondary)
+                .cornerRadius(4)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? Color.red : Color.clear, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(isSelected ? AppColors.Accent.gold : Color.clear, lineWidth: 1)
                 )
         }
     }
 }
 
 #Preview {
-    DeliveryMethodButton(method: DeliveryMethod.dhl, isSelected: true, action: {})
+    HStack {
+        DeliveryMethodButton(method: DeliveryMethod.dhl, isSelected: true, action: {})
+        DeliveryMethodButton(method: DeliveryMethod.fedex, isSelected: false, action: {})
+    }
+    .padding()
+    .background(AppColors.Background.primary)
+    .withAppTheme()
 }

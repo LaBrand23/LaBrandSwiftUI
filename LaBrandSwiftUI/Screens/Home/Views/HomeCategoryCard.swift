@@ -20,14 +20,7 @@ extension HomeView {
                     // Outer ring with gold gradient
                     Circle()
                         .stroke(
-                            LinearGradient(
-                                colors: [
-                                    Color(hex: "C4A77D").opacity(0.7),
-                                    Color(hex: "C4A77D").opacity(0.3)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
+                            AppColors.Gradient.gold,
                             lineWidth: 2
                         )
                         .frame(width: 78, height: 78)
@@ -46,8 +39,8 @@ extension HomeView {
                                     .fill(
                                         LinearGradient(
                                             colors: [
-                                                Color(hex: "F5F5F5"),
-                                                Color(hex: "E8E8E8")
+                                                AppColors.Background.secondary,
+                                                AppColors.Border.primary
                                             ],
                                             startPoint: .top,
                                             endPoint: .bottom
@@ -60,7 +53,7 @@ extension HomeView {
                                     .padding(18)
                             }
                         @unknown default:
-                            Color(hex: "F5F5F5")
+                            AppColors.Background.secondary
                         }
                     }
                     .frame(width: 70, height: 70)
@@ -73,7 +66,7 @@ extension HomeView {
                 Text(category.name.uppercased())
                     .font(.system(size: 11, weight: .medium))
                     .tracking(1.5)
-                    .foregroundStyle(Color(hex: "333333"))
+                    .foregroundStyle(AppColors.Text.secondary)
                     .multilineTextAlignment(.center)
             }
             .frame(width: 90)
@@ -117,5 +110,6 @@ extension HomeView {
         )
     }
     .padding()
-    .background(Color(hex: "FAFAFA"))
+    .background(AppColors.Background.primary)
+    .withAppTheme()
 }

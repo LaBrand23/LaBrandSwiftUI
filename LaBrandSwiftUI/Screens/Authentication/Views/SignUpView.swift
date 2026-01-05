@@ -26,7 +26,7 @@ struct SignUpView: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(Color(hex: "666666"))
+                            .foregroundStyle(AppColors.Text.tertiary)
                             .frame(width: 40, height: 40)
                     }
                 }
@@ -73,7 +73,7 @@ struct SignUpView: View {
             }
             .padding(.horizontal, 24)
         }
-        .background(Color(hex: "FAFAFA"))
+        .background(AppColors.Background.primary)
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -97,23 +97,23 @@ private extension SignUpView {
                 .font(.custom("Georgia", size: 28))
                 .fontWeight(.medium)
                 .tracking(8)
-                .foregroundStyle(Color(hex: "1A1A1A"))
+                .foregroundStyle(AppColors.Text.primary)
             
             // Decorative line
             Rectangle()
-                .fill(Color(hex: "C4A77D"))
+                .fill(AppColors.Accent.gold)
                 .frame(width: 40, height: 2)
             
             // Title
             Text("Create Account")
                 .font(.custom("Georgia", size: 24))
                 .fontWeight(.regular)
-                .foregroundStyle(Color(hex: "1A1A1A"))
+                .foregroundStyle(AppColors.Text.primary)
                 .padding(.top, 24)
             
             Text("Join our exclusive fashion community")
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "666666"))
+                .foregroundStyle(AppColors.Text.tertiary)
         }
         .opacity(hasAppeared ? 1 : 0)
         .offset(y: hasAppeared ? 0 : -20)
@@ -159,31 +159,31 @@ private extension SignUpView {
     
     var termsSection: some View {
         Text("By creating an account, you agree to our ")
-            .foregroundStyle(Color(hex: "999999"))
+            .foregroundStyle(AppColors.Text.muted)
         +
         Text("Terms of Service")
-            .foregroundStyle(Color(hex: "1A1A1A"))
+            .foregroundStyle(AppColors.Text.primary)
         +
         Text(" and ")
-            .foregroundStyle(Color(hex: "999999"))
+            .foregroundStyle(AppColors.Text.muted)
         +
         Text("Privacy Policy")
-            .foregroundStyle(Color(hex: "1A1A1A"))
+            .foregroundStyle(AppColors.Text.primary)
     }
     
     var dividerSection: some View {
         HStack(spacing: 16) {
             Rectangle()
-                .fill(Color(hex: "E8E8E8"))
+                .fill(AppColors.Border.primary)
                 .frame(height: 1)
             
             Text("OR")
                 .font(.system(size: 11, weight: .medium))
                 .tracking(2)
-                .foregroundStyle(Color(hex: "999999"))
+                .foregroundStyle(AppColors.Text.muted)
             
             Rectangle()
-                .fill(Color(hex: "E8E8E8"))
+                .fill(AppColors.Border.primary)
                 .frame(height: 1)
         }
         .opacity(hasAppeared ? 1 : 0)
@@ -194,7 +194,7 @@ private extension SignUpView {
         VStack(spacing: 16) {
             Text("Sign up with")
                 .font(.system(size: 13))
-                .foregroundStyle(Color(hex: "666666"))
+                .foregroundStyle(AppColors.Text.tertiary)
             
             HStack(spacing: 20) {
                 SocialAuthButton(provider: .google, action: viewModel.signUpWithGoogle)
@@ -210,14 +210,14 @@ private extension SignUpView {
         HStack(spacing: 4) {
             Text("Already have an account?")
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "666666"))
+                .foregroundStyle(AppColors.Text.tertiary)
             
             Button {
                 dismiss()
             } label: {
                 Text("Sign In")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color(hex: "1A1A1A"))
+                    .foregroundStyle(AppColors.Text.primary)
             }
         }
         .opacity(hasAppeared ? 1 : 0)
@@ -304,4 +304,5 @@ class SignUpViewModel: ObservableObject {
 // MARK: - Preview
 #Preview {
     SignUpView()
+        .withAppTheme()
 }

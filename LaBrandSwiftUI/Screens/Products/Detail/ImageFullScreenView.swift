@@ -11,7 +11,8 @@ struct ImageFullScreenView: View {
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-//            Color.black.edgesIgnoringSafeArea(.all)
+            AppColors.Background.editorial
+                .ignoresSafeArea()
             
             AsyncImageView(imageUrl: imageUrl, .fit, placeholder: {})
                 .scaleEffect(scale)
@@ -33,12 +34,12 @@ struct ImageFullScreenView: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
-                    .font(.title2)
-                    .foregroundColor(.blue)
-                    .padding()
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(AppColors.Text.primary)
+                    .padding(12)
                     .background(
                         Circle()
-                            .fill(.white.opacity(0.5))
+                            .fill(AppColors.Background.surface.opacity(0.9))
                     )
                     .padding()
             }

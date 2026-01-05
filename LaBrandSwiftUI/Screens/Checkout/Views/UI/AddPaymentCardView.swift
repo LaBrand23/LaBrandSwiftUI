@@ -76,13 +76,7 @@ private extension AddPaymentCardView {
         ZStack {
             // Background
             RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    LinearGradient(
-                        colors: [Color(hex: "1A1A1A"), Color(hex: "333333")],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .fill(AppColors.Gradient.editorial)
             
             VStack(alignment: .leading, spacing: 24) {
                 // Card number
@@ -293,4 +287,5 @@ private struct FormField: View {
     NavigationStack {
         AddPaymentCardView(viewModel: CheckoutViewModel())
     }
+    .withAppTheme()
 }

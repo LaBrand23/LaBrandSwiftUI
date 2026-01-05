@@ -23,12 +23,12 @@ struct AuthTextField: View {
         HStack(spacing: 14) {
             Image(systemName: icon)
                 .font(.system(size: 16))
-                .foregroundStyle(isFocused ? Color(hex: "1A1A1A") : Color(hex: "999999"))
+                .foregroundStyle(isFocused ? AppColors.Text.primary : AppColors.Text.muted)
                 .frame(width: 20)
             
-            TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color(hex: "999999")))
+            TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(AppColors.Text.muted))
                 .font(.system(size: 15))
-                .foregroundStyle(Color(hex: "1A1A1A"))
+                .foregroundStyle(AppColors.Text.primary)
                 .keyboardType(keyboardType)
                 .textContentType(textContentType)
                 .textInputAutocapitalization(autocapitalization)
@@ -36,11 +36,11 @@ struct AuthTextField: View {
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 16)
-        .background(Color(hex: "F5F5F5"))
+        .background(AppColors.Background.secondary)
         .clipShape(RoundedRectangle(cornerRadius: 4))
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(isFocused ? Color(hex: "1A1A1A") : Color.clear, lineWidth: 1)
+                .stroke(isFocused ? AppColors.Border.focus : Color.clear, lineWidth: 1)
         )
         .animation(.easeOut(duration: 0.2), value: isFocused)
     }
@@ -61,18 +61,18 @@ struct AuthSecureField: View {
         HStack(spacing: 14) {
             Image(systemName: icon)
                 .font(.system(size: 16))
-                .foregroundStyle(isFocused ? Color(hex: "1A1A1A") : Color(hex: "999999"))
+                .foregroundStyle(isFocused ? AppColors.Text.primary : AppColors.Text.muted)
                 .frame(width: 20)
             
             Group {
                 if isSecured {
-                    SecureField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color(hex: "999999")))
+                    SecureField("", text: $text, prompt: Text(placeholder).foregroundStyle(AppColors.Text.muted))
                 } else {
-                    TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color(hex: "999999")))
+                    TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(AppColors.Text.muted))
                 }
             }
             .font(.system(size: 15))
-            .foregroundStyle(Color(hex: "1A1A1A"))
+            .foregroundStyle(AppColors.Text.primary)
             .textContentType(textContentType)
             .focused($isFocused)
             
@@ -81,16 +81,16 @@ struct AuthSecureField: View {
             } label: {
                 Image(systemName: isSecured ? "eye.slash" : "eye")
                     .font(.system(size: 14))
-                    .foregroundStyle(Color(hex: "999999"))
+                    .foregroundStyle(AppColors.Text.muted)
             }
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 16)
-        .background(Color(hex: "F5F5F5"))
+        .background(AppColors.Background.secondary)
         .clipShape(RoundedRectangle(cornerRadius: 4))
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(isFocused ? Color(hex: "1A1A1A") : Color.clear, lineWidth: 1)
+                .stroke(isFocused ? AppColors.Border.focus : Color.clear, lineWidth: 1)
         )
         .animation(.easeOut(duration: 0.2), value: isFocused)
     }
@@ -128,7 +128,7 @@ struct SocialAuthButton: View {
                 if provider.isSystemIcon {
                     Image(systemName: provider.iconName)
                         .font(.system(size: 20))
-                        .foregroundStyle(Color(hex: "1A1A1A"))
+                        .foregroundStyle(AppColors.Text.primary)
                 } else {
                     Image(provider.iconName)
                         .resizable()
@@ -137,11 +137,11 @@ struct SocialAuthButton: View {
                 }
             }
             .frame(width: 56, height: 56)
-            .background(Color.white)
+            .background(AppColors.Background.surface)
             .clipShape(Circle())
             .overlay(
                 Circle()
-                    .stroke(Color(hex: "E8E8E8"), lineWidth: 1)
+                    .stroke(AppColors.Border.primary, lineWidth: 1)
             )
         }
         .scaleEffect(isPressed ? 0.95 : 1.0)
@@ -166,17 +166,17 @@ struct PrimaryAuthButton: View {
             ZStack {
                 if isLoading {
                     ProgressView()
-                        .tint(.white)
+                        .tint(AppColors.Button.primaryText)
                 } else {
                     Text(title.uppercased())
                         .font(.system(size: 14, weight: .semibold))
                         .tracking(2)
                 }
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(AppColors.Button.primaryText)
             .frame(maxWidth: .infinity)
             .frame(height: 54)
-            .background(Color(hex: "1A1A1A"))
+            .background(AppColors.Button.primaryBackground)
         }
         .disabled(isLoading)
         .scaleEffect(isPressed ? 0.98 : 1.0)
@@ -203,7 +203,8 @@ struct PrimaryAuthButton: View {
         )
     }
     .padding()
-    .background(Color(hex: "FAFAFA"))
+    .background(AppColors.Background.primary)
+    .withAppTheme()
 }
 
 #Preview("Buttons") {
@@ -217,6 +218,7 @@ struct PrimaryAuthButton: View {
         }
     }
     .padding()
-    .background(Color(hex: "FAFAFA"))
+    .background(AppColors.Background.primary)
+    .withAppTheme()
 }
 

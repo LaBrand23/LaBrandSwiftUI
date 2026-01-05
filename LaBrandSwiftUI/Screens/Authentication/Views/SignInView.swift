@@ -56,7 +56,7 @@ struct SignInView: View {
             }
             .padding(.horizontal, 24)
         }
-        .background(Color(hex: "FAFAFA"))
+        .background(AppColors.Background.primary)
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -89,23 +89,23 @@ private extension SignInView {
                 .font(.custom("Georgia", size: 28))
                 .fontWeight(.medium)
                 .tracking(8)
-                .foregroundStyle(Color(hex: "1A1A1A"))
+                .foregroundStyle(AppColors.Text.primary)
             
             // Decorative line
             Rectangle()
-                .fill(Color(hex: "C4A77D"))
+                .fill(AppColors.Accent.gold)
                 .frame(width: 40, height: 2)
             
             // Title
             Text("Welcome Back")
                 .font(.custom("Georgia", size: 24))
                 .fontWeight(.regular)
-                .foregroundStyle(Color(hex: "1A1A1A"))
+                .foregroundStyle(AppColors.Text.primary)
                 .padding(.top, 24)
             
             Text("Sign in to continue shopping")
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "666666"))
+                .foregroundStyle(AppColors.Text.tertiary)
         }
         .opacity(hasAppeared ? 1 : 0)
         .offset(y: hasAppeared ? 0 : -20)
@@ -137,7 +137,7 @@ private extension SignInView {
                 } label: {
                     Text("Forgot Password?")
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "666666"))
+                        .foregroundStyle(AppColors.Text.tertiary)
                 }
             }
         }
@@ -149,16 +149,16 @@ private extension SignInView {
     var dividerSection: some View {
         HStack(spacing: 16) {
             Rectangle()
-                .fill(Color(hex: "E8E8E8"))
+                .fill(AppColors.Border.primary)
                 .frame(height: 1)
             
             Text("OR")
                 .font(.system(size: 11, weight: .medium))
                 .tracking(2)
-                .foregroundStyle(Color(hex: "999999"))
+                .foregroundStyle(AppColors.Text.muted)
             
             Rectangle()
-                .fill(Color(hex: "E8E8E8"))
+                .fill(AppColors.Border.primary)
                 .frame(height: 1)
         }
         .opacity(hasAppeared ? 1 : 0)
@@ -169,7 +169,7 @@ private extension SignInView {
         VStack(spacing: 16) {
             Text("Sign in with")
                 .font(.system(size: 13))
-                .foregroundStyle(Color(hex: "666666"))
+                .foregroundStyle(AppColors.Text.tertiary)
             
             HStack(spacing: 20) {
                 SocialAuthButton(provider: .google, action: viewModel.signInWithGoogle)
@@ -185,14 +185,14 @@ private extension SignInView {
         HStack(spacing: 4) {
             Text("Don't have an account?")
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "666666"))
+                .foregroundStyle(AppColors.Text.tertiary)
             
             Button {
                 viewModel.showSignUp = true
             } label: {
                 Text("Sign Up")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color(hex: "1A1A1A"))
+                    .foregroundStyle(AppColors.Text.primary)
             }
         }
         .opacity(hasAppeared ? 1 : 0)
@@ -204,4 +204,5 @@ private extension SignInView {
 #Preview {
     SignInView()
         .environmentObject(AuthenticationManager())
+        .withAppTheme()
 }

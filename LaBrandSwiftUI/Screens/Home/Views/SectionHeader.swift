@@ -20,12 +20,12 @@ extension HomeView {
                         .font(.custom("Georgia", size: 20))
                         .fontWeight(.medium)
                         .tracking(2)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(AppColors.Text.primary)
                     
                     if let subtitle = subtitle {
                         Text(subtitle)
                             .font(.system(size: 13))
-                            .foregroundStyle(Color(hex: "666666"))
+                            .foregroundStyle(AppColors.Text.tertiary)
                     }
                 }
                 
@@ -41,7 +41,7 @@ extension HomeView {
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 11, weight: .medium))
                         }
-                        .foregroundStyle(Color(hex: "1A1A1A"))
+                        .foregroundStyle(AppColors.Text.primary)
                     }
                 }
             }
@@ -56,4 +56,6 @@ extension HomeView {
         HomeView.SectionHeader(title: "TRENDING NOW", showViewAll: true)
         HomeView.SectionHeader(title: "CATEGORIES")
     }
+    .background(AppColors.Background.primary)
+    .withAppTheme()
 }

@@ -44,7 +44,7 @@ struct HomeView: View {
                     .padding(.bottom, 32)
             }
         }
-        .background(Color(hex: "FAFAFA"))
+        .background(AppColors.Background.primary)
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -61,7 +61,7 @@ struct HomeView: View {
                 } label: {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 16, weight: .regular))
-                        .foregroundStyle(Color(hex: "1A1A1A"))
+                        .foregroundStyle(AppColors.Text.primary)
                 }
             }
         }
@@ -99,7 +99,7 @@ private extension HomeView {
                 .font(.custom("Georgia", size: 13))
                 .fontWeight(.medium)
                 .tracking(3)
-                .foregroundStyle(Color(hex: "666666"))
+                .foregroundStyle(AppColors.Text.tertiary)
                 .padding(.horizontal, 20)
             
             ScrollView(.horizontal, showsIndicators: false) {
@@ -157,28 +157,24 @@ private extension HomeView {
     var editorialBanner: some View {
         ZStack {
             // Background gradient
-            LinearGradient(
-                colors: [Color(hex: "1A1A1A"), Color(hex: "2D2D2D")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            AppColors.Gradient.editorial
             
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("THE EDIT")
                         .font(.custom("Georgia", size: 11))
                         .tracking(4)
-                        .foregroundStyle(Color(hex: "C4A77D"))
+                        .foregroundStyle(AppColors.Accent.gold)
                     
                     Text("Timeless\nElegance")
                         .font(.custom("Georgia", size: 32))
                         .fontWeight(.regular)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppColors.Text.inverted)
                         .lineSpacing(4)
                     
                     Text("Curated pieces for the modern wardrobe")
                         .font(.system(size: 13))
-                        .foregroundStyle(Color.white.opacity(0.7))
+                        .foregroundStyle(AppColors.Text.inverted.opacity(0.7))
                         .padding(.top, 4)
                     
                     Button {
@@ -187,12 +183,12 @@ private extension HomeView {
                         Text("EXPLORE")
                             .font(.system(size: 12, weight: .semibold))
                             .tracking(2)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AppColors.Text.inverted)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
                             .background(
                                 RoundedRectangle(cornerRadius: 0)
-                                    .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                                    .stroke(AppColors.Text.inverted.opacity(0.5), lineWidth: 1)
                             )
                     }
                     .padding(.top, 16)
@@ -204,11 +200,11 @@ private extension HomeView {
                 // Decorative element
                 VStack {
                     Circle()
-                        .stroke(Color(hex: "C4A77D").opacity(0.3), lineWidth: 1)
+                        .stroke(AppColors.Accent.gold.opacity(0.3), lineWidth: 1)
                         .frame(width: 120, height: 120)
                         .overlay {
                             Circle()
-                                .stroke(Color(hex: "C4A77D").opacity(0.2), lineWidth: 1)
+                                .stroke(AppColors.Accent.gold.opacity(0.2), lineWidth: 1)
                                 .frame(width: 80, height: 80)
                         }
                 }
@@ -251,11 +247,11 @@ private extension HomeView {
                         .font(.custom("Georgia", size: 24))
                         .fontWeight(.medium)
                         .tracking(4)
-                        .foregroundStyle(Color(hex: "1A1A1A"))
+                        .foregroundStyle(AppColors.Text.primary)
                     
                     Text("Up to 50% off selected items")
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "666666"))
+                        .foregroundStyle(AppColors.Text.tertiary)
                 }
                 
                 Spacer()
@@ -269,7 +265,7 @@ private extension HomeView {
                         Image(systemName: "arrow.right")
                             .font(.system(size: 11, weight: .medium))
                     }
-                    .foregroundStyle(Color(hex: "C41E3A"))
+                    .foregroundStyle(AppColors.Accent.sale)
                 }
             }
             .padding(.horizontal, 20)
@@ -312,10 +308,10 @@ private extension HomeView {
                             .font(.system(size: 9, weight: .bold))
                             .tracking(1)
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppColors.Text.inverted)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(Color(hex: "1A1A1A"))
+                    .background(AppColors.Background.editorial)
                     .padding(10)
                 }
                 
@@ -323,16 +319,16 @@ private extension HomeView {
                     Text(product.brand.name.uppercased())
                         .font(.system(size: 10, weight: .medium))
                         .tracking(1.5)
-                        .foregroundStyle(Color(hex: "999999"))
+                        .foregroundStyle(AppColors.Text.muted)
                     
                     Text(product.name)
                         .font(.system(size: 14))
-                        .foregroundStyle(Color(hex: "1A1A1A"))
+                        .foregroundStyle(AppColors.Text.primary)
                         .lineLimit(1)
                     
                     Text("$\(String(format: "%.0f", product.price))")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Color(hex: "1A1A1A"))
+                        .foregroundStyle(AppColors.Text.primary)
                 }
             }
             .frame(width: 200)
@@ -357,4 +353,5 @@ struct Promotion: Identifiable {
     NavigationStack {
         HomeView()
     }
+    .withAppTheme()
 }

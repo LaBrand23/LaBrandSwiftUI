@@ -28,7 +28,7 @@ struct PromotionBannerView: View {
                         fallbackBackground
                             .overlay {
                                 ProgressView()
-                                    .tint(.white)
+                                    .tint(AppColors.Text.inverted)
                             }
                     @unknown default:
                         fallbackBackground
@@ -36,15 +36,7 @@ struct PromotionBannerView: View {
                 }
                 
                 // Gradient Overlay
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: 0.3),
-                        .init(color: Color.black.opacity(0.3), location: 0.5),
-                        .init(color: Color.black.opacity(0.7), location: 1.0)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+                AppColors.Gradient.imageOverlay
                 
                 // Content
                 VStack(alignment: .leading, spacing: 12) {
@@ -52,23 +44,23 @@ struct PromotionBannerView: View {
                     Text("NEW COLLECTION")
                         .font(.system(size: 10, weight: .semibold))
                         .tracking(3)
-                        .foregroundStyle(Color(hex: "C4A77D"))
+                        .foregroundStyle(AppColors.Accent.gold)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
                         .background(
                             Capsule()
-                                .fill(Color.black.opacity(0.4))
+                                .fill(AppColors.Background.editorial.opacity(0.4))
                         )
                     
                     Text(promotion.title)
                         .font(.custom("Georgia", size: 36))
                         .fontWeight(.regular)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppColors.Text.inverted)
                         .lineSpacing(4)
                     
                     Text(promotion.subtitle)
                         .font(.system(size: 15))
-                        .foregroundStyle(Color.white.opacity(0.85))
+                        .foregroundStyle(AppColors.Text.inverted.opacity(0.85))
                     
                     // CTA Button
                     Button {
@@ -82,10 +74,10 @@ struct PromotionBannerView: View {
                             Image(systemName: "arrow.right")
                                 .font(.system(size: 12, weight: .semibold))
                         }
-                        .foregroundStyle(.black)
+                        .foregroundStyle(AppColors.Text.primary)
                         .padding(.horizontal, 28)
                         .padding(.vertical, 14)
-                        .background(Color.white)
+                        .background(AppColors.Background.surface)
                     }
                     .padding(.top, 8)
                 }
@@ -100,8 +92,8 @@ struct PromotionBannerView: View {
             // Elegant gradient fallback
             LinearGradient(
                 colors: [
-                    Color(hex: "2C3E50"),
-                    Color(hex: "1A1A2E")
+                    AppColors.Background.navy,
+                    AppColors.Background.editorial
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -112,18 +104,18 @@ struct PromotionBannerView: View {
                 ZStack {
                     // Decorative circles
                     Circle()
-                        .stroke(Color.white.opacity(0.05), lineWidth: 1)
+                        .stroke(AppColors.Text.inverted.opacity(0.05), lineWidth: 1)
                         .frame(width: 300, height: 300)
                         .offset(x: geo.size.width * 0.3, y: -50)
                     
                     Circle()
-                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                        .stroke(AppColors.Text.inverted.opacity(0.08), lineWidth: 1)
                         .frame(width: 200, height: 200)
                         .offset(x: geo.size.width * 0.5, y: 100)
                     
                     // Accent line
                     Rectangle()
-                        .fill(Color(hex: "C4A77D").opacity(0.3))
+                        .fill(AppColors.Accent.gold.opacity(0.3))
                         .frame(width: 60, height: 2)
                         .offset(x: geo.size.width * 0.35, y: -100)
                 }

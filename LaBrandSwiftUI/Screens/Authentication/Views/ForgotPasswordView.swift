@@ -63,7 +63,7 @@ struct ForgotPasswordView: View {
                             Text("Back to Sign In")
                                 .font(.system(size: 14, weight: .medium))
                         }
-                        .foregroundStyle(Color(hex: "666666"))
+                        .foregroundStyle(AppColors.Text.tertiary)
                     }
                     .padding(.top, 24)
                     .opacity(hasAppeared ? 1 : 0)
@@ -73,7 +73,7 @@ struct ForgotPasswordView: View {
                 }
                 .padding(.horizontal, 24)
             }
-            .background(Color(hex: "FAFAFA"))
+            .background(AppColors.Background.primary)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -82,7 +82,7 @@ struct ForgotPasswordView: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(Color(hex: "666666"))
+                            .foregroundStyle(AppColors.Text.tertiary)
                     }
                 }
             }
@@ -115,11 +115,11 @@ private extension ForgotPasswordView {
             Text("Forgot Password?")
                 .font(.custom("Georgia", size: 28))
                 .fontWeight(.regular)
-                .foregroundStyle(Color(hex: "1A1A1A"))
+                .foregroundStyle(AppColors.Text.primary)
             
             Text("Enter your email address and we'll send you\na link to reset your password")
                 .font(.system(size: 14))
-                .foregroundStyle(Color(hex: "666666"))
+                .foregroundStyle(AppColors.Text.tertiary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
         }
@@ -132,22 +132,22 @@ private extension ForgotPasswordView {
         ZStack {
             // Decorative circles
             Circle()
-                .stroke(Color(hex: "E8E8E8"), lineWidth: 1)
+                .stroke(AppColors.Border.primary, lineWidth: 1)
                 .frame(width: 140, height: 140)
             
             Circle()
-                .stroke(Color(hex: "C4A77D").opacity(0.3), lineWidth: 1)
+                .stroke(AppColors.Accent.gold.opacity(0.3), lineWidth: 1)
                 .frame(width: 100, height: 100)
             
             // Lock icon
             ZStack {
                 Circle()
-                    .fill(Color(hex: "F5F5F5"))
+                    .fill(AppColors.Background.secondary)
                     .frame(width: 70, height: 70)
                 
                 Image(systemName: "lock.shield")
                     .font(.system(size: 28))
-                    .foregroundStyle(Color(hex: "C4A77D"))
+                    .foregroundStyle(AppColors.Accent.gold)
             }
         }
         .opacity(hasAppeared ? 1 : 0)
@@ -202,4 +202,5 @@ class ForgotPasswordViewModel: ObservableObject {
 // MARK: - Preview
 #Preview {
     ForgotPasswordView()
+        .withAppTheme()
 }

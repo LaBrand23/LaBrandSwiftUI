@@ -19,13 +19,13 @@ struct CategoryCard: View {
                     .font(.custom("Georgia", size: 15))
                     .fontWeight(.medium)
                     .tracking(2)
-                    .foregroundStyle(Color(hex: "1A1A1A"))
+                    .foregroundStyle(AppColors.Text.primary)
                 
                 // Item count or subtitle
                 Text("Shop Now")
                     .font(.system(size: 11, weight: .medium))
                     .tracking(1)
-                    .foregroundStyle(Color(hex: "999999"))
+                    .foregroundStyle(AppColors.Text.muted)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.leading, 20)
@@ -41,7 +41,7 @@ struct CategoryCard: View {
                     // Fallback placeholder
                     ZStack {
                         LinearGradient(
-                            colors: [Color(hex: "F5F5F5"), Color(hex: "E8E8E8")],
+                            colors: [AppColors.Background.secondary, AppColors.Border.primary],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -51,7 +51,7 @@ struct CategoryCard: View {
                             .aspectRatio(contentMode: .fill)
                     }
                 @unknown default:
-                    Color(hex: "F5F5F5")
+                    AppColors.Background.secondary
                 }
             }
             .frame(width: 120, height: 100)
@@ -60,11 +60,11 @@ struct CategoryCard: View {
             )
         }
         .frame(height: 100)
-        .background(Color.white)
+        .background(AppColors.Background.surface)
         .clipShape(RoundedRectangle(cornerRadius: 4))
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color(hex: "E8E8E8"), lineWidth: 1)
+                .stroke(AppColors.Border.primary, lineWidth: 1)
         )
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.spring(response: 0.3), value: isPressed)
@@ -107,5 +107,6 @@ struct CategoryCard: View {
         )
     }
     .padding(.horizontal, 20)
-    .background(Color(hex: "FAFAFA"))
+    .background(AppColors.Background.primary)
+    .withAppTheme()
 }

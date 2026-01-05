@@ -36,8 +36,8 @@ struct SplashView: View {
                         .stroke(
                             LinearGradient(
                                 colors: [
-                                    Color(hex: "C4A77D").opacity(0.6),
-                                    Color(hex: "C4A77D").opacity(0.2)
+                                    AppColors.Accent.gold.opacity(0.6),
+                                    AppColors.Accent.gold.opacity(0.2)
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -50,7 +50,7 @@ struct SplashView: View {
                     
                     // Inner ring
                     Circle()
-                        .stroke(Color(hex: "C4A77D").opacity(0.3), lineWidth: 1)
+                        .stroke(AppColors.Accent.gold.opacity(0.3), lineWidth: 1)
                         .frame(width: 120, height: 120)
                         .scaleEffect(ringScale)
                         .opacity(ringOpacity * 0.7)
@@ -65,7 +65,7 @@ struct SplashView: View {
                         
                         // Decorative line
                         Rectangle()
-                            .fill(Color(hex: "C4A77D"))
+                            .fill(AppColors.Accent.gold)
                             .frame(width: 40, height: 1)
                     }
                     .scaleEffect(logoScale)
@@ -79,7 +79,7 @@ struct SplashView: View {
                     Text("LUXURY FASHION")
                         .font(.system(size: 11, weight: .medium))
                         .tracking(4)
-                        .foregroundStyle(Color(hex: "C4A77D"))
+                        .foregroundStyle(AppColors.Accent.gold)
                     
                     Text("Curated for you")
                         .font(.custom("Georgia", size: 14))
@@ -114,7 +114,7 @@ struct SplashView: View {
             
             // Ambient glow
             Circle()
-                .fill(Color(hex: "C4A77D").opacity(0.08))
+                .fill(AppColors.Accent.gold.opacity(0.08))
                 .frame(width: 400, height: 400)
                 .blur(radius: 100)
                 .offset(y: -100)
@@ -153,7 +153,7 @@ struct SplashView: View {
                 // Floating particles
                 ForEach(0..<8, id: \.self) { index in
                     Circle()
-                        .fill(Color(hex: "C4A77D").opacity(0.3))
+                        .fill(AppColors.Accent.gold.opacity(0.3))
                         .frame(width: CGFloat.random(in: 2...4))
                         .position(
                             x: CGFloat.random(in: 0...geometry.size.width),

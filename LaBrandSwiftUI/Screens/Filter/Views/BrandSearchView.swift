@@ -102,7 +102,7 @@ private extension BrandSearchView {
             .tint(AppColors.Accent.gold)
             .scaleEffect(1.2)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.black.opacity(0.05))
+            .background(AppColors.Shadow.light)
     }
     
     var brandsList: some View {
@@ -212,7 +212,7 @@ struct BrandRow: View {
                         
                         Image(systemName: "checkmark")
                             .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AppColors.Text.inverted)
                     }
                 }
                 

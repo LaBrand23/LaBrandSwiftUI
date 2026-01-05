@@ -13,7 +13,7 @@ struct FavoritesListView: View {
                     .aspectRatio(contentMode: .fill)
             } placeholder: {
                 Rectangle()
-                    .foregroundColor(Color(.systemGray6))
+                    .foregroundColor(AppColors.Background.secondary)
             }
             .frame(width: 100, height: 100)
             .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -22,28 +22,30 @@ struct FavoritesListView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(product.brand.name)
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundColor(AppColors.Text.muted)
                 
                 Text(product.name)
                     .font(.subheadline)
                     .fontWeight(.medium)
+                    .foregroundStyle(AppColors.Text.primary)
                 
                 if let size = product.sizes.first {
                     Text("Size: \(size)")
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundColor(AppColors.Text.muted)
                 }
                 
                 HStack(alignment: .firstTextBaseline) {
                     Text("$\(String(format: "%.2f", Double(truncating: product.price as NSNumber)))")
                         .font(.subheadline)
                         .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.Text.primary)
                     
                     if let originalPrice = product.originalPrice {
                         Text("$\(String(format: "%.2f", Double(truncating: originalPrice as NSNumber)))")
                             .font(.caption)
                             .strikethrough()
-                            .foregroundColor(.gray)
+                            .foregroundColor(AppColors.Text.muted)
                     }
                 }
             }
@@ -57,15 +59,15 @@ struct FavoritesListView: View {
                 }
             } label: {
                 Image(systemName: "heart.fill")
-                    .foregroundColor(.red)
+                    .foregroundColor(AppColors.Accent.sale)
                     .padding(8)
-                    .background(Color(.systemGray6))
+                    .background(AppColors.Background.secondary)
                     .clipShape(Circle())
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(AppColors.Background.surface)
         .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+        .shadow(color: AppColors.Shadow.light, radius: 8, x: 0, y: 4)
     }
 } 

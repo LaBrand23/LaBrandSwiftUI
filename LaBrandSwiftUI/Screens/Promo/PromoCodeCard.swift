@@ -82,7 +82,7 @@ struct PromoCodeCard: View {
             }
             
             // Overlay
-            Color.black.opacity(0.3)
+            AppColors.Background.editorial.opacity(0.3)
             
             // Discount Text
             VStack(spacing: 0) {
@@ -92,7 +92,7 @@ struct PromoCodeCard: View {
                     .font(.system(size: 10, weight: .bold))
                     .tracking(1)
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(AppColors.Text.inverted)
         }
         .frame(width: 80)
         .clipShape(

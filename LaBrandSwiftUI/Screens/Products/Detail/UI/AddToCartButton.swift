@@ -15,16 +15,17 @@ struct AddToCartButton: View {
     var body: some View {
         Button(action: action) {
             HStack {
-                Text("Add to Cart")
-                    .fontWeight(.semibold)
+                Text("ADD TO BAG")
+                    .font(.system(size: 14, weight: .semibold))
+                    .tracking(2)
                 Spacer()
                 Text("$\(String(format: "%.2f", Double(truncating: price as NSNumber)))")
-                    .fontWeight(.semibold)
+                    .font(.system(size: 14, weight: .semibold))
             }
-            .foregroundColor(.white)
+            .foregroundColor(AppColors.Button.primaryText)
             .padding()
-            .background(isEnabled ? Color.red : Color.gray)
-            .cornerRadius(25)
+            .background(isEnabled ? AppColors.Button.primaryBackground : AppColors.Button.disabled)
+            .cornerRadius(0)
         }
         .disabled(!isEnabled)
     }

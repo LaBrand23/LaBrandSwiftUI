@@ -77,7 +77,7 @@ struct OnboardingView: View {
                     HStack(spacing: 8) {
                         ForEach(pages.indices, id: \.self) { index in
                             Capsule()
-                                .fill(currentPage == index ? Color(hex: "C4A77D") : Color.white.opacity(0.3))
+                                .fill(currentPage == index ? AppColors.Accent.gold : Color.white.opacity(0.3))
                                 .frame(width: currentPage == index ? 28 : 8, height: 4)
                                 .animation(.spring(response: 0.4), value: currentPage)
                         }
@@ -130,7 +130,7 @@ struct OnboardingView: View {
                                     .font(.system(size: 13, weight: .semibold))
                             }
                         }
-                        .foregroundStyle(Color(hex: "1A1A1A"))
+                        .foregroundStyle(AppColors.Background.editorial)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 18)
                         .background(Color.white)
@@ -149,7 +149,7 @@ struct OnboardingView: View {
                                 Text("Already have an account?")
                                     .foregroundStyle(.white.opacity(0.6))
                                 Text("Sign In")
-                                    .foregroundStyle(Color(hex: "C4A77D"))
+                                    .foregroundStyle(AppColors.Accent.gold)
                             }
                             .font(.system(size: 13))
                         }
@@ -266,7 +266,7 @@ struct OnboardingPageView: View {
                 
                 // Gold accent circle
                 Circle()
-                    .fill(Color(hex: "C4A77D").opacity(0.3))
+                    .fill(AppColors.Accent.gold.opacity(0.3))
                     .frame(width: 200, height: 200)
                     .blur(radius: 60)
                     .offset(x: geometry.size.width * 0.1, y: geometry.size.height * 0.3)
@@ -308,7 +308,7 @@ struct OnboardingPageView: View {
             
             // Accessories suggestion
             Circle()
-                .stroke(Color(hex: "C4A77D").opacity(0.4), lineWidth: 2)
+                .stroke(AppColors.Accent.gold.opacity(0.4), lineWidth: 2)
                 .frame(width: 60, height: 60)
                 .offset(x: 30, y: -geometry.size.height * 0.25)
             
@@ -327,7 +327,7 @@ struct OnboardingPageView: View {
             // Floating particles
             ForEach(0..<5, id: \.self) { index in
                 Circle()
-                    .fill(Color(hex: "C4A77D").opacity(Double.random(in: 0.1...0.3)))
+                    .fill(AppColors.Accent.gold.opacity(Double.random(in: 0.1...0.3)))
                     .frame(width: CGFloat.random(in: 4...8))
                     .offset(
                         x: CGFloat.random(in: -geometry.size.width/2...geometry.size.width/2),
@@ -338,7 +338,7 @@ struct OnboardingPageView: View {
             
             // Accent line
             Rectangle()
-                .fill(Color(hex: "C4A77D").opacity(0.5))
+                .fill(AppColors.Accent.gold.opacity(0.5))
                 .frame(width: 60, height: 2)
                 .offset(x: -geometry.size.width * 0.25, y: -geometry.size.height * 0.3)
                 .blur(radius: 0.5)

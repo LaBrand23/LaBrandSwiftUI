@@ -140,7 +140,7 @@ private extension CategoriesView {
         ZStack {
             // Background gradient
             LinearGradient(
-                colors: [Color(hex: "C41E3A"), Color(hex: "8B0000")],
+                colors: [AppColors.Accent.sale, AppColors.Accent.sale.opacity(0.7)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -149,12 +149,12 @@ private extension CategoriesView {
             GeometryReader { geo in
                 ZStack {
                     Circle()
-                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                        .stroke(AppColors.Text.inverted.opacity(0.1), lineWidth: 1)
                         .frame(width: 100, height: 100)
                         .offset(x: geo.size.width - 60, y: -20)
                     
                     Circle()
-                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                        .stroke(AppColors.Text.inverted.opacity(0.08), lineWidth: 1)
                         .frame(width: 60, height: 60)
                         .offset(x: geo.size.width - 100, y: 50)
                 }
@@ -167,20 +167,20 @@ private extension CategoriesView {
                         .font(.custom("Georgia", size: 22))
                         .fontWeight(.medium)
                         .tracking(2)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppColors.Text.inverted)
                     
                     Text("Up to 50% off")
                         .font(.system(size: 14))
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(AppColors.Text.inverted.opacity(0.9))
                 }
                 
                 Spacer()
                 
                 Image(systemName: "arrow.right")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppColors.Text.inverted)
                     .frame(width: 40, height: 40)
-                    .background(Color.white.opacity(0.2))
+                    .background(AppColors.Text.inverted.opacity(0.2))
                     .clipShape(Circle())
             }
             .padding(.horizontal, 24)
@@ -195,4 +195,5 @@ private extension CategoriesView {
     NavigationStack {
         CategoriesView()
     }
+    .withAppTheme()
 }

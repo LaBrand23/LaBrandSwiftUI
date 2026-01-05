@@ -48,10 +48,10 @@ struct ProductCard: View {
                             Text("SOLD OUT")
                                 .font(.system(size: 10, weight: .semibold))
                                 .tracking(2)
-                                .foregroundStyle(Color(hex: "1A1A1A"))
+                                .foregroundStyle(AppColors.Text.primary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 8)
-                                .background(.white.opacity(0.9))
+                                .background(AppColors.Background.surface.opacity(0.9))
                         }
                     }
                 }
@@ -75,12 +75,12 @@ struct ProductCard: View {
                     Text(product.brand.name.uppercased())
                         .font(.system(size: 10, weight: .medium))
                         .tracking(1.5)
-                        .foregroundStyle(Color(hex: "999999"))
+                        .foregroundStyle(AppColors.Text.muted)
                     
                     // Product name
                     Text(product.name)
                         .font(.system(size: 14))
-                        .foregroundStyle(Color(hex: "1A1A1A"))
+                        .foregroundStyle(AppColors.Text.primary)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     
@@ -120,20 +120,20 @@ private extension ProductCard {
             Text("-\(product.discountPercentage ?? 0)%")
                 .font(.system(size: 10, weight: .bold))
                 .tracking(0.5)
-                .foregroundStyle(.white)
+                .foregroundStyle(AppColors.Text.inverted)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(Color(hex: "C41E3A"))
+                .background(AppColors.Accent.sale)
                 .clipShape(Capsule())
             
         case .new:
             Text("NEW")
                 .font(.system(size: 9, weight: .bold))
                 .tracking(1)
-                .foregroundStyle(.white)
+                .foregroundStyle(AppColors.Text.inverted)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(Color(hex: "1A1A1A"))
+                .background(AppColors.Background.editorial)
                 .clipShape(Capsule())
             
         case .default:
@@ -147,13 +147,13 @@ private extension ProductCard {
                 ForEach(0..<5) { index in
                     Image(systemName: index < Int(product.rating) ? "star.fill" : "star")
                         .font(.system(size: 9))
-                        .foregroundStyle(index < Int(product.rating) ? Color(hex: "C4A77D") : Color(hex: "E8E8E8"))
+                        .foregroundStyle(index < Int(product.rating) ? AppColors.Rating.filled : AppColors.Rating.empty)
                 }
             }
             
             Text("(\(product.reviewCount))")
                 .font(.system(size: 11))
-                .foregroundStyle(Color(hex: "999999"))
+                .foregroundStyle(AppColors.Text.muted)
         }
     }
     
@@ -161,13 +161,13 @@ private extension ProductCard {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Text("$\(String(format: "%.0f", product.price))")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(product.originalPrice != nil ? Color(hex: "C41E3A") : Color(hex: "1A1A1A"))
+                .foregroundStyle(product.originalPrice != nil ? AppColors.Accent.sale : AppColors.Text.primary)
             
             if let originalPrice = product.originalPrice {
                 Text("$\(String(format: "%.0f", Double(truncating: originalPrice as NSNumber)))")
                     .font(.system(size: 12))
                     .strikethrough()
-                    .foregroundStyle(Color(hex: "999999"))
+                    .foregroundStyle(AppColors.Text.muted)
             }
         }
     }
@@ -190,12 +190,12 @@ private extension ProductCard {
         Button(action: action) {
             Image(systemName: "xmark")
                 .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(Color(hex: "666666"))
+                .foregroundStyle(AppColors.Text.tertiary)
                 .frame(width: 28, height: 28)
                 .background(
                     Circle()
-                        .fill(Color.white)
-                        .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+                        .fill(AppColors.Background.surface)
+                        .shadow(color: AppColors.Shadow.light, radius: 4, y: 2)
                 )
         }
         .padding(8)
@@ -244,8 +244,9 @@ private extension ProductCard {
         ))
     }
     .padding()
-    .background(Color(hex: "FAFAFA"))
+    .background(AppColors.Background.primary)
     .environmentObject(FavoritesManager())
+    .withAppTheme()
 }
 
 enum ProductCardState {

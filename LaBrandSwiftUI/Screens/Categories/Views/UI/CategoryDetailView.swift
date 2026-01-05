@@ -16,33 +16,48 @@ struct CategoryDetailView: View {
             VStack(spacing: 16) {
                 
                 // Subcategories List
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 0) {
                     ForEach(category.subcategories ?? []) { subcategory in
                         NavigationLink(destination: ProductListView(category: subcategory)) {
                             HStack {
                                 Text(subcategory.name)
-                                    .foregroundColor(.primary)
+                                    .font(.system(size: 15))
+                                    .foregroundColor(AppColors.Text.primary)
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(AppColors.Text.muted)
                             }
-                            .padding(.vertical, 8)
-                            .padding(.horizontal)
+                            .padding(.vertical, 14)
+                            .padding(.horizontal, 20)
                         }
-                        Divider()
+                        
+                        Rectangle()
+                            .fill(AppColors.Border.subtle)
+                            .frame(height: 1)
+                            .padding(.leading, 20)
                     }
                 }
             }
             
         }
+        .background(AppColors.Background.primary)
         .safeAreaInset(edge: .top) {
             // View All Items Button
             viewAllNavBtn
-                .padding(.top)
-                .padding(.horizontal)
+                .padding(.top, 16)
+                .padding(.horizontal, 20)
         }
-        .navigationTitle(category.name)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text(category.name.uppercased())
+                    .font(.custom("Georgia", size: 18))
+                    .fontWeight(.medium)
+                    .tracking(4)
+            }
+        }
     }
 }
 
@@ -53,17 +68,20 @@ private extension CategoryDetailView {
     var viewAllNavBtn: some View {
         NavigationLink(destination: ProductListView(category: category)) {
             Text("VIEW ALL ITEMS")
-                .fontWeight(.semibold)
+                .font(.system(size: 13, weight: .semibold))
+                .tracking(2)
                 .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.red)
-                .foregroundColor(.white)
-                .clipShape(Capsule())
+                .padding(.vertical, 16)
+                .background(AppColors.Button.primaryBackground)
+                .foregroundColor(AppColors.Button.primaryText)
         }
     }
 }
 
 
 #Preview {
-    CategoryDetailView(category: Category.mockCategories.first!)
+    NavigationStack {
+        CategoryDetailView(category: Category.mockCategories.first!)
+    }
+    .withAppTheme()
 }

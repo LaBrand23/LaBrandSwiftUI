@@ -242,7 +242,7 @@ private extension FilterView {
                         if !selectedBrands.isEmpty {
                             Text("\(selectedBrands.count)")
                                 .font(.system(size: 12, weight: .semibold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(AppColors.Text.inverted)
                                 .frame(width: 22, height: 22)
                                 .background(AppColors.Accent.gold)
                                 .clipShape(Circle())
