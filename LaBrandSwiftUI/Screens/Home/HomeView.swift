@@ -94,7 +94,7 @@ private extension HomeView {
 // MARK: - Quick Categories (Story Style)
 private extension HomeView {
     var quickCategoriesSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 14) {
             Text("SHOP BY CATEGORY")
                 .font(.custom("Georgia", size: 13))
                 .fontWeight(.medium)
@@ -117,6 +117,7 @@ private extension HomeView {
                                     value: hasAppeared
                                 )
                         }
+                        .padding(.vertical,2)
                     }
                 }
                 .padding(.horizontal, 20)

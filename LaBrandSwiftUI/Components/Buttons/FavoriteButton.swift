@@ -26,7 +26,7 @@ struct FavoriteButton: View {
         } label: {
             Image(systemName: isSelected ? "heart.fill" : "heart")
                 .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(isSelected ? Color(hex: "C41E3A") : Color(hex: "666666"))
+                .foregroundStyle(isSelected ? AppColors.Accent.sale : AppColors.Text.tertiary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .scaleEffect(isSelected ? 1.1 : 1.0)
         }
@@ -41,9 +41,9 @@ struct FavoriteButtonStyle: ButtonStyle {
         configuration.label
             .background(
                 Circle()
-                    .fill(Color.white)
+                    .fill(AppColors.Background.surface)
                     .shadow(
-                        color: Color.black.opacity(configuration.isPressed ? 0.06 : 0.1),
+                        color: AppColors.Shadow.medium.opacity(configuration.isPressed ? 0.5 : 1.0),
                         radius: configuration.isPressed ? 3 : 6,
                         y: configuration.isPressed ? 1 : 3
                     )
@@ -53,14 +53,29 @@ struct FavoriteButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: - Preview
 #Preview {
-    HStack(spacing: 20) {
-        FavoriteButton(isSelected: false) {}
-            .frame(width: 36, height: 36)
+    VStack(spacing: 30) {
+        // On primary background
+        HStack(spacing: 20) {
+            FavoriteButton(isSelected: false) {}
+                .frame(width: 36, height: 36)
+            
+            FavoriteButton(isSelected: true) {}
+                .frame(width: 36, height: 36)
+        }
+        .padding(40)
+        .background(AppColors.Background.primary)
         
-        FavoriteButton(isSelected: true) {}
-            .frame(width: 36, height: 36)
+        // On surface background
+        HStack(spacing: 20) {
+            FavoriteButton(isSelected: false) {}
+                .frame(width: 36, height: 36)
+            
+            FavoriteButton(isSelected: true) {}
+                .frame(width: 36, height: 36)
+        }
+        .padding(40)
+        .background(AppColors.Background.surface)
     }
-    .padding(40)
-    .background(Color(hex: "FAFAFA"))
 }

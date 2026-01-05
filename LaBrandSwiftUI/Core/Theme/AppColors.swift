@@ -211,7 +211,7 @@ extension Color {
 }
 
 // MARK: - Preview
-#Preview("Color Palette") {
+#Preview("Color Palette - Light") {
     ScrollView {
         VStack(spacing: 24) {
             // Text Colors
@@ -220,6 +220,7 @@ extension Color {
                 colorRow("Secondary", AppColors.Text.secondary)
                 colorRow("Tertiary", AppColors.Text.tertiary)
                 colorRow("Muted", AppColors.Text.muted)
+                colorRow("Inverted", AppColors.Text.inverted)
             }
             
             // Background Colors
@@ -237,10 +238,75 @@ extension Color {
                 colorRow("Success", AppColors.Accent.success)
                 colorRow("Error", AppColors.Accent.error)
             }
+            
+            // Button Colors
+            colorSection(title: "Buttons") {
+                colorRow("Primary BG", AppColors.Button.primaryBackground)
+                colorRow("Primary Text", AppColors.Button.primaryText)
+                colorRow("Secondary BG", AppColors.Button.secondaryBackground)
+                colorRow("Disabled", AppColors.Button.disabled)
+            }
+            
+            // Border Colors
+            colorSection(title: "Borders") {
+                colorRow("Primary", AppColors.Border.primary)
+                colorRow("Subtle", AppColors.Border.subtle)
+                colorRow("Focus", AppColors.Border.focus)
+            }
         }
         .padding()
     }
     .background(AppColors.Background.primary)
+    .preferredColorScheme(.light)
+}
+
+#Preview("Color Palette - Dark") {
+    ScrollView {
+        VStack(spacing: 24) {
+            // Text Colors
+            colorSection(title: "Text Colors") {
+                colorRow("Primary", AppColors.Text.primary)
+                colorRow("Secondary", AppColors.Text.secondary)
+                colorRow("Tertiary", AppColors.Text.tertiary)
+                colorRow("Muted", AppColors.Text.muted)
+                colorRow("Inverted", AppColors.Text.inverted)
+            }
+            
+            // Background Colors
+            colorSection(title: "Backgrounds") {
+                colorRow("Primary", AppColors.Background.primary)
+                colorRow("Surface", AppColors.Background.surface)
+                colorRow("Secondary", AppColors.Background.secondary)
+                colorRow("Editorial", AppColors.Background.editorial)
+            }
+            
+            // Accent Colors
+            colorSection(title: "Accents") {
+                colorRow("Gold", AppColors.Accent.gold)
+                colorRow("Sale Red", AppColors.Accent.sale)
+                colorRow("Success", AppColors.Accent.success)
+                colorRow("Error", AppColors.Accent.error)
+            }
+            
+            // Button Colors
+            colorSection(title: "Buttons") {
+                colorRow("Primary BG", AppColors.Button.primaryBackground)
+                colorRow("Primary Text", AppColors.Button.primaryText)
+                colorRow("Secondary BG", AppColors.Button.secondaryBackground)
+                colorRow("Disabled", AppColors.Button.disabled)
+            }
+            
+            // Border Colors
+            colorSection(title: "Borders") {
+                colorRow("Primary", AppColors.Border.primary)
+                colorRow("Subtle", AppColors.Border.subtle)
+                colorRow("Focus", AppColors.Border.focus)
+            }
+        }
+        .padding()
+    }
+    .background(AppColors.Background.primary)
+    .preferredColorScheme(.dark)
 }
 
 // Preview Helpers

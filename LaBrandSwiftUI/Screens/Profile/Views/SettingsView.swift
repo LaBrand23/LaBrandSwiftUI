@@ -11,6 +11,7 @@ struct SettingsView: View {
     
     // MARK: - Properties
     @ObservedObject var viewModel: ProfileViewModel
+    @ObservedObject var themeManager = ThemeManager.shared
     @State private var showingPasswordChange = false
     @State private var fullName: String
     @State private var dateOfBirth: Date
@@ -26,6 +27,9 @@ struct SettingsView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
+                // Appearance
+                appearanceSection
+                
                 // Personal Information
                 personalInfoSection
                 
@@ -59,6 +63,43 @@ struct SettingsView: View {
 
 // MARK: - Sections
 private extension SettingsView {
+    
+    var appearanceSection: some View {
+        SettingsSection(title: "APPEARANCE") {
+            VStack(spacing: 16) {
+                // Theme Segmented Control
+                ThemeSegmentedControl(selectedTheme: $themeManager.currentTheme)
+                
+                // Current theme description
+                HStack(spacing: 8) {
+                    Image(systemName: themeManager.currentTheme.icon)
+                        .font(.system(size: 14))
+                        .foregroundStyle(AppColors.Accent.gold)
+                    
+                    Text(themeDescription)
+                        .font(.system(size: 13))
+                        .foregroundStyle(AppColors.Text.tertiary)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 4)
+            }
+        }
+        .opacity(hasAppeared ? 1 : 0)
+        .offset(y: hasAppeared ? 0 : 20)
+        .animation(.easeOut(duration: 0.5), value: hasAppeared)
+    }
+    
+    var themeDescription: String {
+        switch themeManager.currentTheme {
+        case .system:
+            return "Follows your device settings"
+        case .light:
+            return "Always use light appearance"
+        case .dark:
+            return "Always use dark appearance"
+        }
+    }
     
     var personalInfoSection: some View {
         SettingsSection(title: "PERSONAL INFORMATION") {
@@ -380,9 +421,54 @@ private struct PasswordField: View {
     }
 }
 
+// MARK: - Theme Segmented Control
+private struct ThemeSegmentedControl: View {
+    @Binding var selectedTheme: AppTheme
+    @Namespace private var namespace
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(AppTheme.allCases, id: \.self) { theme in
+                themeButton(for: theme)
+            }
+        }
+        .padding(4)
+        .background(AppColors.Background.secondary)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+    
+    private func themeButton(for theme: AppTheme) -> some View {
+        Button {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                selectedTheme = theme
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: theme.icon)
+                    .font(.system(size: 12, weight: .medium))
+                
+                Text(theme.title)
+                    .font(.system(size: 13, weight: .medium))
+            }
+            .foregroundStyle(selectedTheme == theme ? AppColors.Text.inverted : AppColors.Text.secondary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background {
+                if selectedTheme == theme {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(AppColors.Button.primaryBackground)
+                        .matchedGeometryEffect(id: "theme_selector", in: namespace)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 // MARK: - Preview
 #Preview {
     NavigationStack {
         SettingsView(viewModel: ProfileViewModel())
     }
+    .withAppTheme()
 }
