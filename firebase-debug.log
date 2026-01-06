@@ -1053,3 +1053,204 @@
 [debug] [2026-01-06T09:32:23.788Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
 [debug] [2026-01-06T09:32:23.793Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
 [debug] [2026-01-06T09:32:23.793Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T10:49:01.620Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T10:49:01.622Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T10:49:01.622Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T10:49:01.622Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T10:49:01.622Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:01.623Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:01.623Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:01.623Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:01.623Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T10:49:01.623Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T10:49:01.623Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T10:49:01.633Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T10:49:01.634Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:01.634Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:01.634Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T10:49:02.912Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T10:49:02.912Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T10:49:02.914Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.914Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.918Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.918Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.918Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.918Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.919Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [none]
+[debug] [2026-01-06T10:49:02.919Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T10:49:02.919Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [none]
+[debug] [2026-01-06T10:49:02.919Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T10:49:02.919Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [none]
+[debug] [2026-01-06T10:49:02.919Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T10:49:02.937Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T10:49:02.938Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T10:49:02.938Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.938Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.939Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.939Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.939Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.939Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.939Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [none]
+[debug] [2026-01-06T10:49:02.939Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T10:49:02.940Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [none]
+[debug] [2026-01-06T10:49:02.940Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T10:49:02.940Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [none]
+[debug] [2026-01-06T10:49:02.940Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T10:49:02.941Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T10:49:02.942Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T10:49:02.942Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.942Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.943Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.943Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.943Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.943Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:02.943Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [none]
+[debug] [2026-01-06T10:49:02.943Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T10:49:02.943Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [none]
+[debug] [2026-01-06T10:49:02.943Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T10:49:02.944Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [none]
+[debug] [2026-01-06T10:49:02.944Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T10:49:03.902Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com 200
+[debug] [2026-01-06T10:49:03.902Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2026-01-06T10:49:03.903Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com 200
+[debug] [2026-01-06T10:49:03.903Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2026-01-06T10:49:04.173Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com 403
+[debug] [2026-01-06T10:49:04.173Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [omitted]
+[debug] [2026-01-06T10:49:04.176Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com 403
+[debug] [2026-01-06T10:49:04.176Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [omitted]
+[debug] [2026-01-06T10:49:04.176Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com 403
+[debug] [2026-01-06T10:49:04.176Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [omitted]
+[debug] [2026-01-06T10:49:04.275Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com 200
+[debug] [2026-01-06T10:49:04.275Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2026-01-06T10:49:04.284Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com 200
+[debug] [2026-01-06T10:49:04.284Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2026-01-06T10:49:04.285Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T10:49:04.285Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T10:49:04.285Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:04.285Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:04.285Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T10:49:04.307Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com 200
+[debug] [2026-01-06T10:49:04.307Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2026-01-06T10:49:04.307Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com 200
+[debug] [2026-01-06T10:49:04.307Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2026-01-06T10:49:04.308Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T10:49:04.308Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T10:49:04.308Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:04.308Z] Checked if tokens are valid: true, expires at: 1767698000487
+[debug] [2026-01-06T10:49:04.308Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T10:49:05.267Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T10:49:05.267Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T10:49:05.267Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T10:49:05.267Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T10:49:05.269Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T10:49:05.269Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T10:49:05.270Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T10:49:05.270Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T11:25:47.938Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T11:25:47.940Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T11:25:47.940Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T11:25:47.940Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T11:25:47.940Z] Checked if tokens are valid: false, expires at: 1767698000487
+[debug] [2026-01-06T11:25:47.940Z] Checked if tokens are valid: false, expires at: 1767698000487
+[debug] [2026-01-06T11:25:47.941Z] > refreshing access token with scopes: []
+[debug] [2026-01-06T11:25:47.941Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-01-06T11:25:47.941Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-06T11:25:47.952Z] Checked if tokens are valid: false, expires at: 1767698000487
+[debug] [2026-01-06T11:25:47.952Z] Checked if tokens are valid: false, expires at: 1767698000487
+[debug] [2026-01-06T11:25:47.952Z] > refreshing access token with scopes: []
+[debug] [2026-01-06T11:25:47.952Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-01-06T11:25:47.952Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-06T11:25:47.953Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T11:25:47.953Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T11:25:47.953Z] Checked if tokens are valid: false, expires at: 1767698000487
+[debug] [2026-01-06T11:25:47.953Z] Checked if tokens are valid: false, expires at: 1767698000487
+[debug] [2026-01-06T11:25:47.953Z] > refreshing access token with scopes: []
+[debug] [2026-01-06T11:25:47.953Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-01-06T11:25:47.953Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-06T11:25:48.280Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-01-06T11:25:48.280Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-06T11:25:48.292Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T11:25:48.293Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-01-06T11:25:48.293Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-06T11:25:48.298Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T11:25:48.299Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-01-06T11:25:48.299Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-06T11:25:48.307Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T11:25:49.181Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T11:25:49.182Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T11:25:49.195Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.196Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.205Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.205Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.205Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.205Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.206Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [none]
+[debug] [2026-01-06T11:25:49.206Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T11:25:49.207Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [none]
+[debug] [2026-01-06T11:25:49.207Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T11:25:49.207Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [none]
+[debug] [2026-01-06T11:25:49.207Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T11:25:49.733Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T11:25:49.733Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T11:25:49.733Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.733Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.734Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.734Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.734Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.734Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.734Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [none]
+[debug] [2026-01-06T11:25:49.734Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T11:25:49.735Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [none]
+[debug] [2026-01-06T11:25:49.735Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T11:25:49.735Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [none]
+[debug] [2026-01-06T11:25:49.735Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T11:25:49.778Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T11:25:49.778Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T11:25:49.778Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.778Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.779Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.779Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.779Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.779Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:49.779Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [none]
+[debug] [2026-01-06T11:25:49.779Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T11:25:49.780Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [none]
+[debug] [2026-01-06T11:25:49.780Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T11:25:49.780Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [none]
+[debug] [2026-01-06T11:25:49.780Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com x-goog-quota-user=projects/labrand-ef645
+[debug] [2026-01-06T11:25:50.367Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com 403
+[debug] [2026-01-06T11:25:50.367Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [omitted]
+[debug] [2026-01-06T11:25:50.524Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com 200
+[debug] [2026-01-06T11:25:50.524Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2026-01-06T11:25:50.525Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com 200
+[debug] [2026-01-06T11:25:50.525Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2026-01-06T11:25:50.526Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T11:25:50.526Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T11:25:50.526Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:50.526Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:50.526Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T11:25:50.777Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com 403
+[debug] [2026-01-06T11:25:50.777Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [omitted]
+[debug] [2026-01-06T11:25:50.833Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com 403
+[debug] [2026-01-06T11:25:50.833Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseio.com [omitted]
+[debug] [2026-01-06T11:25:50.877Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com 200
+[debug] [2026-01-06T11:25:50.877Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2026-01-06T11:25:50.919Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com 200
+[debug] [2026-01-06T11:25:50.919Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2026-01-06T11:25:50.939Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com 200
+[debug] [2026-01-06T11:25:50.939Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2026-01-06T11:25:50.948Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com 200
+[debug] [2026-01-06T11:25:50.948Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/labrand-ef645/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2026-01-06T11:25:50.949Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T11:25:50.949Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T11:25:50.949Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:50.949Z] Checked if tokens are valid: true, expires at: 1767702347299
+[debug] [2026-01-06T11:25:50.949Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo [none]
+[debug] [2026-01-06T11:25:51.359Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T11:25:51.359Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T11:25:51.360Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T11:25:51.360Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)
+[debug] [2026-01-06T11:25:51.823Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo 200
+[debug] [2026-01-06T11:25:51.823Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/labrand-ef645/billingInfo {"name":"projects/labrand-ef645/billingInfo","projectId":"labrand-ef645","billingAccountName":"billingAccounts/01DA0D-480757-62B160","billingEnabled":true}
+[debug] [2026-01-06T11:25:51.827Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T11:25:51.827Z] > authorizing via signed-in user (shaxzodsunnatov23@gmail.com)

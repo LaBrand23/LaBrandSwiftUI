@@ -1,0 +1,318 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #FAFAFA;
+    --foreground: #1A1A1A;
+    --surface: #FFFFFF;
+    --muted: #999999;
+    --border: #E8E8E8;
+  }
+
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  html,
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #F5F5F5;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #CCCCCC;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #999999;
+  }
+}
+
+@layer components {
+  /* Container */
+  .container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-background-surface rounded-lg border border-border-primary p-6;
+  }
+
+  /* Button base */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-border-focus disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-button-primary-bg text-button-primary-text hover:bg-opacity-90;
+  }
+
+  .btn-secondary {
+    @apply btn bg-button-secondary-bg text-button-secondary-text border border-border-primary hover:bg-background-secondary;
+  }
+
+  .btn-danger {
+    @apply btn bg-accent-error text-white hover:bg-opacity-90;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent hover:bg-background-secondary;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* Input base */
+  .input {
+    @apply w-full px-3 py-2 text-sm border border-border-primary rounded bg-background-surface text-text-primary placeholder:text-text-muted focus:outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus disabled:bg-background-secondary disabled:cursor-not-allowed;
+  }
+
+  /* Label */
+  .label {
+    @apply block text-sm font-medium text-text-secondary mb-1.5;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Status badges */
+  .badge-success {
+    @apply badge bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-error {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  .badge-info {
+    @apply badge bg-blue-100 text-blue-800;
+  }
+
+  .badge-neutral {
+    @apply badge bg-gray-100 text-gray-800;
+  }
+
+  /* Table */
+  .table-wrapper {
+    @apply w-full overflow-x-auto;
+  }
+
+  .table {
+    @apply w-full text-sm text-left;
+  }
+
+  .table th {
+    @apply px-4 py-3 text-xs font-semibold text-text-tertiary uppercase tracking-wider bg-background-secondary border-b border-border-primary;
+  }
+
+  .table td {
+    @apply px-4 py-3 border-b border-border-subtle;
+  }
+
+  .table tbody tr:hover {
+    @apply bg-background-secondary;
+  }
+
+  /* Form section */
+  .form-section {
+    @apply space-y-4;
+  }
+
+  .form-group {
+    @apply space-y-1.5;
+  }
+
+  .form-error {
+    @apply text-xs text-accent-error mt-1;
+  }
+
+  /* Page header */
+  .page-header {
+    @apply flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6;
+  }
+
+  .page-title {
+    @apply text-display-2 font-semibold text-text-primary;
+  }
+
+  /* Stats card */
+  .stats-card {
+    @apply card flex flex-col;
+  }
+
+  .stats-card-label {
+    @apply text-sm text-text-tertiary mb-1;
+  }
+
+  .stats-card-value {
+    @apply text-2xl font-semibold text-text-primary;
+  }
+
+  .stats-card-change {
+    @apply text-sm mt-1;
+  }
+
+  .stats-card-change.positive {
+    @apply text-accent-success;
+  }
+
+  .stats-card-change.negative {
+    @apply text-accent-error;
+  }
+
+  /* Empty state */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-12 text-center;
+  }
+
+  .empty-state-icon {
+    @apply w-12 h-12 text-text-muted mb-4;
+  }
+
+  .empty-state-title {
+    @apply text-lg font-medium text-text-primary mb-2;
+  }
+
+  .empty-state-description {
+    @apply text-sm text-text-tertiary max-w-sm;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    @apply fixed left-0 top-0 h-full w-64 bg-background-surface border-r border-border-primary z-40;
+  }
+
+  .sidebar-nav-item {
+    @apply flex items-center gap-3 px-4 py-2.5 text-sm text-text-secondary hover:bg-background-secondary rounded-md transition-colors;
+  }
+
+  .sidebar-nav-item.active {
+    @apply bg-background-secondary text-text-primary font-medium;
+  }
+
+  /* Dropdown */
+  .dropdown {
+    @apply absolute z-50 min-w-[180px] py-1 bg-background-surface rounded-lg border border-border-primary shadow-dropdown;
+  }
+
+  .dropdown-item {
+    @apply flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-background-secondary cursor-pointer;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4;
+  }
+
+  .modal {
+    @apply bg-background-surface rounded-lg shadow-modal max-w-lg w-full max-h-[90vh] overflow-y-auto;
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between px-6 py-4 border-b border-border-primary;
+  }
+
+  .modal-title {
+    @apply text-lg font-semibold text-text-primary;
+  }
+
+  .modal-body {
+    @apply px-6 py-4;
+  }
+
+  .modal-footer {
+    @apply flex items-center justify-end gap-3 px-6 py-4 border-t border-border-primary;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Truncate multiple lines */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
