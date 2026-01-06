@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users collection - cart and notifications
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+      
+      // Cart subcollection
+      match /cart/{itemId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // Notifications subcollection
+      match /notifications/{notifId} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Only server can write
+      }
+    }
+    
+    // Orders - real-time status updates
+    match /orders/{orderId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only server can write
+    }
+    
+    // Product availability - real-time stock
+    match /products_availability/{productId} {
+      allow read: if true; // Public read
+      allow write: if false; // Only server can write
+    }
+  }
+}
+

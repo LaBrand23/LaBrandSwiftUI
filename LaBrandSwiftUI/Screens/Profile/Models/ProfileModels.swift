@@ -41,16 +41,48 @@ struct Discount {
     let description: String
 }
 
-enum OrderStatus: String {
-    case delivered = "Delivered"
-    case processing = "Processing"
-    case cancelled = "Cancelled"
+enum OrderStatus: String, CaseIterable, Codable {
+    case pending
+    case confirmed
+    case processing
+    case shipped
+    case delivered
+    case cancelled
+    case refunded
+    
+    var displayName: String {
+        switch self {
+        case .pending: return "Pending"
+        case .confirmed: return "Confirmed"
+        case .processing: return "Processing"
+        case .shipped: return "Shipped"
+        case .delivered: return "Delivered"
+        case .cancelled: return "Cancelled"
+        case .refunded: return "Refunded"
+        }
+    }
     
     var color: Color {
-        return switch self {
-        case .delivered:  .green
-        case .processing: .blue
-        case .cancelled:  .red
+        switch self {
+        case .pending: return .orange
+        case .confirmed: return .blue
+        case .processing: return .purple
+        case .shipped: return .indigo
+        case .delivered: return .green
+        case .cancelled: return .red
+        case .refunded: return .gray
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .pending: return "clock"
+        case .confirmed: return "checkmark.circle"
+        case .processing: return "gearshape"
+        case .shipped: return "shippingbox"
+        case .delivered: return "checkmark.seal.fill"
+        case .cancelled: return "xmark.circle"
+        case .refunded: return "arrow.uturn.backward"
         }
     }
 }

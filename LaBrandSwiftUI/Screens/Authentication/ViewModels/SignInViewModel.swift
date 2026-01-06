@@ -22,9 +22,9 @@ class SignInViewModel: ObservableObject {
         isLoading = true
         do {
             try await authManager.signIn(email: email, password: password)
-        } catch let error as AuthenticationManager.AuthError {
+        } catch let error as AuthError where error.errorDescription != nil {
             showError = true
-            errorMessage = error.message
+            errorMessage = error.errorDescription!
         } catch {
             showError = true
             errorMessage = "An unexpected error occurred"
