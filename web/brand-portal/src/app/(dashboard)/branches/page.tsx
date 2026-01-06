@@ -7,6 +7,7 @@ import { Branch } from '@shared/types';
 import Card from '@shared/components/ui/Card';
 import Badge from '@shared/components/ui/Badge';
 import Spinner from '@shared/components/ui/Spinner';
+import Link from 'next/link';
 import {
   BuildingStorefrontIcon,
   MapPinIcon,
@@ -60,7 +61,9 @@ export default function BranchesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {branches.map((branch) => (
-            <BranchCard key={branch.id} branch={branch} />
+            <Link key={branch.id} href={`/branches/${branch.id}`}>
+              <BranchCard branch={branch} />
+            </Link>
           ))}
         </div>
       )}

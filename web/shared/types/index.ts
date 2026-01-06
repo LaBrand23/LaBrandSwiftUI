@@ -506,3 +506,135 @@ export interface ReviewsQueryParams extends PaginationParams {
   has_images?: boolean;
   responded?: boolean;
 }
+
+// CRM Integration types
+export type AdapterType = 'billz' | '1c' | 'loyverse' | 'csv' | 'webhook' | 'custom';
+export type SyncStatus = 'pending' | 'running' | 'success' | 'partial' | 'failed';
+export type IntegrationStatus = 'active' | 'inactive' | 'error' | 'pending_setup';
+
+export interface CRMIntegration {
+  id: string;
+  branch_id: string;
+  brand_id: string;
+  adapter_type: AdapterType;
+  name: string;
+  description?: string;
+  config: IntegrationConfig;
+  is_active: boolean;
+  status: IntegrationStatus;
+  last_sync_at?: string;
+  last_sync_status?: SyncStatus;
+  sync_interval_minutes: number;
+  created_at: string;
+  updated_at?: string;
+  branch?: {
+    id: string;
+    name: string;
+  };
+  brand?: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface IntegrationConfig {
+  // API-based integrations
+  base_url?: string;
+  api_key?: string;
+  api_secret?: string;
+  // Webhook-based integrations
+  webhook_url?: string;
+  webhook_secret?: string;
+  // File-based integrations (1C, CSV)
+  source_type?: 'ftp' | 'sftp' | 'email' | 'drive' | 'upload';
+  ftp_host?: string;
+  ftp_user?: string;
+  ftp_password?: string;
+  file_pattern?: string;
+  // Common settings
+  poll_interval_minutes?: number;
+  sync_prices?: boolean;
+  auto_create_products?: boolean;
+  notify_on_error?: boolean;
+  [key: string]: unknown;
+}
+
+export interface SyncLog {
+  id: string;
+  integration_id: string;
+  started_at: string;
+  completed_at?: string;
+  status: SyncStatus;
+  products_processed: number;
+  products_updated: number;
+  products_created: number;
+  products_failed: number;
+  duration_ms?: number;
+  errors?: SyncError[];
+  created_at: string;
+}
+
+export interface SyncError {
+  sku?: string;
+  product_name?: string;
+  error_code: string;
+  message: string;
+  details?: Record<string, unknown>;
+}
+
+export interface SKUMapping {
+  id: string;
+  integration_id: string;
+  external_sku: string;
+  product_variant_id?: string;
+  product_id?: string;
+  product_name?: string;
+  variant_name?: string;
+  is_auto_mapped: boolean;
+  is_ignored: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface UnifiedStockUpdate {
+  branch_id: string;
+  product_id?: string;
+  sku: string;
+  external_id: string;
+  quantity: number;
+  price?: number;
+  last_updated: string;
+  source: string;
+}
+
+export interface IntegrationsQueryParams extends PaginationParams {
+  brand_id?: string;
+  branch_id?: string;
+  adapter_type?: AdapterType;
+  status?: IntegrationStatus;
+  is_active?: boolean;
+}
+
+export interface SyncLogsQueryParams extends PaginationParams {
+  integration_id?: string;
+  status?: SyncStatus;
+  date_from?: string;
+  date_to?: string;
+}
+
+export interface IntegrationTestResult {
+  success: boolean;
+  message: string;
+  connection_time_ms?: number;
+  products_available?: number;
+  errors?: string[];
+}
+
+export interface IntegrationStats {
+  total_syncs: number;
+  successful_syncs: number;
+  failed_syncs: number;
+  last_7_days_syncs: number;
+  products_synced: number;
+  average_sync_duration_ms: number;
+}

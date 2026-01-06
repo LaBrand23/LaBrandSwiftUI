@@ -9,3 +9,4 @@ export { analyticsService } from './analytics.service';
 export { settingsService } from './settings.service';
 export { inventoryService } from './inventory.service';
 export { promoCodesService } from './promo-codes.service';
+export { integrationsService, ADAPTER_CONFIGS } from './integrations.service';
