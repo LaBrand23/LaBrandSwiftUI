@@ -13,6 +13,7 @@ import Badge from '@shared/components/ui/Badge';
 import Spinner from '@shared/components/ui/Spinner';
 import Pagination from '@shared/components/ui/Pagination';
 import Select from '@shared/components/ui/Select';
+import Link from 'next/link';
 import {
   PlusIcon,
   PencilIcon,
@@ -69,10 +70,12 @@ export default function ProductsPage() {
             Manage your product catalog
           </p>
         </div>
-        <Button>
-          <PlusIcon className="w-5 h-5 mr-2" />
-          Add Product
-        </Button>
+        <Link href="/products/new">
+          <Button>
+            <PlusIcon className="w-5 h-5 mr-2" />
+            Add Product
+          </Button>
+        </Link>
       </div>
 
       {/* Filters */}
@@ -118,10 +121,12 @@ export default function ProductsPage() {
             <p className="text-neutral-500 mb-4">
               Start by adding your first product.
             </p>
-            <Button>
-              <PlusIcon className="w-5 h-5 mr-2" />
-              Add Product
-            </Button>
+            <Link href="/products/new">
+              <Button>
+                <PlusIcon className="w-5 h-5 mr-2" />
+                Add Product
+              </Button>
+            </Link>
           </div>
         </Card>
       ) : (
@@ -173,46 +178,52 @@ function ProductCard({ product }: { product: Product }) {
 
         {/* Hover Actions */}
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-          <Button variant="outline" size="sm" className="bg-white">
-            <EyeIcon className="w-4 h-4 mr-1" />
-            View
-          </Button>
-          <Button variant="outline" size="sm" className="bg-white">
-            <PencilIcon className="w-4 h-4 mr-1" />
-            Edit
-          </Button>
+          <Link href={`/products/${product.id}`}>
+            <Button variant="outline" size="sm" className="bg-white">
+              <EyeIcon className="w-4 h-4 mr-1" />
+              View
+            </Button>
+          </Link>
+          <Link href={`/products/${product.id}/edit`}>
+            <Button variant="outline" size="sm" className="bg-white">
+              <PencilIcon className="w-4 h-4 mr-1" />
+              Edit
+            </Button>
+          </Link>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <h3 className="font-medium text-neutral-900 truncate">{product.name}</h3>
-        <p className="text-sm text-neutral-500 mt-1">SKU: {product.sku}</p>
+      <Link href={`/products/${product.id}`}>
+        <div className="p-4 cursor-pointer hover:bg-neutral-50 transition-colors">
+          <h3 className="font-medium text-neutral-900 truncate">{product.name}</h3>
+          <p className="text-sm text-neutral-500 mt-1">SKU: {product.sku}</p>
 
-        <div className="flex items-center justify-between mt-3">
-          <div>
-            <p className="font-semibold text-neutral-900">
-              {formatCurrency(product.price)}
-            </p>
-            {product.compare_at_price && product.compare_at_price > product.price && (
-              <p className="text-sm text-neutral-400 line-through">
-                {formatCurrency(product.compare_at_price)}
+          <div className="flex items-center justify-between mt-3">
+            <div>
+              <p className="font-semibold text-neutral-900">
+                {formatCurrency(product.price)}
               </p>
-            )}
-          </div>
+              {product.compare_at_price && product.compare_at_price > product.price && (
+                <p className="text-sm text-neutral-400 line-through">
+                  {formatCurrency(product.compare_at_price)}
+                </p>
+              )}
+            </div>
 
-          <div className="text-right">
-            <p className="text-sm text-neutral-600">
-              Stock: {product.stock_quantity}
-            </p>
-            {product.stock_quantity <= product.low_stock_threshold && (
-              <Badge variant="warning" size="sm">
-                Low Stock
-              </Badge>
-            )}
+            <div className="text-right">
+              <p className="text-sm text-neutral-600">
+                Stock: {product.stock_quantity}
+              </p>
+              {product.stock_quantity <= product.low_stock_threshold && (
+                <Badge variant="warning" size="sm">
+                  Low Stock
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </Link>
     </Card>
   );
 }

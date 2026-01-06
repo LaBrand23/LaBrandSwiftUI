@@ -8,3 +8,4 @@ export { reviewsService } from './reviews.service';
 export { analyticsService } from './analytics.service';
 export { settingsService } from './settings.service';
 export { inventoryService } from './inventory.service';
+export { promoCodesService } from './promo-codes.service';

@@ -14,6 +14,7 @@ import Spinner from '@shared/components/ui/Spinner';
 import Modal from '@shared/components/ui/Modal';
 import Pagination from '@shared/components/ui/Pagination';
 import Select from '@shared/components/ui/Select';
+import Link from 'next/link';
 import {
   MagnifyingGlassIcon,
   ShoppingCartIcon,
@@ -228,13 +229,11 @@ export default function OrdersPage() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openDetailModal(order)}
-                        >
-                          <EyeIcon className="w-4 h-4" />
-                        </Button>
+                        <Link href={`/orders/${order.id}`}>
+                          <Button variant="ghost" size="sm">
+                            <EyeIcon className="w-4 h-4" />
+                          </Button>
+                        </Link>
 
                         {order.status === 'pending' && (
                           <Button
