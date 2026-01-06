@@ -53,6 +53,14 @@ extension Product {
     }
 }
 
+// MARK: - Preview Helper
+extension Product {
+    /// A single preview product for SwiftUI previews
+    static var preview: Product {
+        mockProducts.first!
+    }
+}
+
 // MARK: - Mock Data
 extension Product {
     static let mockProducts: [Product] = [
