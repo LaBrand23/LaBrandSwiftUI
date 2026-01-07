@@ -7,7 +7,7 @@ import { useUIStore } from '@shared/stores/uiStore';
 import { authService } from '@shared/services/auth.service';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import Spinner from '@shared/components/ui/Spinner';
+import { Spinner } from '@shared/components/ui/Spinner';
 
 export default function DashboardLayout({
   children,

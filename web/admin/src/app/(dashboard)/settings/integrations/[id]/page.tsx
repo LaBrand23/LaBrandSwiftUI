@@ -8,15 +8,15 @@ import { integrationsService, ADAPTER_CONFIGS } from '@shared/services/integrati
 import { CRMIntegration, SyncLog, SKUMapping, AdapterType, SyncStatus } from '@shared/types';
 import { useUIStore } from '@shared/stores/uiStore';
 import { formatDate } from '@shared/lib/utils';
-import PageHeader from '@shared/components/layouts/PageHeader';
-import Button from '@shared/components/ui/Button';
-import Card from '@shared/components/ui/Card';
-import Badge from '@shared/components/ui/Badge';
-import Spinner from '@shared/components/ui/Spinner';
-import Input from '@shared/components/ui/Input';
-import Select from '@shared/components/ui/Select';
-import Modal from '@shared/components/ui/Modal';
-import Tabs from '@shared/components/ui/Tabs';
+import { PageHeader } from '@shared/components/layouts/PageHeader';
+import { Button } from '@shared/components/ui/Button';
+import { Card } from '@shared/components/ui/Card';
+import { Badge } from '@shared/components/ui/Badge';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Input } from '@shared/components/ui/Input';
+import { Select } from '@shared/components/ui/Select';
+import { Modal } from '@shared/components/ui/Modal';
+import { Tabs } from '@shared/components/ui/Tabs';
 import {
   ArrowLeftIcon,
   ArrowPathIcon,

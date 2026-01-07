@@ -12,12 +12,12 @@ import {
 import { PaymentMethod } from '@shared/types';
 import { useUIStore } from '@shared/stores/uiStore';
 import { formatCurrency } from '@shared/lib/utils';
-import PageHeader from '@shared/components/layouts/PageHeader';
-import Button from '@shared/components/ui/Button';
-import Input from '@shared/components/ui/Input';
-import Card from '@shared/components/ui/Card';
-import Spinner from '@shared/components/ui/Spinner';
-import Tabs from '@shared/components/ui/Tabs';
+import { PageHeader } from '@shared/components/layouts/PageHeader';
+import { Button } from '@shared/components/ui/Button';
+import { Input } from '@shared/components/ui/Input';
+import { Card } from '@shared/components/ui/Card';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Tabs } from '@shared/components/ui/Tabs';
 import {
   Cog6ToothIcon,
   TruckIcon,

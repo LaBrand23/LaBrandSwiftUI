@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
 import { analyticsService } from '@shared/services/analytics.service';
 import { formatCurrency } from '@shared/lib/utils';
-import Card from '@shared/components/ui/Card';
-import Spinner from '@shared/components/ui/Spinner';
-import Badge from '@shared/components/ui/Badge';
+import { Card } from '@shared/components/ui/Card';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Badge } from '@shared/components/ui/Badge';
 import {
   CurrencyDollarIcon,
   ShoppingCartIcon,

@@ -6,15 +6,15 @@ import { reviewsService } from '@shared/services/reviews.service';
 import { Review, ReviewsQueryParams } from '@shared/types';
 import { useUIStore } from '@shared/stores/uiStore';
 import { formatCurrency, formatDate } from '@shared/lib/utils';
-import PageHeader from '@shared/components/layouts/PageHeader';
-import Button from '@shared/components/ui/Button';
-import Badge from '@shared/components/ui/Badge';
-import Card from '@shared/components/ui/Card';
-import Modal from '@shared/components/ui/Modal';
-import Spinner from '@shared/components/ui/Spinner';
-import Select from '@shared/components/ui/Select';
-import Pagination from '@shared/components/ui/Pagination';
-import Avatar from '@shared/components/ui/Avatar';
+import { PageHeader } from '@shared/components/layouts/PageHeader';
+import { Button } from '@shared/components/ui/Button';
+import { Badge } from '@shared/components/ui/Badge';
+import { Card } from '@shared/components/ui/Card';
+import { Modal } from '@shared/components/ui/Modal';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Select } from '@shared/components/ui/Select';
+import { Pagination } from '@shared/components/ui/Pagination';
+import { Avatar } from '@shared/components/ui/Avatar';
 import {
   StarIcon as StarSolid,
   MagnifyingGlassIcon,

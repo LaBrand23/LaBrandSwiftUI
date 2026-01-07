@@ -8,13 +8,13 @@ import {
 } from '@shared/services/inventory.service';
 import { useUIStore } from '@shared/stores/uiStore';
 import { formatDate } from '@shared/lib/utils';
-import PageHeader from '@shared/components/layouts/PageHeader';
-import Card from '@shared/components/ui/Card';
-import Button from '@shared/components/ui/Button';
-import Badge from '@shared/components/ui/Badge';
-import Spinner from '@shared/components/ui/Spinner';
-import Modal from '@shared/components/ui/Modal';
-import Tabs from '@shared/components/ui/Tabs';
+import { PageHeader } from '@shared/components/layouts/PageHeader';
+import { Card } from '@shared/components/ui/Card';
+import { Button } from '@shared/components/ui/Button';
+import { Badge } from '@shared/components/ui/Badge';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Modal } from '@shared/components/ui/Modal';
+import { Tabs } from '@shared/components/ui/Tabs';
 import {
   ArrowPathIcon,
   ExclamationTriangleIcon,

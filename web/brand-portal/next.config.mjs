@@ -9,6 +9,11 @@ const nextConfig = {
   transpilePackages: ['@shared'],
   webpack: (config) => {
     config.resolve.alias['@shared'] = path.resolve(__dirname, '../shared');
+    // Allow shared module to resolve dependencies from this project's node_modules
+    config.resolve.modules = [
+      path.resolve(__dirname, 'node_modules'),
+      'node_modules',
+    ];
     return config;
   },
   images: {

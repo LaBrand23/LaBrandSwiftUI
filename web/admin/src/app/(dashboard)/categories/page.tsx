@@ -5,14 +5,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoriesService, CategoriesQueryParams, CreateCategoryPayload } from '@shared/services/categories.service';
 import { Category, Gender } from '@shared/types';
 import { useUIStore } from '@shared/stores/uiStore';
-import PageHeader from '@shared/components/layouts/PageHeader';
-import Button from '@shared/components/ui/Button';
-import Input from '@shared/components/ui/Input';
-import Badge from '@shared/components/ui/Badge';
-import Card from '@shared/components/ui/Card';
-import Modal from '@shared/components/ui/Modal';
-import Spinner from '@shared/components/ui/Spinner';
-import Select from '@shared/components/ui/Select';
+import { PageHeader } from '@shared/components/layouts/PageHeader';
+import { Button } from '@shared/components/ui/Button';
+import { Input } from '@shared/components/ui/Input';
+import { Badge } from '@shared/components/ui/Badge';
+import { Card } from '@shared/components/ui/Card';
+import { Modal } from '@shared/components/ui/Modal';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Select } from '@shared/components/ui/Select';
 import {
   PlusIcon,
   PencilIcon,

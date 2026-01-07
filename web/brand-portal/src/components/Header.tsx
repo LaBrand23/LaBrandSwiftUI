@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@shared/stores/authStore';
 import { authService } from '@shared/services/auth.service';
-import Avatar from '@shared/components/ui/Avatar';
+import { Avatar } from '@shared/components/ui/Avatar';
 import {
   BellIcon,
   ArrowRightOnRectangleIcon,

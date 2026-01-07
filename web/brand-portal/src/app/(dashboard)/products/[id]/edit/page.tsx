@@ -8,12 +8,12 @@ import { useUIStore } from '@shared/stores/uiStore';
 import { productsService, UpdateProductPayload } from '@shared/services/products.service';
 import { categoriesService } from '@shared/services/categories.service';
 import { Gender, ProductStatus } from '@shared/types';
-import Card from '@shared/components/ui/Card';
-import Button from '@shared/components/ui/Button';
-import Input from '@shared/components/ui/Input';
-import Select from '@shared/components/ui/Select';
-import Spinner from '@shared/components/ui/Spinner';
-import Badge from '@shared/components/ui/Badge';
+import { Card } from '@shared/components/ui/Card';
+import { Button } from '@shared/components/ui/Button';
+import { Input } from '@shared/components/ui/Input';
+import { Select } from '@shared/components/ui/Select';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Badge } from '@shared/components/ui/Badge';
 import {
   ArrowLeftIcon,
   PhotoIcon,

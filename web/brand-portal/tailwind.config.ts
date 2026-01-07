@@ -10,6 +10,44 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Design system colors
+        text: {
+          primary: '#1A1A1A',
+          secondary: '#333333',
+          tertiary: '#666666',
+          muted: '#999999',
+          inverted: '#FFFFFF',
+        },
+        background: {
+          primary: '#FAFAFA',
+          surface: '#FFFFFF',
+          secondary: '#F5F5F5',
+          editorial: '#1A1A1A',
+          dark: '#0D0D0D',
+        },
+        border: {
+          primary: '#E8E8E8',
+          subtle: '#F0F0F0',
+          focus: '#1A1A1A',
+        },
+        accent: {
+          gold: '#C4A77D',
+          sale: '#C41E3A',
+          success: '#2E7D32',
+          error: '#C41E3A',
+          warning: '#F59E0B',
+          info: '#3B82F6',
+        },
+        button: {
+          primary: {
+            bg: '#1A1A1A',
+            text: '#FFFFFF',
+          },
+          secondary: {
+            bg: '#FFFFFF',
+            text: '#1A1A1A',
+          },
+        },
         // Brand Portal - Elegant purple theme for brand managers
         primary: {
           50: '#faf5ff',
@@ -104,10 +142,21 @@ const config: Config = {
         sans: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-geist-mono)', 'monospace'],
       },
+      fontSize: {
+        'display-1': ['36px', { lineHeight: '1.2', letterSpacing: '0.02em' }],
+        'display-2': ['24px', { lineHeight: '1.3', letterSpacing: '0.04em' }],
+        'display-3': ['20px', { lineHeight: '1.4', letterSpacing: '0.02em' }],
+        'heading': ['22px', { lineHeight: '1.4', letterSpacing: '0.06em' }],
+        'body': ['15px', { lineHeight: '1.6' }],
+        'caption': ['13px', { lineHeight: '1.5' }],
+        'micro': ['10px', { lineHeight: '1.4', letterSpacing: '0.03em' }],
+      },
       boxShadow: {
         'soft': '0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 4px 16px -4px rgba(0, 0, 0, 0.1)',
         'medium': '0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 8px 24px -4px rgba(0, 0, 0, 0.12)',
         'hard': '0 8px 16px -4px rgba(0, 0, 0, 0.1), 0 16px 32px -8px rgba(0, 0, 0, 0.15)',
+        'dropdown': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'modal': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
       },
     },
   },

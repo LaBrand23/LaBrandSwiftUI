@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
 import { brandsService } from '@shared/services/brands.service';
 import { Branch } from '@shared/types';
-import Card from '@shared/components/ui/Card';
-import Badge from '@shared/components/ui/Badge';
-import Spinner from '@shared/components/ui/Spinner';
+import { Card } from '@shared/components/ui/Card';
+import { Badge } from '@shared/components/ui/Badge';
+import { Spinner } from '@shared/components/ui/Spinner';
 import Link from 'next/link';
 import {
   BuildingStorefrontIcon,

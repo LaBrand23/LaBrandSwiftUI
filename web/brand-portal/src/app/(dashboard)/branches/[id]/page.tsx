@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { useAuthStore } from '@shared/stores/authStore';
 import { brandsService } from '@shared/services/brands.service';
 import { Branch } from '@shared/types';
-import Card from '@shared/components/ui/Card';
-import Button from '@shared/components/ui/Button';
-import Badge from '@shared/components/ui/Badge';
-import Spinner from '@shared/components/ui/Spinner';
+import { Card } from '@shared/components/ui/Card';
+import { Button } from '@shared/components/ui/Button';
+import { Badge } from '@shared/components/ui/Badge';
+import { Spinner } from '@shared/components/ui/Spinner';
 import {
   ArrowLeftIcon,
   BuildingStorefrontIcon,

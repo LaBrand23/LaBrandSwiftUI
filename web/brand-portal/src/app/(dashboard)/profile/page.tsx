@@ -5,11 +5,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
 import { useUIStore } from '@shared/stores/uiStore';
 import { usersService } from '@shared/services/users.service';
-import Card from '@shared/components/ui/Card';
-import Button from '@shared/components/ui/Button';
-import Input from '@shared/components/ui/Input';
-import Avatar from '@shared/components/ui/Avatar';
-import Badge from '@shared/components/ui/Badge';
+import { Card } from '@shared/components/ui/Card';
+import { Button } from '@shared/components/ui/Button';
+import { Input } from '@shared/components/ui/Input';
+import { Avatar } from '@shared/components/ui/Avatar';
+import { Badge } from '@shared/components/ui/Badge';
 import {
   UserCircleIcon,
   EnvelopeIcon,

@@ -6,14 +6,14 @@ import { useRouter } from 'next/navigation';
 import { integrationsService } from '@shared/services/integrations.service';
 import { SyncLog, SyncStatus } from '@shared/types';
 import { formatDate } from '@shared/lib/utils';
-import PageHeader from '@shared/components/layouts/PageHeader';
-import Button from '@shared/components/ui/Button';
-import Card from '@shared/components/ui/Card';
-import Badge from '@shared/components/ui/Badge';
-import Spinner from '@shared/components/ui/Spinner';
-import Select from '@shared/components/ui/Select';
-import Pagination from '@shared/components/ui/Pagination';
-import Modal from '@shared/components/ui/Modal';
+import { PageHeader } from '@shared/components/layouts/PageHeader';
+import { Button } from '@shared/components/ui/Button';
+import { Card } from '@shared/components/ui/Card';
+import { Badge } from '@shared/components/ui/Badge';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Select } from '@shared/components/ui/Select';
+import { Pagination } from '@shared/components/ui/Pagination';
+import { Modal } from '@shared/components/ui/Modal';
 import {
   ArrowLeftIcon,
   DocumentTextIcon,

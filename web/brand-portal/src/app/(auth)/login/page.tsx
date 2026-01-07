@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { authService } from '@shared/services/auth.service';
 import { useAuthStore } from '@shared/stores/authStore';
 import { useUIStore } from '@shared/stores/uiStore';
-import Button from '@shared/components/ui/Button';
-import Input from '@shared/components/ui/Input';
+import { Button } from '@shared/components/ui/Button';
+import { Input } from '@shared/components/ui/Input';
 
 export default function LoginPage() {
   const router = useRouter();

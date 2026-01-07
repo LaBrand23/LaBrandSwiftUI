@@ -8,11 +8,11 @@ import { useUIStore } from '@shared/stores/uiStore';
 import { ordersService } from '@shared/services/orders.service';
 import { OrderStatus } from '@shared/types';
 import { formatCurrency, formatDate } from '@shared/lib/utils';
-import Card from '@shared/components/ui/Card';
-import Button from '@shared/components/ui/Button';
-import Badge from '@shared/components/ui/Badge';
-import Spinner from '@shared/components/ui/Spinner';
-import Modal from '@shared/components/ui/Modal';
+import { Card } from '@shared/components/ui/Card';
+import { Button } from '@shared/components/ui/Button';
+import { Badge } from '@shared/components/ui/Badge';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Modal } from '@shared/components/ui/Modal';
 import {
   ArrowLeftIcon,
   ShoppingCartIcon,

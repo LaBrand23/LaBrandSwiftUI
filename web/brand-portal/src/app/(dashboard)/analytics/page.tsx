@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
 import { analyticsService, AnalyticsParams } from '@shared/services/analytics.service';
 import { formatCurrency } from '@shared/lib/utils';
-import Card from '@shared/components/ui/Card';
-import Spinner from '@shared/components/ui/Spinner';
-import Select from '@shared/components/ui/Select';
+import { Card } from '@shared/components/ui/Card';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Select } from '@shared/components/ui/Select';
 import {
   ArrowUpIcon,
   ArrowDownIcon,

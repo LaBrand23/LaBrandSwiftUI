@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { analyticsService, AnalyticsParams } from '@shared/services/analytics.service';
 import { formatCurrency } from '@shared/lib/utils';
-import PageHeader from '@shared/components/layouts/PageHeader';
-import Button from '@shared/components/ui/Button';
-import Card from '@shared/components/ui/Card';
-import Spinner from '@shared/components/ui/Spinner';
-import Select from '@shared/components/ui/Select';
-import Tabs from '@shared/components/ui/Tabs';
+import { PageHeader } from '@shared/components/layouts/PageHeader';
+import { Button } from '@shared/components/ui/Button';
+import { Card } from '@shared/components/ui/Card';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Select } from '@shared/components/ui/Select';
+import { Tabs } from '@shared/components/ui/Tabs';
 import {
   ArrowUpIcon,
   ArrowDownIcon,

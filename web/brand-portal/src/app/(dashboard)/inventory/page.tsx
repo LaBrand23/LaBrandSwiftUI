@@ -7,14 +7,14 @@ import { useUIStore } from '@shared/stores/uiStore';
 import { productsService } from '@shared/services/products.service';
 import { Product, ProductsQueryParams } from '@shared/types';
 import { formatCurrency } from '@shared/lib/utils';
-import Card from '@shared/components/ui/Card';
-import Button from '@shared/components/ui/Button';
-import Badge from '@shared/components/ui/Badge';
-import Spinner from '@shared/components/ui/Spinner';
-import Modal from '@shared/components/ui/Modal';
-import Input from '@shared/components/ui/Input';
-import Pagination from '@shared/components/ui/Pagination';
-import Select from '@shared/components/ui/Select';
+import { Card } from '@shared/components/ui/Card';
+import { Button } from '@shared/components/ui/Button';
+import { Badge } from '@shared/components/ui/Badge';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Modal } from '@shared/components/ui/Modal';
+import { Input } from '@shared/components/ui/Input';
+import { Pagination } from '@shared/components/ui/Pagination';
+import { Select } from '@shared/components/ui/Select';
 import {
   MagnifyingGlassIcon,
   ArchiveBoxIcon,

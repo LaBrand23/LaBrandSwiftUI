@@ -7,12 +7,12 @@ import { integrationsService, ADAPTER_CONFIGS, CreateIntegrationData } from '@sh
 import { brandsService } from '@shared/services/brands.service';
 import { AdapterType, IntegrationConfig } from '@shared/types';
 import { useUIStore } from '@shared/stores/uiStore';
-import PageHeader from '@shared/components/layouts/PageHeader';
-import Button from '@shared/components/ui/Button';
-import Card from '@shared/components/ui/Card';
-import Input from '@shared/components/ui/Input';
-import Select from '@shared/components/ui/Select';
-import Spinner from '@shared/components/ui/Spinner';
+import { PageHeader } from '@shared/components/layouts/PageHeader';
+import { Button } from '@shared/components/ui/Button';
+import { Card } from '@shared/components/ui/Card';
+import { Input } from '@shared/components/ui/Input';
+import { Select } from '@shared/components/ui/Select';
+import { Spinner } from '@shared/components/ui/Spinner';
 import {
   ArrowLeftIcon,
   ServerIcon,

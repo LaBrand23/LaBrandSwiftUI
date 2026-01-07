@@ -7,13 +7,13 @@ import { CRMIntegration, SyncLog, SyncStatus, AdapterType } from '@shared/types'
 import { useAuthStore } from '@shared/stores/authStore';
 import { useUIStore } from '@shared/stores/uiStore';
 import { formatDate } from '@shared/lib/utils';
-import Card from '@shared/components/ui/Card';
-import Button from '@shared/components/ui/Button';
-import Badge from '@shared/components/ui/Badge';
-import Spinner from '@shared/components/ui/Spinner';
-import Modal from '@shared/components/ui/Modal';
-import Select from '@shared/components/ui/Select';
-import Input from '@shared/components/ui/Input';
+import { Card } from '@shared/components/ui/Card';
+import { Button } from '@shared/components/ui/Button';
+import { Badge } from '@shared/components/ui/Badge';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Modal } from '@shared/components/ui/Modal';
+import { Select } from '@shared/components/ui/Select';
+import { Input } from '@shared/components/ui/Input';
 import {
   ArrowPathIcon,
   CheckCircleIcon,

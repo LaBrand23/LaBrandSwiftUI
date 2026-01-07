@@ -7,14 +7,14 @@ import { useUIStore } from '@shared/stores/uiStore';
 import { reviewsService } from '@shared/services/reviews.service';
 import { Review, ReviewsQueryParams } from '@shared/types';
 import { formatDate } from '@shared/lib/utils';
-import Card from '@shared/components/ui/Card';
-import Button from '@shared/components/ui/Button';
-import Badge from '@shared/components/ui/Badge';
-import Spinner from '@shared/components/ui/Spinner';
-import Modal from '@shared/components/ui/Modal';
-import Pagination from '@shared/components/ui/Pagination';
-import Select from '@shared/components/ui/Select';
-import Avatar from '@shared/components/ui/Avatar';
+import { Card } from '@shared/components/ui/Card';
+import { Button } from '@shared/components/ui/Button';
+import { Badge } from '@shared/components/ui/Badge';
+import { Spinner } from '@shared/components/ui/Spinner';
+import { Modal } from '@shared/components/ui/Modal';
+import { Pagination } from '@shared/components/ui/Pagination';
+import { Select } from '@shared/components/ui/Select';
+import { Avatar } from '@shared/components/ui/Avatar';
 import {
   ChatBubbleLeftRightIcon,
   StarIcon as StarSolid,
