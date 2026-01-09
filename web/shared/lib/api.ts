@@ -16,13 +16,17 @@ export const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
-      const user = auth.currentUser;
+      const user = auth?.currentUser;
+      console.log('[API] Request interceptor - current user:', user?.uid || 'null');
       if (user) {
         const token = await user.getIdToken();
+        console.log('[API] Got ID token, length:', token?.length || 0);
         config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        console.warn('[API] No current user - request will be sent without auth token');
       }
     } catch (error) {
-      console.error('Error getting auth token:', error);
+      console.error('[API] Error getting auth token:', error);
     }
     return config;
   },
@@ -35,9 +39,11 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     // Return the data directly for successful responses
+    console.log('[API] Response success:', response.config.url, response.status);
     return response.data;
   },
   async (error: AxiosError<{ error?: string; code?: string; details?: unknown }>) => {
+    console.error('[API] Response error:', error.config?.url, error.response?.status, error.message);
     const originalRequest = error.config;
 
     // Handle 401 Unauthorized - token might be expired

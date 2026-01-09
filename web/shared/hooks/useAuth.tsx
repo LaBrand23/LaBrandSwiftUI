@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { onAuthChange, signIn, signOut } from '../lib/firebase';
 import { useAuthStore } from '../stores/authStore';
@@ -17,47 +17,95 @@ export function useAuth(options: UseAuthOptions = {}) {
   const { requiredRoles, redirectTo = '/login' } = options;
   const router = useRouter();
   const pathname = usePathname();
-  const initRef = useRef(false);
 
   const store = useAuthStore();
   const { user, firebaseUser, isLoading, isAuthenticated } = store;
 
+  // Clear old localStorage on first load (migration from persist middleware)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth-storage');
+    }
+  }, []);
+
   // Listen to Firebase auth state changes
   useEffect(() => {
-    // Prevent multiple subscriptions
-    if (initRef.current) return;
-    initRef.current = true;
+    console.log('[Auth] Setting up auth listener...');
 
-    const unsubscribe = onAuthChange(async (fbUser) => {
-      store.setFirebaseUser(fbUser);
-
-      if (fbUser) {
-        try {
-          // Fetch user data from API
-          const userData = await authService.getMe();
-          store.setUser(userData);
-
-          // Check role access
-          if (requiredRoles?.length && !requiredRoles.includes(userData.role)) {
-            router.replace('/unauthorized');
-            return;
-          }
-        } catch (error) {
-          console.error('Error fetching user profile:', error);
-          store.setError('Failed to load user profile');
-          await signOut();
-          store.logout();
-        }
-      } else {
-        // No Firebase user - logout
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (store.isLoading) {
+        console.warn('[Auth] Auth timeout - forcing logout and redirecting to login');
         store.logout();
-        if (!pathname.includes('/login') && !pathname.includes('/forgot-password')) {
+        if (!pathname.includes('/login')) {
           router.replace(redirectTo);
         }
       }
-    });
+    }, 15000); // 15 second timeout
 
-    return () => unsubscribe();
+    let unsubscribe: (() => void) | undefined;
+
+    try {
+      unsubscribe = onAuthChange(async (fbUser) => {
+        clearTimeout(timeoutId);
+        console.log('[Auth] onAuthChange fired, user:', fbUser?.uid || 'null');
+        store.setFirebaseUser(fbUser);
+
+        if (fbUser) {
+          try {
+            console.log('[Auth] Fetching user profile from API...');
+            // Fetch user data from API
+            const userData = await authService.getMe();
+            console.log('[Auth] User profile fetched successfully:', userData?.id);
+
+            if (!userData) {
+              console.error('[Auth] No user data returned from API');
+              throw new Error('No user data returned');
+            }
+
+            store.setUser(userData);
+
+            // Check role access
+            if (requiredRoles?.length && !requiredRoles.includes(userData.role)) {
+              console.log('[Auth] Role check failed, redirecting to unauthorized');
+              router.replace('/unauthorized');
+              return;
+            }
+            console.log('[Auth] Auth complete, user authenticated with role:', userData.role);
+          } catch (error) {
+            console.error('[Auth] Error fetching user profile:', error);
+            store.setError('Failed to load user profile');
+            try {
+              await signOut();
+            } catch (signOutError) {
+              console.error('[Auth] Error signing out:', signOutError);
+            }
+            store.logout();
+            if (!pathname.includes('/login')) {
+              router.replace(redirectTo);
+            }
+          }
+        } else {
+          console.log('[Auth] No Firebase user, logging out');
+          // No Firebase user - logout
+          store.logout();
+          if (!pathname.includes('/login') && !pathname.includes('/forgot-password')) {
+            router.replace(redirectTo);
+          }
+        }
+      });
+    } catch (error) {
+      console.error('[Auth] Error setting up auth listener:', error);
+      store.logout();
+      if (!pathname.includes('/login')) {
+        router.replace(redirectTo);
+      }
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      unsubscribe?.();
+    };
   }, []);
 
   // Login function

@@ -68,6 +68,12 @@ export async function changePassword(
 
 // Auth state listener
 export function onAuthChange(callback: (user: User | null) => void): () => void {
+  if (!auth) {
+    console.warn('[Firebase] Auth not initialized - SSR context?');
+    // Return a no-op unsubscribe if auth is not available
+    setTimeout(() => callback(null), 0);
+    return () => {};
+  }
   return onAuthStateChanged(auth, callback);
 }
 
