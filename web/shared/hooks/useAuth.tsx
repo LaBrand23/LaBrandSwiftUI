@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { onAuthChange, signIn, signOut } from '../lib/firebase';
 import { useAuthStore } from '../stores/authStore';
@@ -17,81 +17,60 @@ export function useAuth(options: UseAuthOptions = {}) {
   const { requiredRoles, redirectTo = '/login' } = options;
   const router = useRouter();
   const pathname = usePathname();
-  const [isInitialized, setIsInitialized] = useState(false);
+  const initRef = useRef(false);
 
-  const {
-    user,
-    firebaseUser,
-    isLoading,
-    isAuthenticated,
-    setFirebaseUser,
-    setUser,
-    setLoading,
-    setError,
-    logout: storeLogout,
-    hasRole,
-    isAdmin,
-    isRootAdmin,
-    isBrandManager,
-  } = useAuthStore();
+  const store = useAuthStore();
+  const { user, firebaseUser, isLoading, isAuthenticated } = store;
 
   // Listen to Firebase auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthChange(async (firebaseUser) => {
-      setFirebaseUser(firebaseUser);
+    // Prevent multiple subscriptions
+    if (initRef.current) return;
+    initRef.current = true;
 
-      if (firebaseUser) {
+    const unsubscribe = onAuthChange(async (fbUser) => {
+      store.setFirebaseUser(fbUser);
+
+      if (fbUser) {
         try {
-          // Fetch user profile from API
+          // Fetch user data from API
           const userData = await authService.getMe();
-          setUser(userData);
+          store.setUser(userData);
 
           // Check role access
-          if (requiredRoles && requiredRoles.length > 0) {
-            if (!requiredRoles.includes(userData.role)) {
-              // Redirect based on role
-              if (userData.role === 'brand_manager') {
-                router.replace('/');
-              } else if (userData.role === 'admin' || userData.role === 'root_admin') {
-                router.replace('/');
-              } else {
-                router.replace(redirectTo);
-              }
-              return;
-            }
+          if (requiredRoles?.length && !requiredRoles.includes(userData.role)) {
+            router.replace('/unauthorized');
+            return;
           }
         } catch (error) {
           console.error('Error fetching user profile:', error);
-          setError('Failed to load user profile');
+          store.setError('Failed to load user profile');
           await signOut();
-          storeLogout();
+          store.logout();
         }
       } else {
-        storeLogout();
-        // Redirect to login if on protected route
+        // No Firebase user - logout
+        store.logout();
         if (!pathname.includes('/login') && !pathname.includes('/forgot-password')) {
           router.replace(redirectTo);
         }
       }
-
-      setIsInitialized(true);
     });
 
     return () => unsubscribe();
-  }, [pathname, redirectTo, requiredRoles, router, setError, setFirebaseUser, setUser, storeLogout]);
+  }, []);
 
   // Login function
   const login = async (email: string, password: string) => {
-    setLoading(true);
-    setError(null);
+    store.setLoading(true);
+    store.setError(null);
 
     try {
       await signIn(email, password);
-      // Auth state listener will handle the rest
+      // onAuthChange will handle setting the user
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Login failed';
-      setError(errorMessage);
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      store.setError(errorMessage);
       toast.error('Login failed', errorMessage);
       throw error;
     }
@@ -101,7 +80,7 @@ export function useAuth(options: UseAuthOptions = {}) {
   const logout = async () => {
     try {
       await signOut();
-      storeLogout();
+      store.logout();
       router.replace(redirectTo);
     } catch (error) {
       console.error('Logout error:', error);
@@ -111,14 +90,14 @@ export function useAuth(options: UseAuthOptions = {}) {
   return {
     user,
     firebaseUser,
-    isLoading: !isInitialized || isLoading,
+    isLoading,
     isAuthenticated,
     login,
     logout,
-    hasRole,
-    isAdmin,
-    isRootAdmin,
-    isBrandManager,
+    hasRole: store.hasRole,
+    isAdmin: store.isAdmin,
+    isRootAdmin: store.isRootAdmin,
+    isBrandManager: store.isBrandManager,
   };
 }
 
@@ -139,7 +118,7 @@ export function withAuth<P extends object>(
     }
 
     if (!isAuthenticated) {
-      return null; // Will redirect in useAuth
+      return null;
     }
 
     return <WrappedComponent {...props} />;

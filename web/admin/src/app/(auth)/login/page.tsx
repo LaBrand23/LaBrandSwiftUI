@@ -9,9 +9,8 @@ import { z } from 'zod';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { Button } from '../../../../../shared/components/ui/Button';
 import { FormInput } from '../../../../../shared/components/forms/FormField';
-import { signIn } from '../../../../../shared/lib/firebase';
+import { signIn, signOut } from '../../../../../shared/lib/firebase';
 import { authService } from '../../../../../shared/services/auth.service';
-import { useAuthStore } from '../../../../../shared/stores/authStore';
 import { toast } from '../../../../../shared/stores/uiStore';
 
 const loginSchema = z.object({
@@ -25,7 +24,6 @@ export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { setUser, setFirebaseUser } = useAuthStore();
 
   const {
     register,
@@ -44,21 +42,20 @@ export default function LoginPage() {
 
     try {
       // Sign in with Firebase
-      const firebaseUser = await signIn(data.email, data.password);
-      setFirebaseUser(firebaseUser);
+      await signIn(data.email, data.password);
 
-      // Get user profile from API
+      // Verify user has admin access before navigating
       const userData = await authService.getMe();
 
-      // Check if user has admin access
       if (userData.role !== 'admin' && userData.role !== 'root_admin') {
+        await signOut();
         toast.error('Access denied', 'You do not have permission to access the admin panel');
         setIsLoading(false);
         return;
       }
 
-      setUser(userData);
       toast.success('Welcome back!', `Logged in as ${userData.full_name}`);
+      // Navigate to dashboard - onAuthChange will handle setting user
       router.push('/');
     } catch (error: unknown) {
       console.error('Login error:', error);

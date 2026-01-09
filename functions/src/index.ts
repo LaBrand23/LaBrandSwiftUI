@@ -10,6 +10,7 @@ import usersController from "./modules/users/users.controller";
 import ordersController from "./modules/orders/orders.controller";
 import favoritesController from "./modules/favorites/favorites.controller";
 import reviewsController from "./modules/reviews/reviews.controller";
+import analyticsController from "./modules/analytics/analytics.controller";
 
 // Initialize Express app
 const app = express();
@@ -40,6 +41,7 @@ app.use("/users", usersController);
 app.use("/orders", ordersController);
 app.use("/favorites", favoritesController);
 app.use("/reviews", reviewsController);
+app.use("/analytics", analyticsController);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {

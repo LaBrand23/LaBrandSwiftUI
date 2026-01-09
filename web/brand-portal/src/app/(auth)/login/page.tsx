@@ -2,15 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn, signOut } from '@shared/lib/firebase';
 import { authService } from '@shared/services/auth.service';
-import { useAuthStore } from '@shared/stores/authStore';
 import { useUIStore } from '@shared/stores/uiStore';
 import { Button } from '@shared/components/ui/Button';
 import { Input } from '@shared/components/ui/Input';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setUser, setLoading: setAuthLoading } = useAuthStore();
   const { addToast } = useUIStore();
 
   const [email, setEmail] = useState('');
@@ -24,18 +23,21 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const { user } = await authService.login(email, password);
+      // Sign in with Firebase
+      await signIn(email, password);
 
-      // Check if user has brand_manager role
+      // Verify user has brand_manager role before navigating
+      const user = await authService.getMe();
+
       if (user.role !== 'brand_manager') {
+        await signOut();
         setError('This portal is only for brand managers. Please contact support.');
-        await authService.logout();
         setIsLoading(false);
         return;
       }
 
-      setUser(user);
       addToast('Welcome back!', 'success');
+      // Navigate to dashboard - onAuthChange will handle setting user
       router.push('/');
     } catch (err: any) {
       setError(err.message || 'Invalid email or password');
