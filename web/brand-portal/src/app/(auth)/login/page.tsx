@@ -4,13 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, signOut } from '@shared/lib/firebase';
 import { authService } from '@shared/services/auth.service';
-import { useUIStore } from '@shared/stores/uiStore';
+import { toast } from '@shared/stores/uiStore';
 import { Button } from '@shared/components/ui/Button';
 import { Input } from '@shared/components/ui/Input';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { addToast } = useUIStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,7 +35,7 @@ export default function LoginPage() {
         return;
       }
 
-      addToast('Welcome back!', 'success');
+      toast.success('Welcome back!');
       // Navigate to dashboard - onAuthChange will handle setting user
       router.push('/');
     } catch (err: any) {

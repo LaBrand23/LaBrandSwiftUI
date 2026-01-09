@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@shared/stores/authStore';
 import { useUIStore } from '@shared/stores/uiStore';
 import { authService } from '@shared/services/auth.service';
+import { auth } from '@shared/lib/firebase';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { Spinner } from '@shared/components/ui/Spinner';
@@ -22,11 +23,15 @@ export default function DashboardLayout({
     const checkAuth = async () => {
       setLoading(true);
       try {
-        const currentUser = await authService.getCurrentUser();
-        if (!currentUser) {
+        // Wait for Firebase auth to be ready
+        const firebaseUser = auth.currentUser;
+        if (!firebaseUser) {
           router.push('/login');
           return;
         }
+
+        // Get user profile from API
+        const currentUser = await authService.getMe();
 
         // Check if user has brand_manager role
         if (currentUser.role !== 'brand_manager') {
@@ -37,6 +42,7 @@ export default function DashboardLayout({
 
         setUser(currentUser);
       } catch (error) {
+        console.error('Auth check failed:', error);
         router.push('/login');
       } finally {
         setLoading(false);

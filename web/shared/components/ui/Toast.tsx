@@ -32,7 +32,7 @@ interface ToastItemProps {
 }
 
 function ToastItem({ toast, onRemove }: ToastItemProps) {
-  const Icon = icons[toast.type];
+  const Icon = icons[toast.type] || Info;
 
   return (
     <div
