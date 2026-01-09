@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
-import { Search, Plus, Filter, MoreHorizontal, Eye, Edit, Trash2, UserX, UserCheck } from 'lucide-react';
+import { Search, MoreHorizontal, Eye, Edit, Trash2, UserX, UserCheck, UserPlus } from 'lucide-react';
 import { PageHeader } from '../../../../../shared/components/layouts/PageHeader';
 import { Card, CardContent } from '../../../../../shared/components/ui/Card';
 import { Button } from '../../../../../shared/components/ui/Button';
@@ -20,12 +19,13 @@ import {
   DropdownItem,
   DropdownSeparator,
 } from '../../../../../shared/components/ui/Dropdown';
-import { ConfirmModal } from '../../../../../shared/components/ui/Modal';
-import { usersService } from '../../../../../shared/services/users.service';
+import { Modal, ConfirmModal } from '../../../../../shared/components/ui/Modal';
+import { usersService, CreateUserData } from '../../../../../shared/services/users.service';
+import { brandsService } from '../../../../../shared/services/brands.service';
 import { formatDate } from '../../../../../shared/lib/utils';
 import { toast } from '../../../../../shared/stores/uiStore';
 import { useAuthStore } from '../../../../../shared/stores/authStore';
-import { User, UserRole } from '../../../../../shared/types';
+import { User, UserRole, Brand } from '../../../../../shared/types';
 
 const roleOptions: SelectOption[] = [
   { value: '', label: 'All Roles' },
@@ -48,6 +48,22 @@ const roleColors: Record<UserRole, 'default' | 'success' | 'warning' | 'error' |
   root_admin: 'error',
 };
 
+const createRoleOptions: SelectOption[] = [
+  { value: 'client', label: 'Client' },
+  { value: 'brand_manager', label: 'Brand Manager' },
+  { value: 'admin', label: 'Admin' },
+  { value: 'root_admin', label: 'Root Admin' },
+];
+
+const initialFormData: CreateUserData = {
+  email: '',
+  password: '',
+  full_name: '',
+  phone: '',
+  role: 'client',
+  brand_id: undefined,
+};
+
 export default function UsersPage() {
   const { isRootAdmin } = useAuthStore();
   const [page, setPage] = useState(1);
@@ -57,6 +73,18 @@ export default function UsersPage() {
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; user: User | null }>({
     open: false,
     user: null,
+  });
+
+  // Create user modal state
+  const [createModal, setCreateModal] = useState(false);
+  const [formData, setFormData] = useState<CreateUserData>(initialFormData);
+  const [isCreating, setIsCreating] = useState(false);
+
+  // Fetch brands for brand manager selection
+  const { data: brandsData } = useQuery({
+    queryKey: ['brands-for-select'],
+    queryFn: () => brandsService.getBrands({ limit: 100, is_active: true }),
+    enabled: createModal && formData.role === 'brand_manager',
   });
 
   const { data, isLoading, refetch } = useQuery({
@@ -104,6 +132,40 @@ export default function UsersPage() {
     }
   };
 
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validation
+    if (!formData.email || !formData.password || !formData.full_name) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (formData.role === 'brand_manager' && !formData.brand_id) {
+      toast.error('Please select a brand for the brand manager');
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      await usersService.createUser(formData);
+      toast.success('User created successfully');
+      setCreateModal(false);
+      setFormData(initialFormData);
+      refetch();
+    } catch (error: unknown) {
+      const err = error as { error?: string };
+      toast.error('Failed to create user', err.error || 'Please try again');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const openCreateModal = () => {
+    setFormData(initialFormData);
+    setCreateModal(true);
+  };
+
   return (
     <>
       <PageHeader
@@ -113,6 +175,11 @@ export default function UsersPage() {
           { label: 'Dashboard', href: '/' },
           { label: 'Users' },
         ]}
+        actions={
+          <Button onClick={openCreateModal} leftIcon={<UserPlus className="h-4 w-4" />}>
+            Create User
+          </Button>
+        }
       />
 
       {/* Filters */}
@@ -319,6 +386,118 @@ export default function UsersPage() {
         confirmText="Delete"
         variant="danger"
       />
+
+      {/* Create User Modal */}
+      <Modal
+        isOpen={createModal}
+        onClose={() => setCreateModal(false)}
+        title="Create New User"
+        size="md"
+      >
+        <form onSubmit={handleCreateUser} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Full Name <span className="text-status-error">*</span>
+            </label>
+            <Input
+              placeholder="Enter full name"
+              value={formData.full_name}
+              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Email <span className="text-status-error">*</span>
+            </label>
+            <Input
+              type="email"
+              placeholder="Enter email address"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Password <span className="text-status-error">*</span>
+            </label>
+            <Input
+              type="password"
+              placeholder="Enter password (min 6 characters)"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              minLength={6}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Phone
+            </label>
+            <Input
+              type="tel"
+              placeholder="Enter phone number"
+              value={formData.phone || ''}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Role <span className="text-status-error">*</span>
+            </label>
+            <Select
+              options={createRoleOptions}
+              value={formData.role}
+              onChange={(e) => setFormData({
+                ...formData,
+                role: e.target.value as UserRole,
+                brand_id: undefined // Reset brand when role changes
+              })}
+            />
+          </div>
+
+          {formData.role === 'brand_manager' && (
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                Assign to Brand <span className="text-status-error">*</span>
+              </label>
+              <Select
+                options={[
+                  { value: '', label: 'Select a brand...' },
+                  ...(brandsData?.data || []).map((brand) => ({
+                    value: brand.id,
+                    label: brand.name,
+                  })),
+                ]}
+                value={formData.brand_id || ''}
+                onChange={(e) => setFormData({ ...formData, brand_id: e.target.value || undefined })}
+              />
+              <p className="text-xs text-text-muted mt-1">
+                Brand managers can only manage products and orders for their assigned brand.
+              </p>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-border-primary">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setCreateModal(false)}
+              disabled={isCreating}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" isLoading={isCreating}>
+              Create User
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }

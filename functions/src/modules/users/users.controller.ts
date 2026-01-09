@@ -22,6 +22,16 @@ const updateRoleSchema = z.object({
   brand_id: z.string().uuid().optional(),
 });
 
+const createUserSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  full_name: z.string().min(1, "Full name is required").max(255),
+  phone: z.string().optional(),
+  role: z.enum(["root_admin", "admin", "brand_manager", "client"]),
+  brand_id: z.string().uuid().optional(),
+  branch_id: z.string().uuid().optional(),
+});
+
 const addressSchema = z.object({
   label: z.string().min(1).max(50),
   full_name: z.string().min(1).max(255),
@@ -49,6 +59,38 @@ router.get("/", verifyAuth, requireAdmin, async (req: Request, res: Response) =>
     serverError(res, "Failed to fetch users");
   }
 });
+
+/**
+ * POST /users
+ * Create a new user (Admin only)
+ */
+router.post(
+  "/",
+  verifyAuth,
+  requireAdmin,
+  validateBody(createUserSchema),
+  async (req: Request, res: Response) => {
+    try {
+      const user = await usersService.createUser({
+        email: req.body.email,
+        password: req.body.password,
+        full_name: req.body.full_name,
+        phone: req.body.phone,
+        role: req.body.role as UserRole,
+        brand_id: req.body.brand_id,
+        branch_id: req.body.branch_id,
+      });
+      success(res, user, "User created successfully");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        error(res, err.message, err.statusCode);
+        return;
+      }
+      console.error("Create user error:", err);
+      serverError(res, "Failed to create user");
+    }
+  }
+);
 
 /**
  * GET /users/me

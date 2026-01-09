@@ -72,10 +72,19 @@ export class BrandsService {
    */
   async createBrand(input: {
     name: string;
+    slug?: string;
     logo_url?: string;
     description?: string;
+    website?: string;
+    is_featured?: boolean;
   }): Promise<Brand> {
-    const slug = generateSlug(input.name);
+    // Use provided slug or generate from name
+    const slug = input.slug || generateSlug(input.name);
+
+    // Validate slug is not empty
+    if (!slug) {
+      throw new ConflictError("Brand name must contain valid characters");
+    }
 
     // Check for duplicate
     const { data: existing } = await supabase
@@ -93,13 +102,19 @@ export class BrandsService {
       .insert({
         name: input.name,
         slug,
-        logo_url: input.logo_url,
-        description: input.description,
+        logo_url: input.logo_url || null,
+        description: input.description || null,
+        website: input.website || null,
+        is_active: true,
+        is_featured: input.is_featured || false,
       })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error("Error creating brand:", error);
+      throw new ConflictError("Failed to create brand: " + error.message);
+    }
     return data;
   }
 

@@ -30,7 +30,23 @@ export interface UpdateUserRoleData {
   branch_id?: string;
 }
 
+export interface CreateUserData {
+  email: string;
+  password: string;
+  full_name: string;
+  phone?: string;
+  role: UserRole;
+  brand_id?: string;
+  branch_id?: string;
+}
+
 export const usersService = {
+  // Create a new user (admin only)
+  async createUser(data: CreateUserData): Promise<User> {
+    const response = await apiClient.post<unknown, { data: User }>('/users', data);
+    return response.data;
+  },
+
   // Get all users
   async getUsers(params: UsersQueryParams = {}): Promise<UsersResponse> {
     const queryString = buildQueryString(params as Record<string, unknown>);

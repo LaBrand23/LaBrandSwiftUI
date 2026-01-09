@@ -12,8 +12,11 @@ const router = Router();
 // Validation schemas
 const createBrandSchema = z.object({
   name: z.string().min(1).max(255),
-  logo_url: z.string().url().optional(),
+  slug: z.string().optional(),
+  logo_url: z.string().url().optional().or(z.literal('')),
   description: z.string().optional(),
+  website: z.string().url().optional().or(z.literal('')),
+  is_featured: z.boolean().optional(),
 });
 
 const updateBrandSchema = z.object({

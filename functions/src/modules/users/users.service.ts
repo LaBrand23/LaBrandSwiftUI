@@ -1,6 +1,7 @@
 import supabase from "../../config/supabase";
+import { auth as firebaseAuth } from "../../config/firebase";
 import { User, Address } from "../../types";
-import { NotFoundError } from "../../utils/errors";
+import { NotFoundError, BadRequestError } from "../../utils/errors";
 import { parsePagination, parseSort } from "../../utils/helpers";
 import { UserRole } from "../../config/constants";
 
@@ -42,6 +43,87 @@ export class UsersService {
       users: data || [],
       total: count || 0,
     };
+  }
+
+  /**
+   * Create a new user (Admin only)
+   * Creates both Firebase Auth user and Supabase record
+   */
+  async createUser(input: {
+    email: string;
+    password: string;
+    full_name: string;
+    phone?: string;
+    role: UserRole;
+    brand_id?: string;
+    branch_id?: string;
+  }): Promise<User> {
+    // Validate brand_id for brand managers
+    if (input.role === UserRole.BRAND_MANAGER && !input.brand_id) {
+      throw new BadRequestError("Brand ID is required for brand managers");
+    }
+
+    // Check if email already exists in Supabase
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", input.email)
+      .single();
+
+    if (existingUser) {
+      throw new BadRequestError("A user with this email already exists");
+    }
+
+    // Create Firebase Auth user
+    let firebaseUser;
+    try {
+      firebaseUser = await firebaseAuth.createUser({
+        email: input.email,
+        password: input.password,
+        displayName: input.full_name,
+        emailVerified: true, // Auto-verify for admin-created accounts
+      });
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string };
+      if (error.code === "auth/email-already-exists") {
+        throw new BadRequestError("A user with this email already exists in Firebase");
+      }
+      throw new BadRequestError(error.message || "Failed to create Firebase user");
+    }
+
+    // Create Supabase user record
+    try {
+      const { data: user, error } = await supabase
+        .from("users")
+        .insert({
+          firebase_uid: firebaseUser.uid,
+          email: input.email,
+          full_name: input.full_name,
+          phone: input.phone,
+          role: input.role,
+          brand_id: input.role === UserRole.BRAND_MANAGER ? input.brand_id : null,
+          branch_id: input.role === UserRole.BRAND_MANAGER ? input.branch_id : null,
+          is_active: true,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        // Rollback: delete Firebase user if Supabase insert fails
+        await firebaseAuth.deleteUser(firebaseUser.uid);
+        throw error;
+      }
+
+      return user;
+    } catch (err) {
+      // Rollback: delete Firebase user if anything fails
+      try {
+        await firebaseAuth.deleteUser(firebaseUser.uid);
+      } catch {
+        console.error("Failed to rollback Firebase user:", firebaseUser.uid);
+      }
+      throw err;
+    }
   }
 
   /**
