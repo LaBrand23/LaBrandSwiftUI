@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
 import { toast } from '@shared/stores/uiStore';
-import { productsService, CreateProductPayload } from '@shared/services/products.service';
+import { productsService, CreateProductData } from '@shared/services/products.service';
 import { categoriesService } from '@shared/services/categories.service';
 import { Gender } from '@shared/types';
 import { Card } from '@shared/components/ui/Card';
@@ -103,7 +103,7 @@ export default function NewProductPage() {
   ];
 
   const createMutation = useMutation({
-    mutationFn: (payload: CreateProductPayload) => productsService.create(payload),
+    mutationFn: (payload: CreateProductData) => productsService.createProduct(payload),
     onSuccess: (product) => {
       toast.success('Product created successfully');
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -125,30 +125,22 @@ export default function NewProductPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) newErrors.name = 'Product name is required';
-    if (!formData.sku.trim()) newErrors.sku = 'SKU is required';
     if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = 'Valid price is required';
     if (!formData.category_id) newErrors.category_id = 'Category is required';
-    if (!formData.gender) newErrors.gender = 'Gender is required';
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      const payload: CreateProductPayload = {
+      // Match backend createProductSchema
+      const payload: CreateProductData = {
         name: formData.name.trim(),
-        sku: formData.sku.trim(),
+        category_id: formData.category_id,
         description: formData.description.trim() || undefined,
         price: parseFloat(formData.price),
-        compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : undefined,
-        cost_per_item: formData.cost_per_item ? parseFloat(formData.cost_per_item) : undefined,
-        category_id: formData.category_id,
-        gender: formData.gender as Gender,
-        brand_id: brandId!,
-        branch_id: branchId || undefined,
+        sale_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : undefined,
         stock_quantity: parseInt(formData.stock_quantity) || 0,
-        low_stock_threshold: parseInt(formData.low_stock_threshold) || 5,
-        images: formData.images,
-        tags: formData.tags.length > 0 ? formData.tags : undefined,
-        status: formData.status,
+        is_featured: false,
+        is_new: true,
       };
 
       createMutation.mutate(payload);

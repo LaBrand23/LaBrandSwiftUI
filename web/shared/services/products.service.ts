@@ -20,28 +20,14 @@ export interface ProductResponse {
 }
 
 export interface CreateProductData {
-  brand_id: string;
-  branch_id: string;
-  category_id: string;
   name: string;
-  sku: string;
+  category_id: string;
   description?: string;
-  short_description?: string;
   price: number;
-  compare_at_price?: number;
-  cost_price?: number;
-  status?: ProductStatus;
+  sale_price?: number;
+  is_new?: boolean;
   is_featured?: boolean;
-  stock_quantity: number;
-  low_stock_threshold?: number;
-  weight?: number;
-  dimensions?: {
-    length: number;
-    width: number;
-    height: number;
-  };
-  images?: string[];
-  tags?: string[];
+  stock_quantity?: number;
 }
 
 export interface CreateVariantData {
