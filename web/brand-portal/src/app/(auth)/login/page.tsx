@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, signOut } from '@shared/lib/firebase';
 import { authService } from '@shared/services/auth.service';
+import { useAuthStore } from '@shared/stores/authStore';
 import { toast } from '@shared/stores/uiStore';
 import { Button } from '@shared/components/ui/Button';
 import { Input } from '@shared/components/ui/Input';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useAuthStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,10 +37,15 @@ export default function LoginPage() {
         return;
       }
 
+      // Set user in auth store before navigation
+      setUser(user);
+
       toast.success('Welcome back!');
-      // Navigate to dashboard - onAuthChange will handle setting user
-      router.push('/');
+
+      // Navigate to dashboard
+      window.location.href = '/';
     } catch (err: any) {
+      console.error('[Login] Error:', err);
       setError(err.message || 'Invalid email or password');
     } finally {
       setIsLoading(false);

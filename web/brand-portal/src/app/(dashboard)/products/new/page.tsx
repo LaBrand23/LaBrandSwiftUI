@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
+import { toast } from '@shared/stores/uiStore';
 import { productsService, CreateProductPayload } from '@shared/services/products.service';
 import { categoriesService } from '@shared/services/categories.service';
 import { Gender } from '@shared/types';
@@ -70,10 +70,10 @@ export default function NewProductPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { addToast } = useUIStore();
 
-  const brandId = user?.brand_assignment?.brand_id;
-  const branchId = user?.brand_assignment?.branch_id;
+  // Get brand_id directly from user (not brand_assignment)
+  const brandId = user?.brand_id;
+  const branchId = user?.branch_id;
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -105,12 +105,12 @@ export default function NewProductPage() {
   const createMutation = useMutation({
     mutationFn: (payload: CreateProductPayload) => productsService.create(payload),
     onSuccess: (product) => {
-      addToast('Product created successfully', 'success');
+      toast.success('Product created successfully');
       queryClient.invalidateQueries({ queryKey: ['products'] });
       router.push(`/products/${product.id}`);
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to create product', 'error');
+      toast.error(error.message || 'Failed to create product');
     },
   });
 

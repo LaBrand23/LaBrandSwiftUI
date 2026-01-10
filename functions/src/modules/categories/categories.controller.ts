@@ -40,6 +40,21 @@ router.get("/", async (_req: Request, res: Response) => {
 });
 
 /**
+ * GET /categories/tree
+ * Get category tree - alias for / (public)
+ */
+router.get("/tree", async (req: Request, res: Response) => {
+  try {
+    const gender = req.query.gender as string | undefined;
+    const categories = await categoriesService.getCategoryTree(gender);
+    success(res, categories);
+  } catch (err) {
+    console.error("Get categories tree error:", err);
+    serverError(res, "Failed to fetch categories");
+  }
+});
+
+/**
  * GET /categories/:id
  * Get category by ID (public)
  */

@@ -17,6 +17,12 @@ export interface User {
 }
 
 export interface AuthUser extends User {
+  brand?: {
+    id: string;
+    name: string;
+    slug: string;
+    logo_url?: string;
+  };
   brand_assignment?: {
     brand_id: string;
     brand_name: string;

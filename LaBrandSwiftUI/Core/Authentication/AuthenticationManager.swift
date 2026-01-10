@@ -42,26 +42,26 @@ struct AppUser: Identifiable, Codable {
 
 // MARK: - Auth Error
 enum AuthError: LocalizedError {
-    case invalidCredentials
+        case invalidCredentials
     case networkError(Error)
-    case invalidEmail
-    case weakPassword
+        case invalidEmail
+        case weakPassword
     case emailAlreadyInUse
     case userNotFound
     case wrongPassword
     case tooManyRequests
     case unknown(Error)
-    
+        
     var errorDescription: String? {
-        switch self {
-        case .invalidCredentials:
-            return "Invalid email or password"
-        case .networkError:
+            switch self {
+            case .invalidCredentials:
+                return "Invalid email or password"
+            case .networkError:
             return "Network error occurred. Please try again."
-        case .invalidEmail:
+            case .invalidEmail:
             return "Please enter a valid email address"
-        case .weakPassword:
-            return "Password must be at least 8 characters"
+            case .weakPassword:
+                return "Password must be at least 8 characters"
         case .emailAlreadyInUse:
             return "This email is already registered"
         case .userNotFound:
@@ -72,10 +72,10 @@ enum AuthError: LocalizedError {
             return "Too many attempts. Please try again later."
         case .unknown(let error):
             return error.localizedDescription
+            }
         }
     }
-}
-
+    
 // MARK: - Authentication Manager
 @MainActor
 class AuthenticationManager: ObservableObject {
@@ -186,8 +186,8 @@ class AuthenticationManager: ObservableObject {
     func signOut() {
         do {
             try Auth.auth().signOut()
-            isAuthenticated = false
-            currentUser = nil
+        isAuthenticated = false
+        currentUser = nil
         } catch {
             print("Sign out error: \(error)")
         }

@@ -65,31 +65,26 @@ export default function Sidebar() {
       </div>
 
       {/* Brand Info */}
-      {isSidebarOpen && user?.brand_assignment && (
+      {isSidebarOpen && user?.brand && (
         <div className="p-4 border-b border-neutral-100">
           <div className="flex items-center gap-3">
-            {user.brand_assignment.brand_logo ? (
+            {user.brand.logo_url ? (
               <img
-                src={user.brand_assignment.brand_logo}
-                alt={user.brand_assignment.brand_name}
+                src={user.brand.logo_url}
+                alt={user.brand.name}
                 className="w-10 h-10 rounded-lg object-cover"
               />
             ) : (
               <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
                 <span className="text-lg font-bold text-primary-600">
-                  {user.brand_assignment.brand_name.charAt(0)}
+                  {user.brand.name.charAt(0)}
                 </span>
               </div>
             )}
             <div className="flex-1 min-w-0">
               <p className="font-medium text-neutral-900 truncate">
-                {user.brand_assignment.brand_name}
+                {user.brand.name}
               </p>
-              {user.brand_assignment.branch_name && (
-                <p className="text-xs text-neutral-500 truncate">
-                  {user.brand_assignment.branch_name}
-                </p>
-              )}
             </div>
           </div>
         </div>

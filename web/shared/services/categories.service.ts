@@ -38,10 +38,10 @@ export const categoriesService = {
 
   async getTree(gender?: Gender): Promise<Category[]> {
     const queryString = gender ? `?gender=${gender}` : '';
-    const response = await apiClient.get<ApiResponse<Category[]>>(
+    const response = await apiClient.get<unknown, { success: boolean; data: Category[] }>(
       `/categories/tree${queryString}`
     );
-    return response.data.data;
+    return response.data;
   },
 
   async getRootCategories(): Promise<Category[]> {

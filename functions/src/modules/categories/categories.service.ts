@@ -7,12 +7,17 @@ export class CategoriesService {
   /**
    * Get all root categories with children (tree structure)
    */
-  async getCategoryTree(): Promise<Category[]> {
-    const { data, error } = await supabase
+  async getCategoryTree(gender?: string): Promise<Category[]> {
+    let query = supabase
       .from("categories")
       .select("*")
-      .eq("is_active", true)
-      .order("position", { ascending: true });
+      .eq("is_active", true);
+
+    if (gender) {
+      query = query.or(`gender.eq.${gender},gender.eq.unisex,gender.is.null`);
+    }
+
+    const { data, error } = await query.order("position", { ascending: true });
 
     if (error) throw error;
 
