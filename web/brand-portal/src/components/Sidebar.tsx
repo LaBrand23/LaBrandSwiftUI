@@ -31,12 +31,12 @@ const navigation = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuthStore();
-  const { isSidebarOpen, toggleSidebar } = useUIStore();
+  const { sidebarCollapsed, toggleSidebarCollapsed } = useUIStore();
 
   return (
     <aside
       className={`fixed left-0 top-0 h-full bg-white border-r border-neutral-200 z-40 transition-all duration-300 ${
-        isSidebarOpen ? 'w-64' : 'w-20'
+        sidebarCollapsed ? 'w-20' : 'w-64'
       } hidden lg:block`}
     >
       {/* Logo */}
@@ -45,7 +45,7 @@ export default function Sidebar() {
           <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
             <span className="text-lg font-bold text-primary-600">LB</span>
           </div>
-          {isSidebarOpen && (
+          {!sidebarCollapsed && (
             <div>
               <span className="font-semibold text-neutral-900">LaBrand</span>
               <p className="text-xs text-neutral-500">Brand Portal</p>
@@ -53,19 +53,19 @@ export default function Sidebar() {
           )}
         </Link>
         <button
-          onClick={toggleSidebar}
+          onClick={toggleSidebarCollapsed}
           className="p-1.5 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
         >
-          {isSidebarOpen ? (
-            <ChevronLeftIcon className="w-5 h-5" />
-          ) : (
+          {sidebarCollapsed ? (
             <ChevronRightIcon className="w-5 h-5" />
+          ) : (
+            <ChevronLeftIcon className="w-5 h-5" />
           )}
         </button>
       </div>
 
       {/* Brand Info */}
-      {isSidebarOpen && user?.brand && (
+      {!sidebarCollapsed && user?.brand && (
         <div className="p-4 border-b border-neutral-100">
           <div className="flex items-center gap-3">
             {user.brand.logo_url ? (
@@ -106,10 +106,10 @@ export default function Sidebar() {
                   ? 'bg-primary-50 text-primary-700'
                   : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
               }`}
-              title={!isSidebarOpen ? item.name : undefined}
+              title={sidebarCollapsed ? item.name : undefined}
             >
               <item.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : ''}`} />
-              {isSidebarOpen && (
+              {!sidebarCollapsed && (
                 <span className="font-medium">{item.name}</span>
               )}
             </Link>

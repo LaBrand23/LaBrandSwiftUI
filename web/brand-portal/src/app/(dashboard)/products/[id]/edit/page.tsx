@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
-import { productsService, UpdateProductPayload } from '@shared/services/products.service';
+import { toast } from '@shared/stores/uiStore';
+import { productsService, CreateProductData } from '@shared/services/products.service';
 import { categoriesService } from '@shared/services/categories.service';
 import { Gender, ProductStatus } from '@shared/types';
 import { Card } from '@shared/components/ui/Card';
@@ -43,7 +43,7 @@ interface FormData {
   description: string;
   price: string;
   compare_at_price: string;
-  cost_per_item: string;
+  cost_price: string;
   category_id: string;
   gender: Gender | '';
   stock_quantity: string;
@@ -58,10 +58,9 @@ export default function EditProductPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { addToast } = useUIStore();
 
   const productId = params.id as string;
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const [formData, setFormData] = useState<FormData | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -71,7 +70,7 @@ export default function EditProductPage() {
   // Fetch product
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', productId],
-    queryFn: () => productsService.getById(productId),
+    queryFn: () => productsService.getProduct(productId),
     enabled: !!productId,
   });
 
@@ -106,7 +105,7 @@ export default function EditProductPage() {
         description: product.description || '',
         price: product.price.toString(),
         compare_at_price: product.compare_at_price?.toString() || '',
-        cost_per_item: product.cost_per_item?.toString() || '',
+        cost_price: product.cost_price?.toString() || '',
         category_id: product.category_id || '',
         gender: product.gender || '',
         stock_quantity: product.stock_quantity.toString(),
@@ -119,14 +118,14 @@ export default function EditProductPage() {
   }, [product]);
 
   const updateMutation = useMutation({
-    mutationFn: (payload: UpdateProductPayload) => productsService.update(productId, payload),
+    mutationFn: (payload: Partial<CreateProductData>) => productsService.updateProduct(productId, payload),
     onSuccess: () => {
-      addToast('Product updated successfully', 'success');
+      toast.success('Product updated successfully');
       queryClient.invalidateQueries({ queryKey: ['product', productId] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to update product', 'error');
+      toast.error(error.message || 'Failed to update product');
     },
   });
 
@@ -145,20 +144,13 @@ export default function EditProductPage() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      const payload: UpdateProductPayload = {
+      const payload: Partial<CreateProductData> = {
         name: formData.name.trim(),
-        sku: formData.sku.trim(),
+        category_id: formData.category_id,
         description: formData.description.trim() || undefined,
         price: parseFloat(formData.price),
-        compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : undefined,
-        cost_per_item: formData.cost_per_item ? parseFloat(formData.cost_per_item) : undefined,
-        category_id: formData.category_id,
-        gender: formData.gender as Gender,
+        sale_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : undefined,
         stock_quantity: parseInt(formData.stock_quantity) || 0,
-        low_stock_threshold: parseInt(formData.low_stock_threshold) || 5,
-        images: formData.images,
-        tags: formData.tags.length > 0 ? formData.tags : undefined,
-        status: formData.status,
       };
 
       updateMutation.mutate(payload);
@@ -231,7 +223,7 @@ export default function EditProductPage() {
       <div className="text-center py-12">
         <CubeIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-neutral-900 mb-2">Access Denied</h3>
-        <p className="text-neutral-500 mb-4">You don't have permission to edit this product.</p>
+        <p className="text-neutral-500 mb-4">You don&apos;t have permission to edit this product.</p>
         <Button variant="outline" onClick={() => router.push('/products')}>
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Back to Products
@@ -280,7 +272,7 @@ export default function EditProductPage() {
                   <Input
                     label="Product Name"
                     value={formData.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('name', e.target.value)}
                     placeholder="e.g., Classic Cotton T-Shirt"
                     error={errors.name}
                     required
@@ -289,7 +281,7 @@ export default function EditProductPage() {
                   <Input
                     label="SKU"
                     value={formData.sku}
-                    onChange={(e) => handleChange('sku', e.target.value.toUpperCase())}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('sku', e.target.value.toUpperCase())}
                     placeholder="PRD-XXXXXX"
                     error={errors.sku}
                     required
@@ -301,7 +293,7 @@ export default function EditProductPage() {
                     </label>
                     <textarea
                       value={formData.description}
-                      onChange={(e) => handleChange('description', e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleChange('description', e.target.value)}
                       placeholder="Describe your product..."
                       rows={4}
                       className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
@@ -320,7 +312,7 @@ export default function EditProductPage() {
                     label="Price (UZS)"
                     type="number"
                     value={formData.price}
-                    onChange={(e) => handleChange('price', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('price', e.target.value)}
                     error={errors.price}
                     required
                   />
@@ -328,14 +320,14 @@ export default function EditProductPage() {
                     label="Compare at Price"
                     type="number"
                     value={formData.compare_at_price}
-                    onChange={(e) => handleChange('compare_at_price', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('compare_at_price', e.target.value)}
                     helper="Shows as crossed out"
                   />
                   <Input
                     label="Cost per Item"
                     type="number"
-                    value={formData.cost_per_item}
-                    onChange={(e) => handleChange('cost_per_item', e.target.value)}
+                    value={formData.cost_price}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('cost_price', e.target.value)}
                     helper="For profit calculation"
                   />
                 </div>
@@ -378,7 +370,7 @@ export default function EditProductPage() {
                 <div className="flex gap-2">
                   <Input
                     value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewImageUrl(e.target.value)}
                     placeholder="Enter image URL"
                     className="flex-1"
                   />
@@ -426,9 +418,9 @@ export default function EditProductPage() {
                 <div className="flex gap-2">
                   <Input
                     value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTag(e.target.value)}
                     placeholder="Add a tag"
-                    onKeyDown={(e) => {
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
                         addTag();
@@ -453,7 +445,7 @@ export default function EditProductPage() {
                 <h2 className="text-lg font-semibold text-neutral-900 mb-4">Status</h2>
                 <Select
                   value={formData.status}
-                  onChange={(e) => handleChange('status', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('status', e.target.value)}
                   options={statusOptions}
                 />
               </div>
@@ -467,7 +459,7 @@ export default function EditProductPage() {
                   <Select
                     label="Category"
                     value={formData.category_id}
-                    onChange={(e) => handleChange('category_id', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('category_id', e.target.value)}
                     options={categoryOptions}
                     error={errors.category_id}
                     required
@@ -476,7 +468,7 @@ export default function EditProductPage() {
                   <Select
                     label="Gender"
                     value={formData.gender}
-                    onChange={(e) => handleChange('gender', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('gender', e.target.value)}
                     options={genderOptions}
                     error={errors.gender}
                     required
@@ -494,7 +486,7 @@ export default function EditProductPage() {
                     label="Stock Quantity"
                     type="number"
                     value={formData.stock_quantity}
-                    onChange={(e) => handleChange('stock_quantity', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('stock_quantity', e.target.value)}
                     min="0"
                   />
 
@@ -502,7 +494,7 @@ export default function EditProductPage() {
                     label="Low Stock Threshold"
                     type="number"
                     value={formData.low_stock_threshold}
-                    onChange={(e) => handleChange('low_stock_threshold', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('low_stock_threshold', e.target.value)}
                     min="0"
                     helper="Alert when stock falls below"
                   />

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
+import { toast } from '@shared/stores/uiStore';
 import { productsService } from '@shared/services/products.service';
 import { Product, ProductsQueryParams } from '@shared/types';
 import { formatCurrency } from '@shared/lib/utils';
@@ -32,9 +32,8 @@ const stockOptions = [
 
 export default function InventoryPage() {
   const { user } = useAuthStore();
-  const { addToast } = useUIStore();
   const queryClient = useQueryClient();
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,16 +47,17 @@ export default function InventoryPage() {
     brand_id: brandId,
     page: currentPage,
     limit: 20,
-    stock: stockFilter as any || undefined,
     search: searchQuery || undefined,
     status: 'active',
   };
 
   const { data, isLoading } = useQuery({
     queryKey: ['inventory', queryParams],
-    queryFn: () => productsService.getAll(queryParams),
+    queryFn: () => productsService.getProducts(queryParams),
     enabled: !!brandId,
   });
+
+  const products = data?.data || [];
 
   const openAdjustModal = (product: Product) => {
     setSelectedProduct(product);
@@ -68,7 +68,7 @@ export default function InventoryPage() {
 
   const handleAdjustStock = () => {
     // This would call an API to adjust stock
-    addToast('Stock updated successfully', 'success');
+    toast.success('Stock updated successfully');
     setIsAdjustModalOpen(false);
     queryClient.invalidateQueries({ queryKey: ['inventory'] });
   };
@@ -76,9 +76,9 @@ export default function InventoryPage() {
   // Calculate inventory stats
   const stats = {
     totalProducts: data?.pagination?.total || 0,
-    inStock: data?.products.filter((p) => p.stock_quantity > p.low_stock_threshold).length || 0,
-    lowStock: data?.products.filter((p) => p.stock_quantity > 0 && p.stock_quantity <= p.low_stock_threshold).length || 0,
-    outOfStock: data?.products.filter((p) => p.stock_quantity === 0).length || 0,
+    inStock: products.filter((p) => p.stock_quantity > p.low_stock_threshold).length || 0,
+    lowStock: products.filter((p) => p.stock_quantity > 0 && p.stock_quantity <= p.low_stock_threshold).length || 0,
+    outOfStock: products.filter((p) => p.stock_quantity === 0).length || 0,
   };
 
   return (
@@ -137,7 +137,7 @@ export default function InventoryPage() {
 
           <Select
             value={stockFilter}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               setStockFilter(e.target.value);
               setCurrentPage(1);
             }}
@@ -153,7 +153,7 @@ export default function InventoryPage() {
           <div className="flex items-center justify-center py-12">
             <Spinner size="lg" />
           </div>
-        ) : !data?.products.length ? (
+        ) : products.length === 0 ? (
           <div className="text-center py-12">
             <ArchiveBoxIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-neutral-900 mb-2">
@@ -189,7 +189,7 @@ export default function InventoryPage() {
                 </tr>
               </thead>
               <tbody>
-                {data.products.map((product) => {
+                {products.map((product) => {
                   const images = product.images as string[];
                   const isLowStock =
                     product.stock_quantity > 0 &&
@@ -352,7 +352,7 @@ export default function InventoryPage() {
               label="Quantity"
               type="number"
               value={adjustmentValue}
-              onChange={(e) => setAdjustmentValue(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAdjustmentValue(e.target.value)}
               min="0"
             />
 

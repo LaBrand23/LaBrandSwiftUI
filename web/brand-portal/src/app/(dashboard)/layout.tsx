@@ -18,7 +18,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const { user, isLoading, setUser, setLoading } = useAuthStore();
-  const { isSidebarOpen } = useUIStore();
+  const { sidebarCollapsed } = useUIStore();
 
   useEffect(() => {
     if (user) {
@@ -76,7 +76,7 @@ export default function DashboardLayout({
       <Sidebar />
       <div
         className={`transition-all duration-300 ${
-          isSidebarOpen ? 'lg:ml-64' : 'lg:ml-20'
+          sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
         }`}
       >
         <Header />

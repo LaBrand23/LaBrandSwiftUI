@@ -10,7 +10,7 @@ export const reviewsService = {
     reviews: Review[];
     pagination?: Pagination;
   }> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<Review[]>>(
       `/admin/reviews${queryString}`
     );

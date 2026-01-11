@@ -1,6 +1,6 @@
 'use client';
 
-import { UnauthorizedPage } from '@shared/components/auth/UnauthorizedPage';
+import { UnauthorizedPage } from '@/components/UnauthorizedPage';
 
 export default function BrandPortalUnauthorizedPage() {
   return <UnauthorizedPage />;

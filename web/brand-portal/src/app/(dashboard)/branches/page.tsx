@@ -17,11 +17,11 @@ import {
 
 export default function BranchesPage() {
   const { user } = useAuthStore();
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const { data: brandDetails, isLoading } = useQuery({
     queryKey: ['brand-details', brandId],
-    queryFn: () => brandsService.getById(brandId!),
+    queryFn: () => brandsService.getBrand(brandId!),
     enabled: !!brandId,
   });
 

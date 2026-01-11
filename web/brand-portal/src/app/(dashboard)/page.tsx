@@ -62,7 +62,7 @@ function StatCard({
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ['brand-dashboard', brandId],
@@ -88,7 +88,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-2xl font-semibold text-neutral-900">Dashboard</h1>
         <p className="text-neutral-500 mt-1">
-          Welcome back, {user?.full_name}! Here's your brand overview.
+          Welcome back, {user?.full_name}! Here&apos;s your brand overview.
         </p>
       </div>
 

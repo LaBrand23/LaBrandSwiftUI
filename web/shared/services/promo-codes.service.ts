@@ -29,7 +29,7 @@ export const promoCodesService = {
     promoCodes: PromoCode[];
     pagination?: Pagination;
   }> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<PromoCode[]>>(
       `/admin/promo-codes${queryString}`
     );

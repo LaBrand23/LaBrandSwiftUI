@@ -3,15 +3,14 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
+import { toast } from '@shared/stores/uiStore';
 import { ordersService } from '@shared/services/orders.service';
-import { Order, OrderStatus, OrdersQueryParams } from '@shared/types';
+import { OrderStatus, OrdersQueryParams } from '@shared/types';
 import { formatCurrency, formatDate } from '@shared/lib/utils';
 import { Card } from '@shared/components/ui/Card';
 import { Button } from '@shared/components/ui/Button';
 import { Badge } from '@shared/components/ui/Badge';
 import { Spinner } from '@shared/components/ui/Spinner';
-import { Modal } from '@shared/components/ui/Modal';
 import { Pagination } from '@shared/components/ui/Pagination';
 import { Select } from '@shared/components/ui/Select';
 import Link from 'next/link';
@@ -45,15 +44,12 @@ const statusBadgeVariant: Record<OrderStatus, 'warning' | 'info' | 'success' | '
 
 export default function OrdersPage() {
   const { user } = useAuthStore();
-  const { addToast } = useUIStore();
   const queryClient = useQueryClient();
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const queryParams: OrdersQueryParams = {
     brand_id: brandId,
@@ -64,26 +60,24 @@ export default function OrdersPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['orders', queryParams],
-    queryFn: () => ordersService.getAll(queryParams),
+    queryFn: () => ordersService.getOrders(queryParams),
     enabled: !!brandId,
   });
 
+  const orders = data?.data || [];
+  const pagination = data?.pagination;
+
   const updateStatusMutation = useMutation({
     mutationFn: ({ orderId, status }: { orderId: string; status: OrderStatus }) =>
-      ordersService.updateStatus(orderId, status),
+      ordersService.updateOrderStatus(orderId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-      addToast('Order status updated', 'success');
+      toast.success('Order status updated');
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to update order', 'error');
+      toast.error(error.message || 'Failed to update order');
     },
   });
-
-  const openDetailModal = (order: Order) => {
-    setSelectedOrder(order);
-    setIsDetailModalOpen(true);
-  };
 
   const handleStatusUpdate = (orderId: string, status: OrderStatus) => {
     updateStatusMutation.mutate({ orderId, status });
@@ -104,25 +98,25 @@ export default function OrdersPage() {
         <Card className="p-4">
           <div className="text-sm text-neutral-500">Pending</div>
           <div className="text-2xl font-semibold text-warning-600 mt-1">
-            {data?.orders.filter((o) => o.status === 'pending').length || 0}
+            {orders.filter((o) => o.status === 'pending').length || 0}
           </div>
         </Card>
         <Card className="p-4">
           <div className="text-sm text-neutral-500">Processing</div>
           <div className="text-2xl font-semibold text-info-600 mt-1">
-            {data?.orders.filter((o) => o.status === 'processing').length || 0}
+            {orders.filter((o) => o.status === 'processing').length || 0}
           </div>
         </Card>
         <Card className="p-4">
           <div className="text-sm text-neutral-500">Shipped</div>
           <div className="text-2xl font-semibold text-primary-600 mt-1">
-            {data?.orders.filter((o) => o.status === 'shipped').length || 0}
+            {orders.filter((o) => o.status === 'shipped').length || 0}
           </div>
         </Card>
         <Card className="p-4">
           <div className="text-sm text-neutral-500">Delivered</div>
           <div className="text-2xl font-semibold text-success-600 mt-1">
-            {data?.orders.filter((o) => o.status === 'delivered').length || 0}
+            {orders.filter((o) => o.status === 'delivered').length || 0}
           </div>
         </Card>
       </div>
@@ -145,7 +139,7 @@ export default function OrdersPage() {
 
           <Select
             value={statusFilter}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               setStatusFilter(e.target.value);
               setCurrentPage(1);
             }}
@@ -161,7 +155,7 @@ export default function OrdersPage() {
           <div className="flex items-center justify-center py-12">
             <Spinner size="lg" />
           </div>
-        ) : !data?.orders.length ? (
+        ) : orders.length === 0 ? (
           <div className="text-center py-12">
             <ShoppingCartIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-neutral-900 mb-2">
@@ -197,7 +191,7 @@ export default function OrdersPage() {
                 </tr>
               </thead>
               <tbody>
-                {data.orders.map((order) => (
+                {orders.map((order) => (
                   <tr
                     key={order.id}
                     className="border-b border-neutral-100 hover:bg-neutral-50"
@@ -267,79 +261,16 @@ export default function OrdersPage() {
           </div>
         )}
 
-        {data?.pagination && data.pagination.totalPages > 1 && (
+        {pagination && pagination.totalPages > 1 && (
           <div className="p-4 border-t border-neutral-100">
             <Pagination
-              currentPage={data.pagination.page}
-              totalPages={data.pagination.totalPages}
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
               onPageChange={setCurrentPage}
             />
           </div>
         )}
       </Card>
-
-      {/* Order Detail Modal */}
-      <Modal
-        isOpen={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
-        title={`Order #${selectedOrder?.order_number}`}
-        size="lg"
-      >
-        {selectedOrder && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-neutral-500">Date</p>
-                <p className="font-medium">{formatDate(selectedOrder.created_at)}</p>
-              </div>
-              <Badge variant={statusBadgeVariant[selectedOrder.status]}>
-                {selectedOrder.status}
-              </Badge>
-            </div>
-
-            <div className="p-4 bg-neutral-50 rounded-lg">
-              <p className="text-sm text-neutral-500">Customer</p>
-              <p className="font-medium">{selectedOrder.customer.full_name}</p>
-              <p className="text-sm text-neutral-600">{selectedOrder.customer.email}</p>
-              {selectedOrder.customer.phone && (
-                <p className="text-sm text-neutral-600">{selectedOrder.customer.phone}</p>
-              )}
-            </div>
-
-            <div className="border-t border-neutral-200 pt-4">
-              <div className="flex justify-between py-2">
-                <span className="text-neutral-600">Subtotal</span>
-                <span>{formatCurrency(selectedOrder.subtotal)}</span>
-              </div>
-              {selectedOrder.discount_amount > 0 && (
-                <div className="flex justify-between py-2">
-                  <span className="text-neutral-600">Discount</span>
-                  <span className="text-success-600">
-                    -{formatCurrency(selectedOrder.discount_amount)}
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between py-2">
-                <span className="text-neutral-600">Shipping</span>
-                <span>{formatCurrency(selectedOrder.shipping_cost)}</span>
-              </div>
-              <div className="flex justify-between py-2 border-t border-neutral-200 font-semibold">
-                <span>Total</span>
-                <span>{formatCurrency(selectedOrder.total)}</span>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button
-                variant="ghost"
-                onClick={() => setIsDetailModalOpen(false)}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 }

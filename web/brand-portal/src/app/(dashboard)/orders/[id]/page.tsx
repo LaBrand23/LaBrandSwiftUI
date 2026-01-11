@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
+import { toast } from '@shared/stores/uiStore';
 import { ordersService } from '@shared/services/orders.service';
 import { OrderStatus } from '@shared/types';
 import { formatCurrency, formatDate } from '@shared/lib/utils';
@@ -45,10 +45,9 @@ export default function OrderDetailPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { addToast } = useUIStore();
 
   const orderId = params.id as string;
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const [statusModal, setStatusModal] = useState<{ open: boolean; status: OrderStatus | null }>({
     open: false,
@@ -58,33 +57,33 @@ export default function OrderDetailPage() {
 
   const { data: order, isLoading } = useQuery({
     queryKey: ['order', orderId],
-    queryFn: () => ordersService.getById(orderId),
+    queryFn: () => ordersService.getOrder(orderId),
     enabled: !!orderId,
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: (status: OrderStatus) => ordersService.updateStatus(orderId, status),
+    mutationFn: (status: OrderStatus) => ordersService.updateOrderStatus(orderId, status),
     onSuccess: () => {
-      addToast('Order status updated successfully', 'success');
+      toast.success('Order status updated successfully');
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       setStatusModal({ open: false, status: null });
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to update order status', 'error');
+      toast.error(error.message || 'Failed to update order status');
     },
   });
 
   const cancelOrderMutation = useMutation({
-    mutationFn: () => ordersService.cancel(orderId),
+    mutationFn: () => ordersService.cancelOrder(orderId, 'Cancelled by brand manager'),
     onSuccess: () => {
-      addToast('Order cancelled', 'success');
+      toast.success('Order cancelled');
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       setCancelModal(false);
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to cancel order', 'error');
+      toast.error(error.message || 'Failed to cancel order');
     },
   });
 
@@ -101,7 +100,7 @@ export default function OrderDetailPage() {
       <div className="text-center py-12">
         <ShoppingCartIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-neutral-900 mb-2">Order not found</h3>
-        <p className="text-neutral-500 mb-4">The order you're looking for doesn't exist.</p>
+        <p className="text-neutral-500 mb-4">The order you&apos;re looking for doesn&apos;t exist.</p>
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Go Back
@@ -111,13 +110,13 @@ export default function OrderDetailPage() {
   }
 
   // Verify order belongs to user's brand
-  const orderBrandId = order.items?.[0]?.product?.brand_id;
+  const orderBrandId = order.items?.[0]?.brand?.id;
   if (orderBrandId && orderBrandId !== brandId) {
     return (
       <div className="text-center py-12">
         <ShoppingCartIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-neutral-900 mb-2">Access Denied</h3>
-        <p className="text-neutral-500 mb-4">You don't have permission to view this order.</p>
+        <p className="text-neutral-500 mb-4">You don&apos;t have permission to view this order.</p>
         <Button variant="outline" onClick={() => router.push('/orders')}>
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Back to Orders
@@ -258,9 +257,9 @@ export default function OrderDetailPage() {
                     className="flex items-center gap-4 p-4 bg-neutral-50 rounded-lg"
                   >
                     <div className="w-16 h-16 bg-neutral-200 rounded-lg overflow-hidden flex-shrink-0">
-                      {item.product?.images?.[0] ? (
+                      {item.image_url ? (
                         <img
-                          src={item.product.images[0] as string}
+                          src={item.image_url}
                           alt={item.product_name}
                           className="w-full h-full object-cover"
                         />
@@ -274,18 +273,18 @@ export default function OrderDetailPage() {
                       <h3 className="font-medium text-neutral-900 truncate">
                         {item.product_name}
                       </h3>
-                      {item.variant && (
+                      {item.variant_name && (
                         <p className="text-sm text-neutral-500">
-                          {[item.variant.color, item.variant.size].filter(Boolean).join(' / ')}
+                          {item.variant_name}
                         </p>
                       )}
                       <p className="text-sm text-neutral-600 mt-1">
-                        {formatCurrency(item.unit_price)} × {item.quantity}
+                        {formatCurrency(item.price)} × {item.quantity}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-neutral-900">
-                        {formatCurrency(item.total_price)}
+                        {formatCurrency(item.total)}
                       </p>
                     </div>
                   </div>
@@ -303,13 +302,10 @@ export default function OrderDetailPage() {
                   <MapPinIcon className="w-5 h-5 text-neutral-400 mt-0.5" />
                   <div>
                     <p className="font-medium text-neutral-900">
-                      {order.shipping_address.recipient_name}
+                      {order.shipping_address.full_name}
                     </p>
                     <p className="text-neutral-600 mt-1">
-                      {order.shipping_address.address_line1}
-                      {order.shipping_address.address_line2 && (
-                        <>, {order.shipping_address.address_line2}</>
-                      )}
+                      {order.shipping_address.address}
                     </p>
                     <p className="text-neutral-600">
                       {order.shipping_address.city}

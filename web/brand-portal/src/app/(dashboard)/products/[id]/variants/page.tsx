@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
-import { productsService, CreateVariantPayload } from '@shared/services/products.service';
+import { toast } from '@shared/stores/uiStore';
+import { productsService, CreateVariantData } from '@shared/services/products.service';
 import { ProductVariant } from '@shared/types';
 import { formatCurrency } from '@shared/lib/utils';
 import { Card } from '@shared/components/ui/Card';
@@ -60,10 +60,9 @@ export default function ProductVariantsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { addToast } = useUIStore();
 
   const productId = params.id as string;
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const [variantModal, setVariantModal] = useState<{ open: boolean; variant: ProductVariant | null }>({
     open: false,
@@ -76,34 +75,34 @@ export default function ProductVariantsPage() {
   // Fetch product
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', productId],
-    queryFn: () => productsService.getById(productId),
+    queryFn: () => productsService.getProduct(productId),
     enabled: !!productId,
   });
 
   // Create variant mutation
   const createVariantMutation = useMutation({
-    mutationFn: (payload: CreateVariantPayload) => productsService.createVariant(productId, payload),
+    mutationFn: (payload: CreateVariantData) => productsService.createVariant(productId, payload),
     onSuccess: () => {
-      addToast('Variant created successfully', 'success');
+      toast.success('Variant created successfully');
       queryClient.invalidateQueries({ queryKey: ['product', productId] });
       closeVariantModal();
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to create variant', 'error');
+      toast.error(error.message || 'Failed to create variant');
     },
   });
 
   // Update variant mutation
   const updateVariantMutation = useMutation({
-    mutationFn: ({ variantId, payload }: { variantId: string; payload: Partial<CreateVariantPayload> }) =>
+    mutationFn: ({ variantId, payload }: { variantId: string; payload: Partial<CreateVariantData> }) =>
       productsService.updateVariant(productId, variantId, payload),
     onSuccess: () => {
-      addToast('Variant updated successfully', 'success');
+      toast.success('Variant updated successfully');
       queryClient.invalidateQueries({ queryKey: ['product', productId] });
       closeVariantModal();
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to update variant', 'error');
+      toast.error(error.message || 'Failed to update variant');
     },
   });
 
@@ -111,12 +110,12 @@ export default function ProductVariantsPage() {
   const deleteVariantMutation = useMutation({
     mutationFn: (variantId: string) => productsService.deleteVariant(productId, variantId),
     onSuccess: () => {
-      addToast('Variant deleted successfully', 'success');
+      toast.success('Variant deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['product', productId] });
       setDeleteModal(null);
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to delete variant', 'error');
+      toast.error(error.message || 'Failed to delete variant');
     },
   });
 
@@ -125,9 +124,9 @@ export default function ProductVariantsPage() {
       setFormData({
         sku: variant.sku,
         color: variant.color || '',
-        color_code: variant.color_code || '#000000',
+        color_code: variant.color_hex || '#000000',
         size: variant.size || '',
-        price: variant.price.toString(),
+        price: (product?.price || 0 + (variant.price_modifier || 0)).toString(),
         stock_quantity: variant.stock_quantity.toString(),
         is_active: variant.is_active,
       });
@@ -166,12 +165,11 @@ export default function ProductVariantsPage() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      const payload: CreateVariantPayload = {
+      const payload: CreateVariantData = {
         sku: formData.sku.trim(),
         color: formData.color.trim() || undefined,
-        color_code: formData.color ? formData.color_code : undefined,
+        color_hex: formData.color ? formData.color_code : undefined,
         size: formData.size.trim() || undefined,
-        price: parseFloat(formData.price),
         stock_quantity: parseInt(formData.stock_quantity) || 0,
         is_active: formData.is_active,
       };
@@ -317,7 +315,7 @@ export default function ProductVariantsPage() {
                           {variant.color && (
                             <div
                               className="w-8 h-8 rounded-full border border-neutral-200 shadow-sm"
-                              style={{ backgroundColor: variant.color_code || variant.color }}
+                              style={{ backgroundColor: variant.color_hex || variant.color }}
                               title={variant.color}
                             />
                           )}
@@ -331,12 +329,12 @@ export default function ProductVariantsPage() {
                       <td className="py-4 px-4 text-sm text-neutral-600 font-mono">{variant.sku}</td>
                       <td className="py-4 px-4 text-right">
                         <span className="font-semibold text-neutral-900">
-                          {formatCurrency(variant.price)}
+                          {formatCurrency(product.price + (variant.price_modifier || 0))}
                         </span>
-                        {variant.price !== product.price && (
+                        {variant.price_modifier !== 0 && variant.price_modifier && (
                           <span className="text-xs text-neutral-400 ml-1">
-                            {variant.price > product.price ? '+' : ''}
-                            {formatCurrency(variant.price - product.price)}
+                            {variant.price_modifier > 0 ? '+' : ''}
+                            {formatCurrency(variant.price_modifier)}
                           </span>
                         )}
                       </td>
@@ -412,7 +410,7 @@ export default function ProductVariantsPage() {
             <div className="flex gap-2">
               <Input
                 value={formData.color}
-                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, color: e.target.value })}
                 placeholder="Color name"
                 className="flex-1"
                 error={errors.color}
@@ -420,7 +418,7 @@ export default function ProductVariantsPage() {
               <input
                 type="color"
                 value={formData.color_code}
-                onChange={(e) => setFormData({ ...formData, color_code: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, color_code: e.target.value })}
                 className="w-12 h-10 rounded-lg border border-neutral-200 cursor-pointer"
               />
             </div>
@@ -447,7 +445,7 @@ export default function ProductVariantsPage() {
             </div>
             <Input
               value={formData.size}
-              onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, size: e.target.value })}
               placeholder="Or enter custom size"
             />
           </div>
@@ -458,7 +456,7 @@ export default function ProductVariantsPage() {
               <Input
                 label="SKU"
                 value={formData.sku}
-                onChange={(e) => setFormData({ ...formData, sku: e.target.value.toUpperCase() })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, sku: e.target.value.toUpperCase() })}
                 placeholder="Variant SKU"
                 error={errors.sku}
                 required
@@ -477,7 +475,7 @@ export default function ProductVariantsPage() {
               label="Price (UZS)"
               type="number"
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, price: e.target.value })}
               error={errors.price}
               required
             />
@@ -485,7 +483,7 @@ export default function ProductVariantsPage() {
               label="Stock Quantity"
               type="number"
               value={formData.stock_quantity}
-              onChange={(e) => setFormData({ ...formData, stock_quantity: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, stock_quantity: e.target.value })}
               min="0"
             />
           </div>
@@ -495,7 +493,7 @@ export default function ProductVariantsPage() {
             <input
               type="checkbox"
               checked={formData.is_active}
-              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, is_active: e.target.checked })}
               className="w-4 h-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
             />
             <span className="text-sm text-neutral-700">Active (available for purchase)</span>

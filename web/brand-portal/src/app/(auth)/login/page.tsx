@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { signIn, signOut } from '@shared/lib/firebase';
 import { authService } from '@shared/services/auth.service';
 import { useAuthStore } from '@shared/stores/authStore';
@@ -10,7 +9,6 @@ import { Button } from '@shared/components/ui/Button';
 import { Input } from '@shared/components/ui/Input';
 
 export default function LoginPage() {
-  const router = useRouter();
   const { setUser } = useAuthStore();
 
   const [email, setEmail] = useState('');
@@ -44,9 +42,10 @@ export default function LoginPage() {
 
       // Navigate to dashboard
       window.location.href = '/';
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('[Login] Error:', err);
-      setError(err.message || 'Invalid email or password');
+      const errorMessage = err instanceof Error ? err.message : 'Invalid email or password';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +77,7 @@ export default function LoginPage() {
               label="Email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
               placeholder="you@brand.com"
               required
             />
@@ -87,7 +86,7 @@ export default function LoginPage() {
               label="Password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
             />

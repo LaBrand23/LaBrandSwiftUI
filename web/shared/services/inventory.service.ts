@@ -70,7 +70,7 @@ export const inventoryService = {
   async getStockHistory(
     params?: InventoryQueryParams
   ): Promise<{ history: StockHistoryItem[]; pagination?: Pagination }> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<StockHistoryItem[]>>(
       `/admin/inventory/history${queryString}`
     );

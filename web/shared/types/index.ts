@@ -143,6 +143,7 @@ export interface Product {
   weight?: number;
   dimensions?: ProductDimensions;
   tags?: string[];
+  gender?: Gender;
   created_at: string;
   updated_at?: string;
   brand?: {

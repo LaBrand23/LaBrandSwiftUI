@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
@@ -73,7 +73,6 @@ export default function NewProductPage() {
 
   // Get brand_id directly from user (not brand_assignment)
   const brandId = user?.brand_id;
-  const branchId = user?.branch_id;
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -216,7 +215,7 @@ export default function NewProductPage() {
                     <Input
                       label="Product Name"
                       value={formData.name}
-                      onChange={(e) => handleChange('name', e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('name', e.target.value)}
                       placeholder="e.g., Classic Cotton T-Shirt"
                       error={errors.name}
                       required
@@ -228,7 +227,7 @@ export default function NewProductPage() {
                       <Input
                         label="SKU"
                         value={formData.sku}
-                        onChange={(e) => handleChange('sku', e.target.value.toUpperCase())}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('sku', e.target.value.toUpperCase())}
                         placeholder="PRD-XXXXXX"
                         error={errors.sku}
                         required
@@ -247,7 +246,7 @@ export default function NewProductPage() {
                     </label>
                     <textarea
                       value={formData.description}
-                      onChange={(e) => handleChange('description', e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleChange('description', e.target.value)}
                       placeholder="Describe your product..."
                       rows={4}
                       className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
@@ -267,7 +266,7 @@ export default function NewProductPage() {
                       label="Price (UZS)"
                       type="number"
                       value={formData.price}
-                      onChange={(e) => handleChange('price', e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('price', e.target.value)}
                       placeholder="0"
                       error={errors.price}
                       required
@@ -278,7 +277,7 @@ export default function NewProductPage() {
                       label="Compare at Price"
                       type="number"
                       value={formData.compare_at_price}
-                      onChange={(e) => handleChange('compare_at_price', e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('compare_at_price', e.target.value)}
                       placeholder="Original price"
                       helper="Shows as crossed out"
                     />
@@ -288,7 +287,7 @@ export default function NewProductPage() {
                       label="Cost per Item"
                       type="number"
                       value={formData.cost_per_item}
-                      onChange={(e) => handleChange('cost_per_item', e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('cost_per_item', e.target.value)}
                       placeholder="Your cost"
                       helper="For profit calculation"
                     />
@@ -333,7 +332,7 @@ export default function NewProductPage() {
                 <div className="flex gap-2">
                   <Input
                     value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewImageUrl(e.target.value)}
                     placeholder="Enter image URL"
                     className="flex-1"
                   />
@@ -382,9 +381,9 @@ export default function NewProductPage() {
                 <div className="flex gap-2">
                   <Input
                     value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTag(e.target.value)}
                     placeholder="Add a tag"
-                    onKeyDown={(e) => {
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
                         addTag();
@@ -409,7 +408,7 @@ export default function NewProductPage() {
                 <h2 className="text-lg font-semibold text-neutral-900 mb-4">Status</h2>
                 <Select
                   value={formData.status}
-                  onChange={(e) => handleChange('status', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('status', e.target.value)}
                   options={statusOptions}
                 />
               </div>
@@ -423,7 +422,7 @@ export default function NewProductPage() {
                   <Select
                     label="Category"
                     value={formData.category_id}
-                    onChange={(e) => handleChange('category_id', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('category_id', e.target.value)}
                     options={categoryOptions}
                     error={errors.category_id}
                     required
@@ -432,7 +431,7 @@ export default function NewProductPage() {
                   <Select
                     label="Gender"
                     value={formData.gender}
-                    onChange={(e) => handleChange('gender', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('gender', e.target.value)}
                     options={genderOptions}
                     error={errors.gender}
                     required
@@ -450,7 +449,7 @@ export default function NewProductPage() {
                     label="Stock Quantity"
                     type="number"
                     value={formData.stock_quantity}
-                    onChange={(e) => handleChange('stock_quantity', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('stock_quantity', e.target.value)}
                     min="0"
                   />
 
@@ -458,7 +457,7 @@ export default function NewProductPage() {
                     label="Low Stock Threshold"
                     type="number"
                     value={formData.low_stock_threshold}
-                    onChange={(e) => handleChange('low_stock_threshold', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('low_stock_threshold', e.target.value)}
                     min="0"
                     helper="Alert when stock falls below this"
                   />

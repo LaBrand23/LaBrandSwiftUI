@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { integrationsService, ADAPTER_CONFIGS } from '@shared/services/integrations.service';
-import { CRMIntegration, SyncLog, SyncStatus, AdapterType } from '@shared/types';
+import { CRMIntegration, SyncStatus, AdapterType } from '@shared/types';
 import { useAuthStore } from '@shared/stores/authStore';
 import { useUIStore } from '@shared/stores/uiStore';
 import { formatDate } from '@shared/lib/utils';
@@ -13,7 +13,6 @@ import { Badge } from '@shared/components/ui/Badge';
 import { Spinner } from '@shared/components/ui/Spinner';
 import { Modal } from '@shared/components/ui/Modal';
 import { Select } from '@shared/components/ui/Select';
-import { Input } from '@shared/components/ui/Input';
 import {
   ArrowPathIcon,
   CheckCircleIcon,
@@ -74,12 +73,12 @@ export default function IntegrationSettingsPage() {
   const syncMutation = useMutation({
     mutationFn: (id: string) => integrationsService.triggerBrandSync(id),
     onSuccess: (result) => {
-      addToast(result.message || 'Sync started', 'success');
+      addToast({ type: 'success', title: result.message || 'Sync started' });
       queryClient.invalidateQueries({ queryKey: ['brand-integrations'] });
       queryClient.invalidateQueries({ queryKey: ['brand-sync-logs'] });
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to start sync', 'error');
+      addToast({ type: 'error', title: error.message || 'Failed to start sync' });
     },
   });
 
@@ -91,12 +90,12 @@ export default function IntegrationSettingsPage() {
         notes: requestData.notes,
       }),
     onSuccess: (result) => {
-      addToast(result.message || 'Integration request submitted', 'success');
+      addToast({ type: 'success', title: result.message || 'Integration request submitted' });
       setRequestModal(false);
       setRequestData({ adapter_type: '', notes: '' });
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to submit request', 'error');
+      addToast({ type: 'error', title: error.message || 'Failed to submit request' });
     },
   });
 
@@ -282,7 +281,7 @@ export default function IntegrationSettingsPage() {
           <Select
             label="Integration Type"
             value={requestData.adapter_type}
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
               setRequestData({
                 ...requestData,
                 adapter_type: e.target.value as AdapterType,
@@ -304,7 +303,7 @@ export default function IntegrationSettingsPage() {
             </label>
             <textarea
               value={requestData.notes}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setRequestData({ ...requestData, notes: e.target.value })
               }
               placeholder="Provide any additional details about your integration requirements..."

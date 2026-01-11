@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
+import { toast } from '@shared/stores/uiStore';
 import { productsService } from '@shared/services/products.service';
 import { ProductStatus } from '@shared/types';
 import { formatCurrency, formatDate } from '@shared/lib/utils';
@@ -39,10 +39,9 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { addToast } = useUIStore();
 
   const productId = params.id as string;
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const [deleteModal, setDeleteModal] = useState(false);
   const [statusModal, setStatusModal] = useState<{ open: boolean; status: ProductStatus | null }>({
@@ -53,31 +52,31 @@ export default function ProductDetailPage() {
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', productId],
-    queryFn: () => productsService.getById(productId),
+    queryFn: () => productsService.getProduct(productId),
     enabled: !!productId,
   });
 
   const updateStatusMutation = useMutation({
     mutationFn: (status: ProductStatus) =>
-      productsService.update(productId, { status }),
+      productsService.updateProduct(productId, { status }),
     onSuccess: () => {
-      addToast('Product status updated', 'success');
+      toast.success('Product status updated');
       queryClient.invalidateQueries({ queryKey: ['product', productId] });
       setStatusModal({ open: false, status: null });
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to update status', 'error');
+      toast.error(error.message || 'Failed to update status');
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => productsService.delete(productId),
+    mutationFn: () => productsService.deleteProduct(productId),
     onSuccess: () => {
-      addToast('Product deleted successfully', 'success');
+      toast.success('Product deleted successfully');
       router.push('/products');
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to delete product', 'error');
+      toast.error(error.message || 'Failed to delete product');
     },
   });
 
@@ -94,7 +93,7 @@ export default function ProductDetailPage() {
       <div className="text-center py-12">
         <CubeIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-neutral-900 mb-2">Product not found</h3>
-        <p className="text-neutral-500 mb-4">The product you're looking for doesn't exist.</p>
+        <p className="text-neutral-500 mb-4">The product you&apos;re looking for doesn&apos;t exist.</p>
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Go Back
@@ -109,7 +108,7 @@ export default function ProductDetailPage() {
       <div className="text-center py-12">
         <CubeIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-neutral-900 mb-2">Access Denied</h3>
-        <p className="text-neutral-500 mb-4">You don't have permission to view this product.</p>
+        <p className="text-neutral-500 mb-4">You don&apos;t have permission to view this product.</p>
         <Button variant="outline" onClick={() => router.push('/products')}>
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Back to Products
@@ -257,7 +256,7 @@ export default function ProductDetailPage() {
                               {variant.color && (
                                 <div
                                   className="w-4 h-4 rounded-full border border-neutral-200"
-                                  style={{ backgroundColor: variant.color_code || variant.color }}
+                                  style={{ backgroundColor: variant.color_hex || variant.color }}
                                   title={variant.color}
                                 />
                               )}
@@ -268,7 +267,7 @@ export default function ProductDetailPage() {
                           </td>
                           <td className="py-3 px-2 text-sm text-neutral-600">{variant.sku}</td>
                           <td className="py-3 px-2 text-sm text-right font-medium">
-                            {formatCurrency(variant.price)}
+                            {formatCurrency(product.price + (variant.price_modifier || 0))}
                           </td>
                           <td className="py-3 px-2 text-sm text-right">
                             <span className={variant.stock_quantity <= 5 ? 'text-warning-600' : ''}>
@@ -322,19 +321,19 @@ export default function ProductDetailPage() {
                     </span>
                   </div>
                 )}
-                {product.cost_per_item && (
+                {product.cost_price && (
                   <div className="flex items-center justify-between">
                     <span className="text-neutral-600">Cost</span>
                     <span className="text-neutral-500">
-                      {formatCurrency(product.cost_per_item)}
+                      {formatCurrency(product.cost_price)}
                     </span>
                   </div>
                 )}
-                {product.cost_per_item && (
+                {product.cost_price && (
                   <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
                     <span className="text-neutral-600">Profit</span>
                     <span className="text-success-600 font-medium">
-                      {formatCurrency(product.price - product.cost_per_item)}
+                      {formatCurrency(product.price - product.cost_price)}
                     </span>
                   </div>
                 )}
@@ -393,7 +392,7 @@ export default function ProductDetailPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-600">Updated</span>
-                  <span className="text-neutral-500 text-sm">{formatDate(product.updated_at)}</span>
+                  <span className="text-neutral-500 text-sm">{product.updated_at ? formatDate(product.updated_at) : '-'}</span>
                 </div>
               </div>
             </div>

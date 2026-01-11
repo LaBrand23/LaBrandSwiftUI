@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
+import { toast } from '@shared/stores/uiStore';
 import { reviewsService } from '@shared/services/reviews.service';
 import { Review, ReviewsQueryParams } from '@shared/types';
 import { formatDate } from '@shared/lib/utils';
@@ -48,9 +48,8 @@ function StarRating({ rating }: { rating: number }) {
 
 export default function ReviewsPage() {
   const { user } = useAuthStore();
-  const { addToast } = useUIStore();
   const queryClient = useQueryClient();
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [ratingFilter, setRatingFilter] = useState('');
@@ -82,12 +81,12 @@ export default function ReviewsPage() {
       reviewsService.respond(id, { text }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reviews'] });
-      addToast('Response sent successfully', 'success');
+      toast.success('Response sent successfully');
       setIsResponseModalOpen(false);
       setResponseText('');
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to send response', 'error');
+      toast.error(error.message || 'Failed to send response');
     },
   });
 
@@ -151,7 +150,7 @@ export default function ReviewsPage() {
         <div className="flex items-center gap-4">
           <Select
             value={ratingFilter}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               setRatingFilter(e.target.value);
               setCurrentPage(1);
             }}
@@ -288,7 +287,7 @@ export default function ReviewsPage() {
               </label>
               <textarea
                 value={responseText}
-                onChange={(e) => setResponseText(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setResponseText(e.target.value)}
                 rows={4}
                 className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                 placeholder="Thank you for your feedback..."

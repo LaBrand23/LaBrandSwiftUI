@@ -26,7 +26,7 @@ export const categoriesService = {
     categories: Category[];
     pagination?: Pagination;
   }> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<Category[]>>(
       `/admin/categories${queryString}`
     );

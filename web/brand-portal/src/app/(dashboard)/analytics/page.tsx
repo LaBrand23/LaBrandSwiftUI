@@ -105,7 +105,7 @@ function RevenueChart({ data }: { data: Array<{ date: string; revenue: number; o
 
 export default function AnalyticsPage() {
   const { user } = useAuthStore();
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
   const [period, setPeriod] = useState<Period>('month');
 
   const params: AnalyticsParams = {
@@ -139,7 +139,7 @@ export default function AnalyticsPage() {
         </div>
         <Select
           value={period}
-          onChange={(e) => setPeriod(e.target.value as Period)}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPeriod(e.target.value as Period)}
           options={periodOptions}
           className="w-40"
         />

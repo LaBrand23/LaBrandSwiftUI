@@ -80,4 +80,10 @@ export const usersService = {
   async deleteUser(id: string): Promise<void> {
     await apiClient.delete(`/users/${id}`);
   },
+
+  // Update user profile
+  async updateProfile(id: string, data: { full_name?: string; phone?: string }): Promise<User> {
+    const response = await apiClient.patch<unknown, { data: User }>(`/users/${id}`, data);
+    return response.data;
+  },
 };

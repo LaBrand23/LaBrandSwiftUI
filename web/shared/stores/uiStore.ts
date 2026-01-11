@@ -134,8 +134,8 @@ export const useUIStore = create<UIState>()(
       },
 
       // Global loading actions
-      setGlobalLoading: (globalLoading, loadingMessage = null) => {
-        set({ globalLoading, loadingMessage });
+      setGlobalLoading: (globalLoading, loadingMessage) => {
+        set({ globalLoading, loadingMessage: loadingMessage ?? null });
       },
     }),
     {

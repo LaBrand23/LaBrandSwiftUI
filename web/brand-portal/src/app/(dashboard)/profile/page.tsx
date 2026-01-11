@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
+import { toast } from '@shared/stores/uiStore';
 import { usersService } from '@shared/services/users.service';
 import { Card } from '@shared/components/ui/Card';
 import { Button } from '@shared/components/ui/Button';
@@ -20,8 +20,6 @@ import {
 
 export default function ProfilePage() {
   const { user, setUser } = useAuthStore();
-  const { addToast } = useUIStore();
-  const queryClient = useQueryClient();
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -38,14 +36,14 @@ export default function ProfilePage() {
 
   const updateProfileMutation = useMutation({
     mutationFn: (data: { full_name?: string; phone?: string }) =>
-      usersService.update(user!.id, data),
+      usersService.updateProfile(user!.id, data),
     onSuccess: (updatedUser) => {
       setUser({ ...user!, ...updatedUser });
-      addToast('Profile updated successfully', 'success');
+      toast.success('Profile updated successfully');
       setIsEditing(false);
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to update profile', 'error');
+      toast.error(error.message || 'Failed to update profile');
     },
   });
 
@@ -58,17 +56,17 @@ export default function ProfilePage() {
     e.preventDefault();
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      addToast('Passwords do not match', 'error');
+      toast.error('Passwords do not match');
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      addToast('Password must be at least 6 characters', 'error');
+      toast.error('Password must be at least 6 characters');
       return;
     }
 
     // This would call an API to change password
-    addToast('Password changed successfully', 'success');
+    toast.success('Password changed successfully');
     setIsChangingPassword(false);
     setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
@@ -137,13 +135,13 @@ export default function ProfilePage() {
             <Input
               label="Full Name"
               value={formData.full_name}
-              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, full_name: e.target.value })}
               placeholder="Your full name"
             />
             <Input
               label="Phone Number"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
               placeholder="+998 XX XXX XX XX"
             />
             <div className="flex justify-end">
@@ -215,7 +213,7 @@ export default function ProfilePage() {
               label="Current Password"
               type="password"
               value={passwordData.currentPassword}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setPasswordData({ ...passwordData, currentPassword: e.target.value })
               }
               placeholder="Enter current password"
@@ -225,7 +223,7 @@ export default function ProfilePage() {
               label="New Password"
               type="password"
               value={passwordData.newPassword}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setPasswordData({ ...passwordData, newPassword: e.target.value })
               }
               placeholder="Enter new password"
@@ -235,7 +233,7 @@ export default function ProfilePage() {
               label="Confirm New Password"
               type="password"
               value={passwordData.confirmPassword}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setPasswordData({ ...passwordData, confirmPassword: e.target.value })
               }
               placeholder="Confirm new password"

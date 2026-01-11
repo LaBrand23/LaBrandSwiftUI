@@ -28,6 +28,14 @@ export interface CreateProductData {
   is_new?: boolean;
   is_featured?: boolean;
   stock_quantity?: number;
+  status?: 'draft' | 'active' | 'archived';
+  sku?: string;
+  compare_at_price?: number;
+  cost_price?: number;
+  low_stock_threshold?: number;
+  images?: string[];
+  tags?: string[];
+  gender?: 'men' | 'women' | 'kids' | 'unisex';
 }
 
 export interface CreateVariantData {

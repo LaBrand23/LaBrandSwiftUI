@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reviewsService } from '@shared/services/reviews.service';
-import { useUIStore } from '@shared/stores/uiStore';
+import { toast } from '@shared/stores/uiStore';
 import { formatDate } from '@shared/lib/utils';
 import { PageHeader } from '@shared/components/layouts/PageHeader';
 import { Button } from '@shared/components/ui/Button';
@@ -15,7 +15,6 @@ import {
   ArrowLeftIcon,
   StarIcon,
   CheckCircleIcon,
-  XCircleIcon,
   ChatBubbleLeftRightIcon,
   UserCircleIcon,
   ShoppingBagIcon,
@@ -27,7 +26,6 @@ export default function ReviewDetailPage() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { addToast } = useUIStore();
   const reviewId = params.id as string;
 
   const [responseText, setResponseText] = useState('');
@@ -39,14 +37,14 @@ export default function ReviewDetailPage() {
   });
 
   const respondMutation = useMutation({
-    mutationFn: (text: string) => reviewsService.respond(reviewId, text),
+    mutationFn: (text: string) => reviewsService.respond(reviewId, { text }),
     onSuccess: () => {
-      addToast('Response submitted successfully', 'success');
+      toast.success('Response submitted successfully');
       queryClient.invalidateQueries({ queryKey: ['review', reviewId] });
       setResponseText('');
     },
     onError: (error: Error) => {
-      addToast(error.message || 'Failed to submit response', 'error');
+      toast.error(error.message || 'Failed to submit response');
     },
   });
 

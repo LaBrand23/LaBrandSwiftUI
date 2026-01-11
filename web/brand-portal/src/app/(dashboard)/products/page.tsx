@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { useUIStore } from '@shared/stores/uiStore';
 import { productsService } from '@shared/services/products.service';
 import { Product, ProductsQueryParams, ProductStatus } from '@shared/types';
 import { formatCurrency } from '@shared/lib/utils';
@@ -20,7 +19,6 @@ import {
   MagnifyingGlassIcon,
   CubeIcon,
   EyeIcon,
-  ArchiveBoxIcon,
 } from '@heroicons/react/24/outline';
 
 const statusOptions = [
@@ -38,9 +36,7 @@ const statusBadgeVariant: Record<ProductStatus, 'success' | 'warning' | 'neutral
 
 export default function ProductsPage() {
   const { user } = useAuthStore();
-  const { addToast } = useUIStore();
-  const queryClient = useQueryClient();
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,9 +52,12 @@ export default function ProductsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['products', queryParams],
-    queryFn: () => productsService.getAll(queryParams),
+    queryFn: () => productsService.getProducts(queryParams),
     enabled: !!brandId,
   });
+
+  const products = data?.data || [];
+  const pagination = data?.pagination;
 
   return (
     <div className="space-y-6">
@@ -88,7 +87,7 @@ export default function ProductsPage() {
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
@@ -96,7 +95,7 @@ export default function ProductsPage() {
 
           <Select
             value={statusFilter}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               setStatusFilter(e.target.value);
               setCurrentPage(1);
             }}
@@ -111,7 +110,7 @@ export default function ProductsPage() {
         <div className="flex items-center justify-center py-12">
           <Spinner size="lg" />
         </div>
-      ) : !data?.products.length ? (
+      ) : products.length === 0 ? (
         <Card className="p-12">
           <div className="text-center">
             <CubeIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
@@ -131,18 +130,18 @@ export default function ProductsPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {data.products.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       )}
 
       {/* Pagination */}
-      {data?.pagination && data.pagination.totalPages > 1 && (
+      {pagination && pagination.totalPages > 1 && (
         <div className="flex justify-center">
           <Pagination
-            currentPage={data.pagination.page}
-            totalPages={data.pagination.totalPages}
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
             onPageChange={setCurrentPage}
           />
         </div>

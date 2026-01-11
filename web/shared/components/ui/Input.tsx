@@ -28,42 +28,58 @@ const inputVariants = cva(
 export interface InputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>,
     VariantProps<typeof inputVariants> {
+  label?: string;
   error?: string;
+  helper?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   (
-    { className, variant, inputSize, error, leftIcon, rightIcon, ...props },
+    { className, variant, inputSize, label, error, helper, leftIcon, rightIcon, ...props },
     ref
   ) => {
     const hasError = !!error || variant === 'error';
 
     return (
-      <div className="relative">
-        {leftIcon && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
-            {leftIcon}
-          </span>
+      <div className="w-full">
+        {label && (
+          <label className="block text-sm font-medium text-neutral-700 mb-1">
+            {label}
+            {props.required && <span className="text-error-500 ml-0.5">*</span>}
+          </label>
         )}
-        <input
-          className={cn(
-            inputVariants({
-              variant: hasError ? 'error' : variant,
-              inputSize,
-              className,
-            }),
-            leftIcon && 'pl-10',
-            rightIcon && 'pr-10'
+        <div className="relative">
+          {leftIcon && (
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
+              {leftIcon}
+            </span>
           )}
-          ref={ref}
-          {...props}
-        />
-        {rightIcon && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">
-            {rightIcon}
-          </span>
+          <input
+            className={cn(
+              inputVariants({
+                variant: hasError ? 'error' : variant,
+                inputSize,
+                className,
+              }),
+              leftIcon && 'pl-10',
+              rightIcon && 'pr-10'
+            )}
+            ref={ref}
+            {...props}
+          />
+          {rightIcon && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">
+              {rightIcon}
+            </span>
+          )}
+        </div>
+        {error && (
+          <p className="mt-1 text-sm text-error-500">{error}</p>
+        )}
+        {helper && !error && (
+          <p className="mt-1 text-sm text-neutral-500">{helper}</p>
         )}
       </div>
     );

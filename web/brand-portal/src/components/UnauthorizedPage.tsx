@@ -15,14 +15,7 @@ export function UnauthorizedPage() {
   };
 
   const handleGoHome = () => {
-    // Redirect based on role
-    if (user?.role === 'brand_manager') {
-      router.push('/');
-    } else if (user?.role === 'admin' || user?.role === 'root_admin') {
-      router.push('/');
-    } else {
-      router.push('/login');
-    }
+    router.push('/');
   };
 
   const handleLogout = async () => {
@@ -43,7 +36,7 @@ export function UnauthorizedPage() {
           </h1>
 
           <p className="text-neutral-500 mb-6">
-            You don't have permission to access this page. Please contact your
+            You don&apos;t have permission to access this page. Please contact your
             administrator if you believe this is an error.
           </p>
 

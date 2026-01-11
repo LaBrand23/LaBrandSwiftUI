@@ -22,7 +22,7 @@ export interface AnalyticsParams extends AnalyticsDateRange {
 
 export const analyticsService = {
   async getDashboard(params?: AnalyticsParams): Promise<DashboardData> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<DashboardData>>(
       `/admin/analytics/dashboard${queryString}`
     );
@@ -30,7 +30,7 @@ export const analyticsService = {
   },
 
   async getOverview(params?: AnalyticsParams): Promise<DashboardOverview> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<DashboardOverview>>(
       `/admin/analytics/overview${queryString}`
     );
@@ -40,7 +40,7 @@ export const analyticsService = {
   async getRevenueChart(
     params?: AnalyticsParams & { interval?: 'day' | 'week' | 'month' }
   ): Promise<ChartDataPoint[]> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<ChartDataPoint[]>>(
       `/admin/analytics/revenue${queryString}`
     );
@@ -50,7 +50,7 @@ export const analyticsService = {
   async getTopProducts(
     params?: AnalyticsParams & { limit?: number }
   ): Promise<TopProduct[]> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<TopProduct[]>>(
       `/admin/analytics/top-products${queryString}`
     );
@@ -60,7 +60,7 @@ export const analyticsService = {
   async getTopBrands(
     params?: AnalyticsParams & { limit?: number }
   ): Promise<TopBrand[]> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<TopBrand[]>>(
       `/admin/analytics/top-brands${queryString}`
     );
@@ -68,7 +68,7 @@ export const analyticsService = {
   },
 
   async getOrdersByStatus(params?: AnalyticsParams): Promise<OrdersByStatus> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<OrdersByStatus>>(
       `/admin/analytics/orders-by-status${queryString}`
     );
@@ -95,7 +95,7 @@ export const analyticsService = {
       revenue: number;
     }>;
   }> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<
       ApiResponse<{
         total_orders: number;
@@ -133,7 +133,7 @@ export const analyticsService = {
       total_spent: number;
     }>;
   }> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<
       ApiResponse<{
         total_customers: number;
@@ -155,7 +155,7 @@ export const analyticsService = {
     type: 'sales' | 'orders' | 'products' | 'customers',
     params?: AnalyticsParams & { format?: 'csv' | 'xlsx' }
   ): Promise<Blob> {
-    const queryString = buildQueryString(params);
+    const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get(
       `/admin/analytics/export/${type}${queryString}`,
       { responseType: 'blob' }

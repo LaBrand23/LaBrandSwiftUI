@@ -15,7 +15,7 @@ import {
 
 export default function Header() {
   const router = useRouter();
-  const { user, clearAuth } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +35,7 @@ export default function Header() {
 
   const handleLogout = async () => {
     await authService.logout();
-    clearAuth();
+    logout();
     router.push('/login');
   };
 

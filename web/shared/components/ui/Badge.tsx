@@ -1,6 +1,6 @@
 'use client';
 
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
@@ -10,6 +10,7 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: 'bg-gray-100 text-gray-800',
+        neutral: 'bg-gray-100 text-gray-600',
         success: 'bg-green-100 text-green-800',
         warning: 'bg-yellow-100 text-yellow-800',
         error: 'bg-red-100 text-red-800',
@@ -30,9 +31,12 @@ const badgeVariants = cva(
   }
 );
 
-export interface BadgeProps
-  extends HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {}
+export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'color'> {
+  variant?: 'default' | 'neutral' | 'success' | 'warning' | 'error' | 'info' | 'purple' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  children?: ReactNode;
+  className?: string;
+}
 
 function Badge({ className, variant, size, ...props }: BadgeProps) {
   return (

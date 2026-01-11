@@ -7,22 +7,14 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
-    "baseUrl": ".",
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "baseUrl": "../brand-portal/node_modules",
     "paths": {
-      "@/*": ["./src/*"],
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["../../shared/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["./**/*.ts", "./**/*.tsx"]
 }

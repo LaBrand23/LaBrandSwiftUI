@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuthStore } from '@shared/stores/authStore';
 import { brandsService } from '@shared/services/brands.service';
-import { Branch } from '@shared/types';
+import { WorkingHours } from '@shared/types';
 import { Card } from '@shared/components/ui/Card';
 import { Button } from '@shared/components/ui/Button';
 import { Badge } from '@shared/components/ui/Badge';
@@ -37,11 +37,11 @@ export default function BranchDetailPage() {
   const { user } = useAuthStore();
 
   const branchId = params.id as string;
-  const brandId = user?.brand_assignment?.brand_id;
+  const brandId = user?.brand_id;
 
   const { data: brandDetails, isLoading } = useQuery({
     queryKey: ['brand-details', brandId],
-    queryFn: () => brandsService.getById(brandId!),
+    queryFn: () => brandsService.getBrand(brandId!),
     enabled: !!brandId,
   });
 
@@ -60,7 +60,7 @@ export default function BranchDetailPage() {
       <div className="text-center py-12">
         <BuildingStorefrontIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-neutral-900 mb-2">Branch not found</h3>
-        <p className="text-neutral-500 mb-4">The branch you're looking for doesn't exist.</p>
+        <p className="text-neutral-500 mb-4">The branch you&apos;re looking for doesn&apos;t exist.</p>
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Go Back
@@ -71,17 +71,18 @@ export default function BranchDetailPage() {
 
   const todayName = new Date()
     .toLocaleDateString('en-US', { weekday: 'long' })
-    .toLowerCase() as keyof Branch['working_hours'];
+    .toLowerCase() as keyof WorkingHours;
 
   const todayHours = branch.working_hours?.[todayName];
   const isOpenToday = !!todayHours;
 
   // Simple check if currently open (rough estimation)
   const isCurrentlyOpen = () => {
-    if (!todayHours) return false;
+    const hours = branch.working_hours?.[todayName];
+    if (!hours) return false;
     const now = new Date();
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    return currentTime >= todayHours.open && currentTime <= todayHours.close;
+    return currentTime >= hours.open && currentTime <= hours.close;
   };
 
   return (
