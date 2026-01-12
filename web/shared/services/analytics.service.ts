@@ -21,12 +21,22 @@ export interface AnalyticsParams extends AnalyticsDateRange {
 }
 
 export const analyticsService = {
+  // Admin dashboard - requires admin role
   async getDashboard(params?: AnalyticsParams): Promise<DashboardData> {
     const queryString = buildQueryString((params || {}) as Record<string, unknown>);
     const response = await apiClient.get<ApiResponse<DashboardData>>(
       `/admin/analytics/dashboard${queryString}`
     );
     return response.data.data;
+  },
+
+  // Brand manager dashboard - requires brand_manager role
+  async getBrandDashboard(period?: string): Promise<DashboardData> {
+    const queryString = period ? `?period=${period}` : '';
+    const response = await apiClient.get<unknown, { data: DashboardData }>(
+      `/analytics/brand-dashboard${queryString}`
+    );
+    return response.data;
   },
 
   async getOverview(params?: AnalyticsParams): Promise<DashboardOverview> {

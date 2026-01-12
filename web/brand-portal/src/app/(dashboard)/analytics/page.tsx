@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
-import { analyticsService, AnalyticsParams } from '@shared/services/analytics.service';
+import { analyticsService } from '@shared/services/analytics.service';
 import { formatCurrency } from '@shared/lib/utils';
 import { Card } from '@shared/components/ui/Card';
 import { Spinner } from '@shared/components/ui/Spinner';
@@ -108,14 +108,9 @@ export default function AnalyticsPage() {
   const brandId = user?.brand_id;
   const [period, setPeriod] = useState<Period>('month');
 
-  const params: AnalyticsParams = {
-    brand_id: brandId,
-    period,
-  };
-
   const { data: dashboardData, isLoading } = useQuery({
-    queryKey: ['brand-analytics', params],
-    queryFn: () => analyticsService.getDashboard(params),
+    queryKey: ['brand-analytics', period],
+    queryFn: () => analyticsService.getBrandDashboard(period),
     enabled: !!brandId,
   });
 

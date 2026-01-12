@@ -66,11 +66,7 @@ export default function DashboardPage() {
 
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ['brand-dashboard', brandId],
-    queryFn: () =>
-      analyticsService.getDashboard({
-        brand_id: brandId,
-        period: 'month',
-      }),
+    queryFn: () => analyticsService.getBrandDashboard('month'),
     enabled: !!brandId,
   });
 

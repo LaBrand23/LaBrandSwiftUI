@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
 import { toast } from '@shared/stores/uiStore';
 import { reviewsService } from '@shared/services/reviews.service';
-import { Review, ReviewsQueryParams } from '@shared/types';
+import { Review } from '@shared/types';
 import { formatDate } from '@shared/lib/utils';
 import { Card } from '@shared/components/ui/Card';
 import { Button } from '@shared/components/ui/Button';
@@ -57,30 +57,29 @@ export default function ReviewsPage() {
   const [isResponseModalOpen, setIsResponseModalOpen] = useState(false);
   const [responseText, setResponseText] = useState('');
 
-  const queryParams: ReviewsQueryParams = {
-    brand_id: brandId,
+  const queryParams = {
     page: currentPage,
     limit: 10,
     rating: ratingFilter ? parseInt(ratingFilter) : undefined,
   };
 
   const { data, isLoading } = useQuery({
-    queryKey: ['reviews', queryParams],
-    queryFn: () => reviewsService.getAll(queryParams),
+    queryKey: ['brand-reviews', queryParams],
+    queryFn: () => reviewsService.getBrandReviews(queryParams),
     enabled: !!brandId,
   });
 
   const { data: stats } = useQuery({
-    queryKey: ['reviews', 'stats', brandId],
-    queryFn: () => reviewsService.getStats(),
+    queryKey: ['brand-reviews', 'stats'],
+    queryFn: () => reviewsService.getBrandStats(),
     enabled: !!brandId,
   });
 
   const respondMutation = useMutation({
     mutationFn: ({ id, text }: { id: string; text: string }) =>
-      reviewsService.respond(id, { text }),
+      reviewsService.respondToBrandReview(id, { text }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['brand-reviews'] });
       toast.success('Response sent successfully');
       setIsResponseModalOpen(false);
       setResponseText('');
