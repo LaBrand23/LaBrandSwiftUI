@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
 import { toast } from '@shared/stores/uiStore';
 import { usersService } from '@shared/services/users.service';
+import { authService } from '@shared/services/auth.service';
 import { Card } from '@shared/components/ui/Card';
 import { Button } from '@shared/components/ui/Button';
 import { Input } from '@shared/components/ui/Input';
@@ -52,6 +53,19 @@ export default function ProfilePage() {
     updateProfileMutation.mutate(formData);
   };
 
+  const changePasswordMutation = useMutation({
+    mutationFn: ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) =>
+      authService.changePassword(currentPassword, newPassword),
+    onSuccess: () => {
+      toast.success('Password changed successfully');
+      setIsChangingPassword(false);
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to change password');
+    },
+  });
+
   const handleChangePassword = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -65,10 +79,10 @@ export default function ProfilePage() {
       return;
     }
 
-    // This would call an API to change password
-    toast.success('Password changed successfully');
-    setIsChangingPassword(false);
-    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    changePasswordMutation.mutate({
+      currentPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword,
+    });
   };
 
   if (!user) return null;
@@ -247,7 +261,9 @@ export default function ProfilePage() {
               >
                 Cancel
               </Button>
-              <Button type="submit">Update Password</Button>
+              <Button type="submit" isLoading={changePasswordMutation.isPending}>
+                Update Password
+              </Button>
             </div>
           </form>
         )}

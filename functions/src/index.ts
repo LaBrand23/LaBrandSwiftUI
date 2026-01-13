@@ -11,6 +11,8 @@ import ordersController from "./modules/orders/orders.controller";
 import favoritesController from "./modules/favorites/favorites.controller";
 import reviewsController from "./modules/reviews/reviews.controller";
 import analyticsController from "./modules/analytics/analytics.controller";
+import inventoryController from "./modules/inventory/inventory.controller";
+import notificationsController from "./modules/notifications/notifications.controller";
 
 // Initialize Express app
 const app = express();
@@ -42,6 +44,8 @@ app.use("/orders", ordersController);
 app.use("/favorites", favoritesController);
 app.use("/reviews", reviewsController);
 app.use("/analytics", analyticsController);
+app.use("/inventory", inventoryController);
+app.use("/notifications", notificationsController);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {

@@ -165,7 +165,7 @@ export default function ReviewsPage() {
           <div className="flex items-center justify-center py-12">
             <Spinner size="lg" />
           </div>
-        ) : !data?.reviews.length ? (
+        ) : !data?.reviews?.length ? (
           <div className="text-center py-12">
             <ChatBubbleLeftRightIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-neutral-900 mb-2">

@@ -158,6 +158,31 @@ router.put(
 );
 
 /**
+ * PATCH /users/:id
+ * Update user profile (Owner or Admin)
+ */
+router.patch(
+  "/:id",
+  verifyAuth,
+  requireOwnerOrAdmin((req) => req.params.id),
+  validateParams(uuidParam),
+  validateBody(updateProfileSchema),
+  async (req: Request, res: Response) => {
+    try {
+      const user = await usersService.updateProfile(req.params.id, req.body);
+      success(res, user, "Profile updated successfully");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        error(res, err.message, err.statusCode);
+        return;
+      }
+      console.error("Update profile error:", err);
+      serverError(res, "Failed to update profile");
+    }
+  }
+);
+
+/**
  * PUT /users/:id/role
  * Update user role (Root Admin only)
  */

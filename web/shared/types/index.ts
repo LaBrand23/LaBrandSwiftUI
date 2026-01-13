@@ -645,3 +645,31 @@ export interface IntegrationStats {
   products_synced: number;
   average_sync_duration_ms: number;
 }
+
+// Notification types
+export type NotificationType = 'new_order' | 'new_review' | 'low_stock' | 'order_status';
+
+export interface Notification {
+  id: string;
+  user_id: string | null;
+  brand_id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  data?: {
+    order_id?: string;
+    order_number?: string;
+    review_id?: string;
+    product_id?: string;
+    product_name?: string;
+    [key: string]: unknown;
+  };
+  is_read: boolean;
+  created_at: string;
+  read_at?: string | null;
+}
+
+export interface NotificationsQueryParams extends PaginationParams {
+  type?: NotificationType;
+  is_read?: boolean;
+}

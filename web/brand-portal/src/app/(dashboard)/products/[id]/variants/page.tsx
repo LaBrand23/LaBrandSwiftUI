@@ -126,7 +126,7 @@ export default function ProductVariantsPage() {
         color: variant.color || '',
         color_code: variant.color_hex || '#000000',
         size: variant.size || '',
-        price: (product?.price || 0 + (variant.price_modifier || 0)).toString(),
+        price: ((product?.price || 0) + (variant.price_modifier || 0)).toString(),
         stock_quantity: variant.stock_quantity.toString(),
         is_active: variant.is_active,
       });

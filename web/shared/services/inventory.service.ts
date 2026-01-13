@@ -48,6 +48,7 @@ export interface InventoryQueryParams {
 }
 
 export const inventoryService = {
+  // Admin endpoints - requires admin role
   // Get inventory summary
   async getSummary(brandId?: string): Promise<InventorySummary> {
     const queryString = brandId ? `?brand_id=${brandId}` : '';
@@ -231,6 +232,32 @@ export const inventoryService = {
     >('/admin/inventory/import', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
+    return response.data.data;
+  },
+
+  // Brand manager endpoints - requires brand_manager role
+  // Adjust stock for brand's own products
+  async adjustBrandStock(adjustment: StockAdjustment): Promise<Product> {
+    const response = await apiClient.post<ApiResponse<Product>>(
+      '/inventory/adjust',
+      adjustment
+    );
+    return response.data.data;
+  },
+
+  // Get brand inventory summary
+  async getBrandSummary(): Promise<InventorySummary> {
+    const response = await apiClient.get<ApiResponse<InventorySummary>>(
+      '/inventory/summary'
+    );
+    return response.data.data;
+  },
+
+  // Get brand inventory alerts
+  async getBrandAlerts(): Promise<InventoryAlert[]> {
+    const response = await apiClient.get<ApiResponse<InventoryAlert[]>>(
+      '/inventory/alerts'
+    );
     return response.data.data;
   },
 };

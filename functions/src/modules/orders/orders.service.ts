@@ -4,6 +4,7 @@ import { Order } from "../../types";
 import { NotFoundError, BadRequestError } from "../../utils/errors";
 import { parsePagination, parseSort, formatPrice, calculateDiscount } from "../../utils/helpers";
 import { OrderStatus, UserRole } from "../../config/constants";
+import { notificationsService } from "../notifications/notifications.service";
 
 interface CreateOrderInput {
   items: Array<{
@@ -262,6 +263,26 @@ export class OrdersService {
       created_at: order.created_at,
       user_id: userId,
     });
+
+    // Create notification for brand manager
+    if (brandId) {
+      try {
+        await notificationsService.createBrandNotification(
+          brandId,
+          "new_order",
+          "New Order Received",
+          `Order #${order.order_number} for $${total.toFixed(2)} has been placed.`,
+          {
+            order_id: order.id,
+            order_number: order.order_number,
+            total: order.total,
+          }
+        );
+      } catch (notificationError) {
+        console.error("Failed to create order notification:", notificationError);
+        // Don't fail the order creation if notification fails
+      }
+    }
 
     return { ...order, items: orderItems };
   }

@@ -38,6 +38,24 @@ const createBranchSchema = z.object({
   working_hours: z.record(z.string()).optional(),
 });
 
+const updateBranchSchema = z.object({
+  name: z.string().min(1).max(255).optional(),
+  address: z.string().min(1).optional(),
+  city: z.string().optional(),
+  location: z.object({
+    lat: z.number(),
+    lng: z.number(),
+  }).optional(),
+  phone: z.string().optional(),
+  working_hours: z.record(z.string()).optional(),
+  is_active: z.boolean().optional(),
+});
+
+const branchParams = z.object({
+  id: z.string().uuid(),
+  branchId: z.string().uuid(),
+});
+
 /**
  * GET /brands
  * Get all brands (public)
@@ -178,6 +196,71 @@ router.post(
       }
       console.error("Create branch error:", err);
       serverError(res, "Failed to create branch");
+    }
+  }
+);
+
+/**
+ * PUT /brands/:id/branches/:branchId
+ * Update a branch (Brand Manager)
+ */
+router.put(
+  "/:id/branches/:branchId",
+  verifyAuth,
+  requireBrandManager,
+  requireBrandAccess((req) => req.params.id),
+  validateParams(branchParams),
+  validateBody(updateBranchSchema),
+  async (req: Request, res: Response) => {
+    try {
+      // Verify branch belongs to this brand
+      const branch = await brandsService.getBranchById(req.params.branchId);
+      if (branch.brand_id !== req.params.id) {
+        error(res, "Branch does not belong to this brand", 403);
+        return;
+      }
+
+      const updatedBranch = await brandsService.updateBranch(req.params.branchId, req.body);
+      success(res, updatedBranch, "Branch updated successfully");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        error(res, err.message, err.statusCode);
+        return;
+      }
+      console.error("Update branch error:", err);
+      serverError(res, "Failed to update branch");
+    }
+  }
+);
+
+/**
+ * DELETE /brands/:id/branches/:branchId
+ * Delete (deactivate) a branch (Brand Manager)
+ */
+router.delete(
+  "/:id/branches/:branchId",
+  verifyAuth,
+  requireBrandManager,
+  requireBrandAccess((req) => req.params.id),
+  validateParams(branchParams),
+  async (req: Request, res: Response) => {
+    try {
+      // Verify branch belongs to this brand
+      const branch = await brandsService.getBranchById(req.params.branchId);
+      if (branch.brand_id !== req.params.id) {
+        error(res, "Branch does not belong to this brand", 403);
+        return;
+      }
+
+      await brandsService.deleteBranch(req.params.branchId);
+      success(res, null, "Branch deleted successfully");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        error(res, err.message, err.statusCode);
+        return;
+      }
+      console.error("Delete branch error:", err);
+      serverError(res, "Failed to delete branch");
     }
   }
 );

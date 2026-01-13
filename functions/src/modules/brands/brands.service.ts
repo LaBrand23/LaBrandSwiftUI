@@ -243,7 +243,36 @@ export class BrandsService {
 
     if (error) throw error;
     if (!data) throw new NotFoundError("Branch not found");
-    
+
+    return data;
+  }
+
+  /**
+   * Delete (deactivate) a branch
+   */
+  async deleteBranch(id: string): Promise<void> {
+    const { error } = await supabase
+      .from("branches")
+      .update({ is_active: false })
+      .eq("id", id);
+
+    if (error) throw error;
+  }
+
+  /**
+   * Get a single branch by ID
+   */
+  async getBranchById(id: string): Promise<Branch> {
+    const { data, error } = await supabase
+      .from("branches")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      throw new NotFoundError("Branch not found");
+    }
+
     return data;
   }
 

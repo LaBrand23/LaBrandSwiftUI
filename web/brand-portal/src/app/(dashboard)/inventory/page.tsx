@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@shared/stores/authStore';
 import { toast } from '@shared/stores/uiStore';
 import { productsService } from '@shared/services/products.service';
+import { inventoryService, StockAdjustment } from '@shared/services/inventory.service';
 import { Product, ProductsQueryParams } from '@shared/types';
 import { formatCurrency } from '@shared/lib/utils';
 import { Card } from '@shared/components/ui/Card';
@@ -66,11 +67,34 @@ export default function InventoryPage() {
     setIsAdjustModalOpen(true);
   };
 
+  const adjustStockMutation = useMutation({
+    mutationFn: (adjustment: StockAdjustment) => inventoryService.adjustBrandStock(adjustment),
+    onSuccess: () => {
+      toast.success('Stock updated successfully');
+      setIsAdjustModalOpen(false);
+      setSelectedProduct(null);
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to update stock');
+    },
+  });
+
   const handleAdjustStock = () => {
-    // This would call an API to adjust stock
-    toast.success('Stock updated successfully');
-    setIsAdjustModalOpen(false);
-    queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    if (!selectedProduct || !adjustmentValue) return;
+
+    const quantity = parseInt(adjustmentValue);
+    if (isNaN(quantity) || quantity < 0) {
+      toast.error('Please enter a valid quantity');
+      return;
+    }
+
+    adjustStockMutation.mutate({
+      product_id: selectedProduct.id,
+      quantity,
+      operation: adjustmentType,
+      reason: 'Manual adjustment from inventory page',
+    });
   };
 
   // Calculate inventory stats
@@ -363,7 +387,9 @@ export default function InventoryPage() {
               >
                 Cancel
               </Button>
-              <Button onClick={handleAdjustStock}>Update Stock</Button>
+              <Button onClick={handleAdjustStock} isLoading={adjustStockMutation.isPending}>
+                Update Stock
+              </Button>
             </div>
           </div>
         )}

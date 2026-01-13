@@ -81,7 +81,7 @@ export const reviewsService = {
       `/reviews${queryString}`
     );
     return {
-      reviews: response.data.data,
+      reviews: response.data.data ?? [],
       pagination: response.data.pagination,
     };
   },
@@ -102,7 +102,13 @@ export const reviewsService = {
         by_rating: Record<number, number>;
       }>
     >('/reviews/stats');
-    return response.data.data;
+    return response.data.data ?? {
+      total: 0,
+      pending: 0,
+      approved: 0,
+      average_rating: 0,
+      by_rating: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    };
   },
 
   async respondToBrandReview(id: string, payload: ReviewResponsePayload): Promise<Review> {

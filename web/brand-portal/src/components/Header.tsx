@@ -6,12 +6,12 @@ import { useAuthStore } from '@shared/stores/authStore';
 import { authService } from '@shared/services/auth.service';
 import { Avatar } from '@shared/components/ui/Avatar';
 import {
-  BellIcon,
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
   Cog6ToothIcon,
   Bars3Icon,
 } from '@heroicons/react/24/outline';
+import { NotificationBell } from './NotificationBell';
 
 export default function Header() {
   const router = useRouter();
@@ -54,10 +54,7 @@ export default function Header() {
       {/* Right section */}
       <div className="flex items-center gap-4">
         {/* Notifications */}
-        <button className="relative p-2 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors">
-          <BellIcon className="w-6 h-6" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error-500 rounded-full" />
-        </button>
+        <NotificationBell />
 
         {/* User Menu */}
         <div className="relative" ref={dropdownRef}>

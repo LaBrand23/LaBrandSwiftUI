@@ -15,6 +15,7 @@ import {
   UserCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  BellIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'Inventory', href: '/inventory', icon: ArchiveBoxIcon },
   { name: 'Orders', href: '/orders', icon: ShoppingCartIcon },
   { name: 'Reviews', href: '/reviews', icon: ChatBubbleLeftRightIcon },
+  { name: 'Notifications', href: '/notifications', icon: BellIcon },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
   { name: 'Branches', href: '/branches', icon: BuildingStorefrontIcon },
   { name: 'Profile', href: '/profile', icon: UserCircleIcon },
