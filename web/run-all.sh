@@ -49,7 +49,7 @@ echo ""
 
 # Start Admin (port 3000)
 echo -e "${GREEN}Starting Admin Dashboard on http://localhost:3000${NC}"
-cd "$SCRIPT_DIR/admin" && npm run dev &
+cd "$SCRIPT_DIR/admin" && ./node_modules/.bin/next dev &
 ADMIN_PID=$!
 
 # Small delay to avoid port conflicts
@@ -57,7 +57,7 @@ sleep 2
 
 # Start Brand Portal (port 3001)
 echo -e "${GREEN}Starting Brand Portal on http://localhost:3001${NC}"
-cd "$SCRIPT_DIR/brand-portal" && npm run dev &
+cd "$SCRIPT_DIR/brand-portal" && ./node_modules/.bin/next dev -p 3001 &
 BRAND_PID=$!
 
 echo ""

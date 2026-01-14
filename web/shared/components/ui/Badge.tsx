@@ -77,6 +77,13 @@ const statusVariantMap: Record<string, 'success' | 'warning' | 'error' | 'info' 
 };
 
 function StatusBadge({ status, className, ...props }: StatusBadgeProps) {
+  if (!status) {
+    return (
+      <Badge variant="default" className={cn('capitalize', className)} {...props}>
+        unknown
+      </Badge>
+    );
+  }
   const variant = statusVariantMap[status.toLowerCase()] || 'default';
   const displayStatus = status.replace(/_/g, ' ');
 
