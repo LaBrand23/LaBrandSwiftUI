@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,6 +22,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,7 +38,9 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = async (data: LoginFormData, e?: React.BaseSyntheticEvent) => {
+    // Explicitly prevent default form submission to avoid credentials in URL
+    e?.preventDefault();
     setIsLoading(true);
 
     try {
@@ -58,8 +62,8 @@ export default function LoginPage() {
 
       toast.success('Welcome back!', `Logged in as ${userData.full_name}`);
 
-      // Use window.location for reliable navigation
-      window.location.href = '/';
+      // Use Next.js router for client-side navigation (avoids full page reload)
+      router.push('/');
     } catch (error: unknown) {
       console.error('Login error:', error);
       const errorMessage =
@@ -86,12 +90,19 @@ export default function LoginPage() {
             Sign in to your account
           </h2>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form 
+            onSubmit={handleSubmit(onSubmit)} 
+            method="post"
+            action="#"
+            className="space-y-5"
+            noValidate
+          >
             <FormInput
               label="Email"
               type="email"
               placeholder="admin@labrand.com"
               error={errors.email?.message}
+              autoComplete="email"
               {...register('email')}
             />
 
@@ -101,6 +112,7 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
                 error={errors.password?.message}
+                autoComplete="current-password"
                 {...register('password')}
               />
               <button
