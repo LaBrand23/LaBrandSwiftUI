@@ -8,8 +8,6 @@ import {
   MoreHorizontal,
   Eye,
   ShoppingCart,
-  Calendar,
-  Filter,
 } from 'lucide-react';
 import { PageHeader } from '../../../../../shared/components/layouts/PageHeader';
 import { Card, CardContent } from '../../../../../shared/components/ui/Card';
@@ -76,7 +74,7 @@ export default function OrdersPage() {
       await ordersService.updateOrderStatus(orderId, status);
       toast.success('Order status updated');
       refetch();
-    } catch (error) {
+    } catch {
       toast.error('Failed to update order status');
     }
   };

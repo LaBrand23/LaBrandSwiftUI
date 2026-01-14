@@ -2,9 +2,9 @@
 
 import { useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuthStore } from '@shared/stores/authStore';
-import { UserRole } from '@shared/types';
-import Spinner from '@shared/components/ui/Spinner';
+import { useAuthStore } from '../../stores/authStore';
+import { UserRole } from '../../types';
+import Spinner from '../ui/Spinner';
 
 interface AuthGuardProps {
   children: ReactNode;

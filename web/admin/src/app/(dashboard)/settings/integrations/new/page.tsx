@@ -53,11 +53,11 @@ export default function NewIntegrationPage() {
 
   const { data: brandsData, isLoading: brandsLoading } = useQuery({
     queryKey: ['brands'],
-    queryFn: () => brandsService.getAll({ limit: 100 }),
+    queryFn: () => brandsService.getBrands({ limit: 100 }),
   });
 
   const [selectedBrandId, setSelectedBrandId] = useState<string>('');
-  const selectedBrand = brandsData?.brands.find((b) => b.id === selectedBrandId);
+  const selectedBrand = brandsData?.data.find((b) => b.id === selectedBrandId);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateIntegrationData) => integrationsService.create(data),
@@ -132,7 +132,7 @@ export default function NewIntegrationPage() {
     <div className="space-y-6">
       <PageHeader
         title="Add Integration"
-        subtitle="Connect a CRM or POS system for automatic stock sync"
+        description="Connect a CRM or POS system for automatic stock sync"
         breadcrumbs={[
           { label: 'Settings', href: '/settings' },
           { label: 'Integrations', href: '/settings/integrations' },
@@ -270,7 +270,7 @@ export default function NewIntegrationPage() {
                       }}
                       options={[
                         { value: '', label: 'Select Brand' },
-                        ...(brandsData?.brands.map((b) => ({
+                        ...(brandsData?.data.map((b) => ({
                           value: b.id,
                           label: b.name,
                         })) || []),

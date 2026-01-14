@@ -9,8 +9,6 @@ import {
   Trash2,
   Package,
   Star,
-  ShoppingCart,
-  DollarSign,
   MoreHorizontal,
   Eye,
   EyeOff,
@@ -23,7 +21,7 @@ import { Button } from '../../../../../../shared/components/ui/Button';
 import { Badge, StatusBadge } from '../../../../../../shared/components/ui/Badge';
 import { Spinner } from '../../../../../../shared/components/ui/Spinner';
 import { Modal } from '../../../../../../shared/components/ui/Modal';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../../../shared/components/ui/Tabs';
+// Tabs available for future use
 import {
   Dropdown,
   DropdownTrigger,
@@ -35,7 +33,7 @@ import { productsService } from '../../../../../../shared/services/products.serv
 import { formatCurrency, formatDate } from '../../../../../../shared/lib/utils';
 import { toast } from '../../../../../../shared/stores/uiStore';
 import { useState } from 'react';
-import { ProductStatus, ProductVariant } from '../../../../../../shared/types';
+import { ProductStatus } from '../../../../../../shared/types';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -94,7 +92,7 @@ export default function ProductDetailPage() {
       <div className="text-center py-12">
         <Package className="h-12 w-12 text-text-muted mx-auto mb-4" />
         <p className="text-text-secondary mb-4">Product not found</p>
-        <Button variant="secondary" onClick={() => router.back()}>
+        <Button variant="neutral" onClick={() => router.back()}>
           Go Back
         </Button>
       </div>
@@ -119,7 +117,7 @@ export default function ProductDetailPage() {
         ]}
         actions={
           <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={() => router.back()}>
+            <Button variant="neutral" onClick={() => router.back()}>
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
@@ -131,7 +129,7 @@ export default function ProductDetailPage() {
             </Link>
             <Dropdown>
               <DropdownTrigger asChild>
-                <Button variant="secondary" size="icon">
+                <Button variant="neutral" size="icon">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownTrigger>
@@ -218,7 +216,7 @@ export default function ProductDetailPage() {
                   <p className="text-sm text-text-muted mb-2">Tags</p>
                   <div className="flex flex-wrap gap-2">
                     {product.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary">
+                      <Badge key={tag} variant="neutral">
                         {tag}
                       </Badge>
                     ))}
@@ -233,7 +231,7 @@ export default function ProductDetailPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Variants ({product.variants?.length || 0})</CardTitle>
               <Link href={`/products/${productId}/edit?tab=variants`}>
-                <Button variant="secondary" size="sm">
+                <Button variant="neutral" size="sm">
                   <Plus className="h-4 w-4" />
                   Add Variant
                 </Button>
@@ -314,7 +312,7 @@ export default function ProductDetailPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <Badge variant={variant.is_active ? 'success' : 'secondary'}>
+                            <Badge variant={variant.is_active ? 'success' : 'neutral'}>
                               {variant.is_active ? 'Active' : 'Inactive'}
                             </Badge>
                           </td>
@@ -355,7 +353,7 @@ export default function ProductDetailPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-muted">Featured</span>
-                <Badge variant={product.is_featured ? 'warning' : 'secondary'}>
+                <Badge variant={product.is_featured ? 'warning' : 'neutral'}>
                   {product.is_featured ? 'Yes' : 'No'}
                 </Badge>
               </div>
@@ -513,7 +511,7 @@ export default function ProductDetailPage() {
             undone.
           </p>
           <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => setDeleteModal(false)}>
+            <Button variant="neutral" onClick={() => setDeleteModal(false)}>
               Cancel
             </Button>
             <Button
@@ -538,7 +536,7 @@ export default function ProductDetailPage() {
             Are you sure you want to delete this variant? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => setDeleteVariantId(null)}>
+            <Button variant="neutral" onClick={() => setDeleteVariantId(null)}>
               Cancel
             </Button>
             <Button

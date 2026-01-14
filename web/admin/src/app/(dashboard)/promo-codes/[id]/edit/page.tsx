@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Tag, Percent, DollarSign, Loader2 } from 'lucide-react';
+import { ArrowLeft, Tag, Percent, DollarSign } from 'lucide-react';
 import { PageHeader } from '../../../../../../../shared/components/layouts/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../../../../../shared/components/ui/Card';
 import { Button } from '../../../../../../../shared/components/ui/Button';
@@ -37,7 +37,7 @@ export default function EditPromoCodePage() {
 
   const { data: brandsData } = useQuery({
     queryKey: ['brands-all'],
-    queryFn: () => brandsService.getAll({ limit: 100 }),
+    queryFn: () => brandsService.getBrands({ limit: 100 }),
   });
 
   const { data: categoriesData } = useQuery({
@@ -134,7 +134,7 @@ export default function EditPromoCodePage() {
     return (
       <div className="text-center py-12">
         <p className="text-text-secondary">Promo code not found</p>
-        <Button variant="secondary" onClick={() => router.back()} className="mt-4">
+        <Button variant="neutral" onClick={() => router.back()} className="mt-4">
           Go Back
         </Button>
       </div>
@@ -152,7 +152,7 @@ export default function EditPromoCodePage() {
           { label: promoCode.code },
         ]}
         actions={
-          <Button variant="secondary" onClick={() => router.back()}>
+          <Button variant="neutral" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
@@ -313,7 +313,7 @@ export default function EditPromoCodePage() {
                   <Select
                     options={[
                       { value: '', label: 'All Brands' },
-                      ...(brandsData?.brands || []).map((brand) => ({
+                      ...(brandsData?.data || []).map((brand) => ({
                         value: brand.id,
                         label: brand.name,
                       })),
@@ -331,7 +331,7 @@ export default function EditPromoCodePage() {
                   {formData.applicable_brands && formData.applicable_brands.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
                       {formData.applicable_brands.map((brandId) => {
-                        const brand = brandsData?.brands.find((b) => b.id === brandId);
+                        const brand = brandsData?.data.find((b) => b.id === brandId);
                         return (
                           <span
                             key={brandId}
@@ -486,7 +486,7 @@ export default function EditPromoCodePage() {
                   </Button>
                   <Button
                     type="button"
-                    variant="secondary"
+                    variant="neutral"
                     className="w-full"
                     onClick={() => router.back()}
                   >

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Building2, Globe, Image as ImageIcon, MapPin, Plus, Trash2, Edit } from 'lucide-react';
+import { ArrowLeft, Building2, Globe, Image as ImageIcon, MapPin, Plus, Edit } from 'lucide-react';
 import { PageHeader } from '../../../../../../../shared/components/layouts/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../../../../../shared/components/ui/Card';
 import { Button } from '../../../../../../../shared/components/ui/Button';
@@ -108,13 +108,6 @@ export default function EditBrandPage() {
     },
   });
 
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
@@ -195,7 +188,7 @@ export default function EditBrandPage() {
       <div className="text-center py-12">
         <Building2 className="h-12 w-12 text-text-muted mx-auto mb-4" />
         <p className="text-text-secondary mb-4">Brand not found</p>
-        <Button variant="secondary" onClick={() => router.back()}>
+        <Button variant="neutral" onClick={() => router.back()}>
           Go Back
         </Button>
       </div>
@@ -214,7 +207,7 @@ export default function EditBrandPage() {
           { label: 'Edit' },
         ]}
         actions={
-          <Button variant="secondary" onClick={() => router.back()}>
+          <Button variant="neutral" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
@@ -335,7 +328,7 @@ export default function EditBrandPage() {
                       </Button>
                       <Button
                         type="button"
-                        variant="secondary"
+                        variant="neutral"
                         className="w-full"
                         onClick={() => router.push(`/brands/${brandId}`)}
                       >
@@ -383,7 +376,7 @@ export default function EditBrandPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant={branch.is_active ? 'success' : 'secondary'}>
+                        <Badge variant={branch.is_active ? 'success' : 'neutral'}>
                           {branch.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                         <Button variant="ghost" size="icon-sm" onClick={() => openBranchModal(branch)}>
@@ -458,7 +451,7 @@ export default function EditBrandPage() {
           </FormField>
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="secondary" onClick={closeBranchModal}>
+            <Button type="button" variant="neutral" onClick={closeBranchModal}>
               Cancel
             </Button>
             <Button

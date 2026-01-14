@@ -82,7 +82,7 @@ export default function NewBrandPage() {
           { label: 'Create' },
         ]}
         actions={
-          <Button variant="secondary" onClick={() => router.back()}>
+          <Button variant="neutral" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
@@ -231,7 +231,7 @@ export default function NewBrandPage() {
                   </Button>
                   <Button
                     type="button"
-                    variant="secondary"
+                    variant="neutral"
                     className="w-full"
                     onClick={() => router.back()}
                   >
@@ -245,7 +245,7 @@ export default function NewBrandPage() {
             <Card>
               <CardContent className="pt-6">
                 <p className="text-sm text-text-muted">
-                  After creating the brand, you'll be able to add branches and assign managers.
+                  After creating the brand, you&apos;ll be able to add branches and assign managers.
                 </p>
               </CardContent>
             </Card>

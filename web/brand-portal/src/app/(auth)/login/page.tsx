@@ -43,7 +43,6 @@ export default function LoginPage() {
       // Navigate to dashboard
       window.location.href = '/';
     } catch (err: unknown) {
-      console.error('[Login] Error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Invalid email or password';
       setError(errorMessage);
     } finally {

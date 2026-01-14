@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoriesService, CategoriesQueryParams, CreateCategoryPayload } from '@shared/services/categories.service';
 import { Category, Gender } from '@shared/types';
@@ -406,7 +406,7 @@ export default function CategoriesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Categories"
-        subtitle="Manage product categories and hierarchy"
+        description="Manage product categories and hierarchy"
         actions={
           <Button onClick={() => openCreateModal()}>
             <PlusIcon className="w-5 h-5 mr-2" />

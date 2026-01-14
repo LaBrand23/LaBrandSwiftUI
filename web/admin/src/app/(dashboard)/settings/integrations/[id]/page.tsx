@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { integrationsService, ADAPTER_CONFIGS } from '@shared/services/integrations.service';
-import { CRMIntegration, SyncLog, SKUMapping, AdapterType, SyncStatus } from '@shared/types';
+import { AdapterType, SyncStatus } from '@shared/types';
 import { useUIStore } from '@shared/stores/uiStore';
 import { formatDate } from '@shared/lib/utils';
 import { PageHeader } from '@shared/components/layouts/PageHeader';
@@ -13,10 +13,7 @@ import { Button } from '@shared/components/ui/Button';
 import { Card } from '@shared/components/ui/Card';
 import { Badge } from '@shared/components/ui/Badge';
 import { Spinner } from '@shared/components/ui/Spinner';
-import { Input } from '@shared/components/ui/Input';
-import { Select } from '@shared/components/ui/Select';
 import { Modal } from '@shared/components/ui/Modal';
-import { Tabs } from '@shared/components/ui/Tabs';
 import {
   ArrowLeftIcon,
   ArrowPathIcon,
@@ -161,7 +158,7 @@ export default function IntegrationDetailPage() {
       <div className="text-center py-12">
         <ServerIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-neutral-900 mb-2">Integration not found</h3>
-        <p className="text-neutral-500 mb-4">The integration you're looking for doesn't exist.</p>
+        <p className="text-neutral-500 mb-4">The integration you&apos;re looking for doesn&apos;t exist.</p>
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Go Back
@@ -186,7 +183,7 @@ export default function IntegrationDetailPage() {
     <div className="space-y-6">
       <PageHeader
         title={integration.name}
-        subtitle={`${adapterConfig?.label || integration.adapter_type} integration`}
+        description={`${adapterConfig?.label || integration.adapter_type} integration`}
         breadcrumbs={[
           { label: 'Settings', href: '/settings' },
           { label: 'Integrations', href: '/settings/integrations' },

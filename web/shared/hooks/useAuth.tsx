@@ -30,12 +30,9 @@ export function useAuth(options: UseAuthOptions = {}) {
 
   // Listen to Firebase auth state changes
   useEffect(() => {
-    console.log('[Auth] Setting up auth listener...');
-
     // Set a timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
       if (store.isLoading) {
-        console.warn('[Auth] Auth timeout - forcing logout and redirecting to login');
         store.logout();
         if (!pathname.includes('/login')) {
           router.replace(redirectTo);
@@ -48,18 +45,14 @@ export function useAuth(options: UseAuthOptions = {}) {
     try {
       unsubscribe = onAuthChange(async (fbUser) => {
         clearTimeout(timeoutId);
-        console.log('[Auth] onAuthChange fired, user:', fbUser?.uid || 'null');
         store.setFirebaseUser(fbUser);
 
         if (fbUser) {
           try {
-            console.log('[Auth] Fetching user profile from API...');
             // Fetch user data from API
             const userData = await authService.getMe();
-            console.log('[Auth] User profile fetched successfully:', userData?.id);
 
             if (!userData) {
-              console.error('[Auth] No user data returned from API');
               throw new Error('No user data returned');
             }
 
@@ -67,18 +60,15 @@ export function useAuth(options: UseAuthOptions = {}) {
 
             // Check role access
             if (requiredRoles?.length && !requiredRoles.includes(userData.role)) {
-              console.log('[Auth] Role check failed, redirecting to unauthorized');
               router.replace('/unauthorized');
               return;
             }
-            console.log('[Auth] Auth complete, user authenticated with role:', userData.role);
           } catch (error) {
-            console.error('[Auth] Error fetching user profile:', error);
             store.setError('Failed to load user profile');
             try {
               await signOut();
             } catch (signOutError) {
-              console.error('[Auth] Error signing out:', signOutError);
+              // Silent fail
             }
             store.logout();
             if (!pathname.includes('/login')) {
@@ -86,7 +76,6 @@ export function useAuth(options: UseAuthOptions = {}) {
             }
           }
         } else {
-          console.log('[Auth] No Firebase user, logging out');
           // No Firebase user - logout
           store.logout();
           if (!pathname.includes('/login') && !pathname.includes('/forgot-password')) {
@@ -95,7 +84,6 @@ export function useAuth(options: UseAuthOptions = {}) {
         }
       });
     } catch (error) {
-      console.error('[Auth] Error setting up auth listener:', error);
       store.logout();
       if (!pathname.includes('/login')) {
         router.replace(redirectTo);
@@ -131,7 +119,7 @@ export function useAuth(options: UseAuthOptions = {}) {
       store.logout();
       router.replace(redirectTo);
     } catch (error) {
-      console.error('Logout error:', error);
+      // Silent fail on logout
     }
   };
 

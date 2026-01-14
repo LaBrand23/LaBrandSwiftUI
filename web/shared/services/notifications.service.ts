@@ -71,6 +71,24 @@ export const notificationsService = {
   async deleteNotification(id: string): Promise<void> {
     await apiClient.delete(`/notifications/${id}`);
   },
+
+  /**
+   * Send push notification (Admin only)
+   */
+  async sendPushNotification(data: {
+    title: string;
+    body: string;
+    target: 'all' | 'segment' | 'user';
+    user_ids?: string[];
+    segment?: string;
+    data?: Record<string, string>;
+  }): Promise<{ sent_count: number }> {
+    const response = await apiClient.post<unknown, ApiResponse<{ sent_count: number }>>(
+      '/notifications/push',
+      data
+    );
+    return response.data;
+  },
 };
 
 export default notificationsService;

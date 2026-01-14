@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Package, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Package, Plus } from 'lucide-react';
 import { PageHeader } from '../../../../../../../shared/components/layouts/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../../../../../shared/components/ui/Card';
 import { Button } from '../../../../../../../shared/components/ui/Button';
@@ -59,7 +59,7 @@ export default function EditProductPage() {
 
   const { data: brandsData } = useQuery({
     queryKey: ['brands-all'],
-    queryFn: () => brandsService.getAll({ limit: 100 }),
+    queryFn: () => brandsService.getBrands({ limit: 100 }),
   });
 
   const { data: categoriesData } = useQuery({
@@ -191,7 +191,7 @@ export default function EditProductPage() {
       <div className="text-center py-12">
         <Package className="h-12 w-12 text-text-muted mx-auto mb-4" />
         <p className="text-text-secondary mb-4">Product not found</p>
-        <Button variant="secondary" onClick={() => router.back()}>
+        <Button variant="neutral" onClick={() => router.back()}>
           Go Back
         </Button>
       </div>
@@ -210,7 +210,7 @@ export default function EditProductPage() {
           { label: 'Edit' },
         ]}
         actions={
-          <Button variant="secondary" onClick={() => router.back()}>
+          <Button variant="neutral" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
@@ -282,7 +282,7 @@ export default function EditProductPage() {
                         <Select
                           options={[
                             { value: '', label: 'Select brand' },
-                            ...(brandsData?.brands || []).map((b) => ({
+                            ...(brandsData?.data || []).map((b) => ({
                               value: b.id,
                               label: b.name,
                             })),
@@ -338,7 +338,7 @@ export default function EditProductPage() {
                             }
                           }}
                         />
-                        <Button type="button" variant="secondary" onClick={addTag}>
+                        <Button type="button" variant="neutral" onClick={addTag}>
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
@@ -480,7 +480,7 @@ export default function EditProductPage() {
                       </Button>
                       <Button
                         type="button"
-                        variant="secondary"
+                        variant="neutral"
                         className="w-full"
                         onClick={() => router.push(`/products/${productId}`)}
                       >
@@ -661,7 +661,7 @@ export default function EditProductPage() {
           </label>
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="secondary" onClick={() => setShowVariantModal(false)}>
+            <Button type="button" variant="neutral" onClick={() => setShowVariantModal(false)}>
               Cancel
             </Button>
             <Button type="submit" loading={createVariantMutation.isPending}>

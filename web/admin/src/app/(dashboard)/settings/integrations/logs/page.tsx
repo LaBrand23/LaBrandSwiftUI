@@ -55,7 +55,7 @@ export default function SyncLogsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Sync Logs"
-        subtitle="View sync history across all integrations"
+        description="View sync history across all integrations"
         breadcrumbs={[
           { label: 'Settings', href: '/settings' },
           { label: 'Integrations', href: '/settings/integrations' },

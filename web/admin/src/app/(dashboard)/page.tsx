@@ -37,35 +37,23 @@ export default function DashboardPage() {
     );
   }
 
-  // If error, we'll use mock data instead of showing an error
-  // This allows development to continue while the API is being set up
+  if (error || !data) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <AlertTriangle className="h-12 w-12 text-yellow-500 mb-4" />
+        <h2 className="text-lg font-semibold text-text-primary mb-2">Failed to load dashboard</h2>
+        <p className="text-text-secondary mb-4">Unable to fetch dashboard data. Please try again.</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-button-primary text-white rounded-lg hover:bg-button-primary-hover"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
-  // Use mock data if API doesn't return data yet
-  const dashboardData = data || {
-    overview: {
-      total_revenue: 150000000,
-      revenue_change: 12.5,
-      total_orders: 500,
-      orders_change: 8.3,
-      total_customers: 1200,
-      customers_change: 15.2,
-      average_order_value: 300000,
-      aov_change: 3.1,
-    },
-    revenue_chart: [],
-    top_products: [],
-    top_brands: [],
-    orders_by_status: {
-      pending: 20,
-      confirmed: 15,
-      processing: 10,
-      shipped: 25,
-      delivered: 400,
-      cancelled: 30,
-    },
-    recent_orders: [],
-    low_stock_products: [],
-  };
+  const dashboardData = data;
 
   return (
     <>

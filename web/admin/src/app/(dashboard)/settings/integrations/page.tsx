@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { integrationsService, ADAPTER_CONFIGS } from '@shared/services/integrations.service';
 import { CRMIntegration, AdapterType, IntegrationStatus, SyncStatus } from '@shared/types';
+// Note: XCircleIcon import kept for potential future use
 import { useUIStore } from '@shared/stores/uiStore';
 import { formatDate } from '@shared/lib/utils';
 import { PageHeader } from '@shared/components/layouts/PageHeader';
@@ -12,16 +13,13 @@ import { Button } from '@shared/components/ui/Button';
 import { Card } from '@shared/components/ui/Card';
 import { Badge } from '@shared/components/ui/Badge';
 import { Spinner } from '@shared/components/ui/Spinner';
-import { Modal } from '@shared/components/ui/Modal';
+// Modal available for future use
 import { Select } from '@shared/components/ui/Select';
 import {
   PlusIcon,
   ArrowPathIcon,
   Cog6ToothIcon,
-  CheckCircleIcon,
-  ExclamationCircleIcon,
   ClockIcon,
-  XCircleIcon,
   ServerIcon,
   CloudArrowUpIcon,
   DocumentTextIcon,
@@ -57,7 +55,7 @@ const adapterIcons: Record<AdapterType, typeof ServerIcon> = {
 export default function IntegrationsPage() {
   const queryClient = useQueryClient();
   const { addToast } = useUIStore();
-  const [brandFilter, setBrandFilter] = useState('');
+  const [brandFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [syncingId, setSyncingId] = useState<string | null>(null);
 
@@ -106,7 +104,7 @@ export default function IntegrationsPage() {
     <div className="space-y-6">
       <PageHeader
         title="CRM Integrations"
-        subtitle="Manage stock sync integrations with external CRM/POS systems"
+        description="Manage stock sync integrations with external CRM/POS systems"
         breadcrumbs={[
           { label: 'Settings', href: '/settings' },
           { label: 'Integrations' },

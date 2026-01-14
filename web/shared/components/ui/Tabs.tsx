@@ -18,22 +18,66 @@ function useTabs() {
   return context;
 }
 
-interface TabsProps {
-  defaultValue: string;
+// Simple tabs interface (standalone mode)
+interface SimpleTabsProps {
+  tabs: Array<{ id: string; label: string }>;
+  activeTab: string;
+  onChange: (id: string) => void;
+  className?: string;
+}
+
+// Compound tabs interface (with children)
+interface CompoundTabsProps {
+  defaultValue?: string;
   value?: string;
   onValueChange?: (value: string) => void;
   children: ReactNode;
   className?: string;
 }
 
-function Tabs({
-  defaultValue,
-  value,
-  onValueChange,
-  children,
-  className,
-}: TabsProps) {
-  const [internalValue, setInternalValue] = useState(defaultValue);
+type TabsProps = SimpleTabsProps | CompoundTabsProps;
+
+function isSimpleTabs(props: TabsProps): props is SimpleTabsProps {
+  return 'tabs' in props && 'onChange' in props;
+}
+
+function Tabs(props: TabsProps) {
+  // Simple standalone tabs mode
+  if (isSimpleTabs(props)) {
+    const { tabs, activeTab, onChange, className } = props;
+    return (
+      <div
+        className={cn(
+          'inline-flex items-center gap-1 p-1 bg-background-secondary rounded-lg',
+          className
+        )}
+        role="tablist"
+      >
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            onClick={() => onChange(tab.id)}
+            className={cn(
+              'inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-colors',
+              'focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-1',
+              activeTab === tab.id
+                ? 'bg-background-surface text-text-primary shadow-sm'
+                : 'text-text-tertiary hover:text-text-primary'
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  // Compound tabs mode with children
+  const { defaultValue, value, onValueChange, children, className } = props;
+  const [internalValue, setInternalValue] = useState(defaultValue || '');
   const activeTab = value ?? internalValue;
 
   const setActiveTab = (newValue: string) => {

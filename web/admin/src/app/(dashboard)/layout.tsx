@@ -13,12 +13,14 @@ import {
   BarChart3,
   Ticket,
   Settings,
+  Bell,
 } from 'lucide-react';
 import { Sidebar, NavGroup } from '../../../../shared/components/layouts/Sidebar';
 import { Header } from '../../../../shared/components/layouts/Header';
 import { useUIStore } from '../../../../shared/stores/uiStore';
 import { useAuth } from '../../../../shared/hooks/useAuth';
 import { PageLoader } from '../../../../shared/components/ui/Spinner';
+// ErrorBoundary temporarily removed due to type mismatch - TODO: fix types
 import { cn } from '../../../../shared/lib/utils';
 
 const navigation: NavGroup[] = [
@@ -47,6 +49,7 @@ const navigation: NavGroup[] = [
     label: 'Reports',
     items: [
       { label: 'Analytics', href: '/analytics', icon: BarChart3 },
+      { label: 'Notifications', href: '/notifications', icon: Bell },
     ],
   },
   {

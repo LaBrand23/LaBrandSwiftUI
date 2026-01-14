@@ -25,7 +25,7 @@ import { brandsService } from '../../../../../shared/services/brands.service';
 import { formatDate } from '../../../../../shared/lib/utils';
 import { toast } from '../../../../../shared/stores/uiStore';
 import { useAuthStore } from '../../../../../shared/stores/authStore';
-import { User, UserRole, Brand } from '../../../../../shared/types';
+import { User, UserRole } from '../../../../../shared/types';
 
 const roleOptions: SelectOption[] = [
   { value: '', label: 'All Roles' },
@@ -114,7 +114,7 @@ export default function UsersPage() {
         toast.success('User activated');
       }
       refetch();
-    } catch (error) {
+    } catch {
       toast.error('Failed to update user status');
     }
   };
@@ -127,7 +127,7 @@ export default function UsersPage() {
       toast.success('User deleted');
       setDeleteModal({ open: false, user: null });
       refetch();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete user');
     }
   };

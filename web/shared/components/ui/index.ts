@@ -64,3 +64,5 @@ export {
 } from './ResponsiveContainer';
 
 export { MobileNav, MobileBottomNav } from './MobileNav';
+
+export { StarRating } from './StarRating';

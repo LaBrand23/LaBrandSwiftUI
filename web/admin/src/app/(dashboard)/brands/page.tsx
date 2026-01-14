@@ -21,7 +21,6 @@ import { Button } from '../../../../../shared/components/ui/Button';
 import { Input } from '../../../../../shared/components/ui/Input';
 import { Select, SelectOption } from '../../../../../shared/components/ui/Select';
 import { StatusBadge, Badge } from '../../../../../shared/components/ui/Badge';
-import { Avatar } from '../../../../../shared/components/ui/Avatar';
 import { Pagination, PaginationInfo } from '../../../../../shared/components/ui/Pagination';
 import { Spinner } from '../../../../../shared/components/ui/Spinner';
 import {
@@ -70,7 +69,7 @@ export default function BrandsPage() {
       await brandsService.toggleBrandStatus(brand.id, !brand.is_active);
       toast.success(brand.is_active ? 'Brand deactivated' : 'Brand activated');
       refetch();
-    } catch (error) {
+    } catch {
       toast.error('Failed to update brand status');
     }
   };
@@ -83,7 +82,7 @@ export default function BrandsPage() {
       toast.success('Brand deleted');
       setDeleteModal({ open: false, brand: null });
       refetch();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete brand');
     }
   };

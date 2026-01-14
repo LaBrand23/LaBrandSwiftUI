@@ -105,7 +105,7 @@ export default function DashboardPage() {
         />
         <StatCard
           title="Active Products"
-          value={dashboardData?.inventory_alerts?.out_of_stock ? 0 : 0}
+          value={dashboardData?.top_products?.length || 0}
           icon={CubeIcon}
         />
         <StatCard

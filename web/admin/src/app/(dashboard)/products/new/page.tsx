@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Package, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Package, Plus } from 'lucide-react';
 import { PageHeader } from '../../../../../../shared/components/layouts/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../../../../shared/components/ui/Card';
 import { Button } from '../../../../../../shared/components/ui/Button';
@@ -48,7 +48,7 @@ export default function NewProductPage() {
 
   const { data: brandsData } = useQuery({
     queryKey: ['brands-all'],
-    queryFn: () => brandsService.getAll({ limit: 100 }),
+    queryFn: () => brandsService.getBrands({ limit: 100 }),
   });
 
   const { data: categoriesData } = useQuery({
@@ -88,8 +88,8 @@ export default function NewProductPage() {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.sku.trim()) newErrors.sku = 'SKU is required';
+    if (!formData.name?.trim()) newErrors.name = 'Name is required';
+    if (!formData.sku?.trim()) newErrors.sku = 'SKU is required';
     if (!formData.brand_id) newErrors.brand_id = 'Brand is required';
     if (!formData.branch_id) newErrors.branch_id = 'Branch is required';
     if (!formData.category_id) newErrors.category_id = 'Category is required';
@@ -142,7 +142,7 @@ export default function NewProductPage() {
           { label: 'Create' },
         ]}
         actions={
-          <Button variant="secondary" onClick={() => router.back()}>
+          <Button variant="neutral" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
@@ -178,7 +178,7 @@ export default function NewProductPage() {
                       />
                     </FormField>
                   </div>
-                  <Button type="button" variant="secondary" onClick={generateSku} className="mt-6">
+                  <Button type="button" variant="neutral" onClick={generateSku} className="mt-6">
                     Generate
                   </Button>
                 </div>
@@ -214,7 +214,7 @@ export default function NewProductPage() {
                     <Select
                       options={[
                         { value: '', label: 'Select brand' },
-                        ...(brandsData?.brands || []).map((b) => ({
+                        ...(brandsData?.data || []).map((b) => ({
                           value: b.id,
                           label: b.name,
                         })),
@@ -270,7 +270,7 @@ export default function NewProductPage() {
                         }
                       }}
                     />
-                    <Button type="button" variant="secondary" onClick={addTag}>
+                    <Button type="button" variant="neutral" onClick={addTag}>
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
@@ -418,7 +418,7 @@ export default function NewProductPage() {
                     accept="image/*"
                     multiple
                     className="hidden"
-                    onChange={(e) => {
+                    onChange={() => {
                       // Handle file upload - would integrate with storage service
                       toast.info('Image upload will be integrated with storage service');
                     }}
@@ -443,7 +443,7 @@ export default function NewProductPage() {
                   </Button>
                   <Button
                     type="button"
-                    variant="secondary"
+                    variant="neutral"
                     className="w-full"
                     onClick={() => router.back()}
                   >

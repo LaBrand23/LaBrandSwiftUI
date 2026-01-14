@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { auth } from './firebase';
 
-const API_BASE_URL = 'https://asia-south1-labrand-ef645.cloudfunctions.net/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://asia-south1-labrand-ef645.cloudfunctions.net/api';
 
 // Create axios instance
 export const apiClient: AxiosInstance = axios.create({
@@ -17,16 +17,12 @@ apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
       const user = auth?.currentUser;
-      console.log('[API] Request interceptor - current user:', user?.uid || 'null');
       if (user) {
         const token = await user.getIdToken();
-        console.log('[API] Got ID token, length:', token?.length || 0);
         config.headers.Authorization = `Bearer ${token}`;
-      } else {
-        console.warn('[API] No current user - request will be sent without auth token');
       }
     } catch (error) {
-      console.error('[API] Error getting auth token:', error);
+      // Silent fail - request will be sent without auth token
     }
     return config;
   },
@@ -39,11 +35,9 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     // Return the data directly for successful responses
-    console.log('[API] Response success:', response.config.url, response.status);
     return response.data;
   },
   async (error: AxiosError<{ error?: string; code?: string; details?: unknown }>) => {
-    console.error('[API] Response error:', error.config?.url, error.response?.status, error.message);
     const originalRequest = error.config;
 
     // Handle 401 Unauthorized - token might be expired

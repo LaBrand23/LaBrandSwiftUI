@@ -122,7 +122,7 @@ function RevenueChart({ data }: { data: Array<{ date: string; revenue: number; o
   );
 }
 
-function OrdersByStatusChart({ data }: { data: Record<string, number> }) {
+function OrdersByStatusChart({ data }: { data: { [key: string]: number } }) {
   const statusConfig: Record<string, { label: string; color: string }> = {
     pending: { label: 'Pending', color: 'bg-warning-500' },
     confirmed: { label: 'Confirmed', color: 'bg-info-500' },
@@ -276,8 +276,8 @@ export default function AnalyticsPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (error) {
-      console.error('Export failed:', error);
+    } catch {
+      // Export failed silently
     }
   };
 
@@ -292,12 +292,12 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Analytics"
-        subtitle="Track your business performance"
+        description="Track your business performance"
         actions={
           <div className="flex items-center gap-4">
             <Select
               value={period}
-              onChange={(e) => setPeriod(e.target.value as Period)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPeriod(e.target.value as Period)}
               options={periodOptions}
               className="w-40"
             />
@@ -363,7 +363,7 @@ export default function AnalyticsPage() {
                 Orders by Status
               </h3>
               {dashboardData?.orders_by_status && (
-                <OrdersByStatusChart data={dashboardData.orders_by_status} />
+                <OrdersByStatusChart data={dashboardData.orders_by_status as unknown as { [key: string]: number }} />
               )}
             </Card>
           </div>

@@ -24,16 +24,15 @@ import { Button } from '../../../../../../shared/components/ui/Button';
 import { Badge, StatusBadge } from '../../../../../../shared/components/ui/Badge';
 import { Spinner } from '../../../../../../shared/components/ui/Spinner';
 import { Modal } from '../../../../../../shared/components/ui/Modal';
-import { Input } from '../../../../../../shared/components/ui/Input';
+// Input available for future use
 import {
   Dropdown,
   DropdownTrigger,
   DropdownContent,
   DropdownItem,
-  DropdownSeparator,
 } from '../../../../../../shared/components/ui/Dropdown';
 import { ordersService } from '../../../../../../shared/services/orders.service';
-import { formatCurrency, formatDateTime, formatDate } from '../../../../../../shared/lib/utils';
+import { formatCurrency, formatDateTime } from '../../../../../../shared/lib/utils';
 import { toast } from '../../../../../../shared/stores/uiStore';
 import { OrderStatus } from '../../../../../../shared/types';
 
@@ -107,7 +106,7 @@ export default function OrderDetailPage() {
       <div className="text-center py-12">
         <ShoppingCart className="h-12 w-12 text-text-muted mx-auto mb-4" />
         <p className="text-text-secondary mb-4">Order not found</p>
-        <Button variant="secondary" onClick={() => router.back()}>
+        <Button variant="neutral" onClick={() => router.back()}>
           Go Back
         </Button>
       </div>
@@ -129,11 +128,11 @@ export default function OrderDetailPage() {
         ]}
         actions={
           <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={() => router.back()}>
+            <Button variant="neutral" onClick={() => router.back()}>
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
-            <Button variant="secondary" onClick={() => window.print()}>
+            <Button variant="neutral" onClick={() => window.print()}>
               <Printer className="h-4 w-4" />
               Print
             </Button>
@@ -390,7 +389,7 @@ export default function OrderDetailPage() {
             <CardContent className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-sm text-text-muted">Method</span>
-                <Badge variant="secondary">
+                <Badge variant="neutral">
                   {order.payment_method.replace('_', ' ').toUpperCase()}
                 </Badge>
               </div>
@@ -449,7 +448,7 @@ export default function OrderDetailPage() {
           </div>
           <div className="flex justify-end gap-3">
             <Button
-              variant="secondary"
+              variant="neutral"
               onClick={() => setStatusModal({ open: false, status: null })}
             >
               Cancel
@@ -495,7 +494,7 @@ export default function OrderDetailPage() {
             <span className="text-sm text-text-primary">Process refund for this order</span>
           </label>
           <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => setCancelModal(false)}>
+            <Button variant="neutral" onClick={() => setCancelModal(false)}>
               Keep Order
             </Button>
             <Button

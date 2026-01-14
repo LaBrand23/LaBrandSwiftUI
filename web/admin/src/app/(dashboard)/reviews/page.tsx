@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reviewsService } from '@shared/services/reviews.service';
 import { Review, ReviewsQueryParams } from '@shared/types';
 import { useUIStore } from '@shared/stores/uiStore';
-import { formatCurrency, formatDate } from '@shared/lib/utils';
+import { formatDate } from '@shared/lib/utils';
 import { PageHeader } from '@shared/components/layouts/PageHeader';
 import { Button } from '@shared/components/ui/Button';
 import { Badge } from '@shared/components/ui/Badge';
@@ -185,7 +185,7 @@ export default function ReviewsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Reviews"
-        subtitle="Manage product reviews and ratings"
+        description="Manage product reviews and ratings"
       />
 
       {/* Stats Cards */}

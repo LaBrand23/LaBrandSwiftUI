@@ -105,7 +105,7 @@ export default function PromoCodesPage() {
 
   const getStatusBadge = (promoCode: PromoCode) => {
     if (!promoCode.is_active) {
-      return <Badge variant="secondary">Inactive</Badge>;
+      return <Badge variant="neutral">Inactive</Badge>;
     }
     if (isExpired(promoCode.valid_to)) {
       return <Badge variant="error">Expired</Badge>;
@@ -231,7 +231,7 @@ export default function PromoCodesPage() {
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <Badge variant={promoCode.type === 'percentage' ? 'primary' : 'secondary'}>
+                          <Badge variant={promoCode.type === 'percentage' ? 'info' : 'neutral'}>
                             {promoCode.type === 'percentage' ? 'Percentage' : 'Fixed'}
                           </Badge>
                         </td>
@@ -364,7 +364,7 @@ export default function PromoCodesPage() {
           </p>
           <div className="flex justify-end gap-3">
             <Button
-              variant="secondary"
+              variant="neutral"
               onClick={() => setDeleteModal({ open: false, promoCode: null })}
             >
               Cancel

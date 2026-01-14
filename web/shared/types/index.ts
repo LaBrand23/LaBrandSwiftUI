@@ -14,6 +14,14 @@ export interface User {
   branch_id?: string;
   created_at: string;
   updated_at?: string;
+  brand_assignment?: {
+    brand_id: string;
+    brand_name: string;
+    brand_logo?: string;
+    branch_id?: string;
+    branch_name?: string;
+    permissions: string[];
+  };
 }
 
 export interface AuthUser extends User {

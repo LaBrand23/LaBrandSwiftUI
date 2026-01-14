@@ -65,7 +65,6 @@ export default function LoginPage() {
       // Use Next.js router for client-side navigation (avoids full page reload)
       router.push('/');
     } catch (error: unknown) {
-      console.error('Login error:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Invalid email or password';
       toast.error('Login failed', errorMessage);

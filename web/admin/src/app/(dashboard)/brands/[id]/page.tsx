@@ -27,7 +27,7 @@ import { Badge } from '../../../../../../shared/components/ui/Badge';
 import { Avatar } from '../../../../../../shared/components/ui/Avatar';
 import { Spinner } from '../../../../../../shared/components/ui/Spinner';
 import { Modal } from '../../../../../../shared/components/ui/Modal';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../../../shared/components/ui/Tabs';
+// Tabs components available but not currently used
 import {
   Dropdown,
   DropdownTrigger,
@@ -95,7 +95,7 @@ export default function BrandDetailPage() {
       <div className="text-center py-12">
         <Building2 className="h-12 w-12 text-text-muted mx-auto mb-4" />
         <p className="text-text-secondary mb-4">Brand not found</p>
-        <Button variant="secondary" onClick={() => router.back()}>
+        <Button variant="neutral" onClick={() => router.back()}>
           Go Back
         </Button>
       </div>
@@ -114,7 +114,7 @@ export default function BrandDetailPage() {
         ]}
         actions={
           <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={() => router.back()}>
+            <Button variant="neutral" onClick={() => router.back()}>
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
@@ -126,7 +126,7 @@ export default function BrandDetailPage() {
             </Link>
             <Dropdown>
               <DropdownTrigger asChild>
-                <Button variant="secondary" size="icon">
+                <Button variant="neutral" size="icon">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownTrigger>
@@ -202,7 +202,7 @@ export default function BrandDetailPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Branches ({brand.branches?.length || 0})</CardTitle>
               <Link href={`/brands/${brandId}/edit?tab=branches`}>
-                <Button variant="secondary" size="sm">
+                <Button variant="neutral" size="sm">
                   <Plus className="h-4 w-4" />
                   Add Branch
                 </Button>
@@ -230,7 +230,7 @@ export default function BrandDetailPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge variant={branch.is_active ? 'success' : 'secondary'}>
+                        <Badge variant={branch.is_active ? 'success' : 'neutral'}>
                           {branch.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                         <Dropdown>
@@ -294,7 +294,7 @@ export default function BrandDetailPage() {
                         <p className="text-sm text-text-muted">{manager.email}</p>
                       </div>
                       {manager.branch_id && (
-                        <Badge variant="secondary">
+                        <Badge variant="neutral">
                           {brand.branches?.find((b) => b.id === manager.branch_id)?.name || 'Branch'}
                         </Badge>
                       )}
@@ -321,13 +321,13 @@ export default function BrandDetailPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-muted">Status</span>
-                <Badge variant={brand.is_active ? 'success' : 'secondary'}>
+                <Badge variant={brand.is_active ? 'success' : 'neutral'}>
                   {brand.is_active ? 'Active' : 'Inactive'}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-muted">Featured</span>
-                <Badge variant={brand.is_featured ? 'warning' : 'secondary'}>
+                <Badge variant={brand.is_featured ? 'warning' : 'neutral'}>
                   {brand.is_featured ? 'Yes' : 'No'}
                 </Badge>
               </div>
@@ -392,13 +392,13 @@ export default function BrandDetailPage() {
             </CardHeader>
             <CardContent className="space-y-2">
               <Link href={`/products?brand_id=${brandId}`} className="block">
-                <Button variant="secondary" className="w-full justify-start">
+                <Button variant="neutral" className="w-full justify-start">
                   <Package className="h-4 w-4" />
                   View Products
                 </Button>
               </Link>
               <Link href={`/orders?brand_id=${brandId}`} className="block">
-                <Button variant="secondary" className="w-full justify-start">
+                <Button variant="neutral" className="w-full justify-start">
                   <ShoppingCart className="h-4 w-4" />
                   View Orders
                 </Button>
@@ -416,7 +416,7 @@ export default function BrandDetailPage() {
             branches and may affect associated products.
           </p>
           <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => setDeleteModal(false)}>
+            <Button variant="neutral" onClick={() => setDeleteModal(false)}>
               Cancel
             </Button>
             <Button
@@ -441,7 +441,7 @@ export default function BrandDetailPage() {
             Are you sure you want to delete this branch? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => setDeleteBranchId(null)}>
+            <Button variant="neutral" onClick={() => setDeleteBranchId(null)}>
               Cancel
             </Button>
             <Button

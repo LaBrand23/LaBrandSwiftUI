@@ -22,8 +22,11 @@ export interface ProductResponse {
 export interface CreateProductData {
   name: string;
   category_id: string;
-  primary_branch_id: string;
+  brand_id?: string;
+  branch_id?: string;
+  primary_branch_id?: string;
   description?: string;
+  short_description?: string;
   price: number;
   sale_price?: number;
   is_new?: boolean;

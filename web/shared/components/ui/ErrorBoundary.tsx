@@ -1,8 +1,8 @@
 'use client';
 
-import { Component, ReactNode } from 'react';
-import Button from './Button';
-import Card from './Card';
+import React, { Component, ReactNode } from 'react';
+import { Button } from './Button';
+import { Card } from './Card';
 import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 interface Props {

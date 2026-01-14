@@ -11,7 +11,6 @@ import {
   Edit,
   Trash2,
   Package,
-  Filter,
   Archive,
   CheckCircle,
 } from 'lucide-react';
@@ -20,7 +19,7 @@ import { Card, CardContent } from '../../../../../shared/components/ui/Card';
 import { Button } from '../../../../../shared/components/ui/Button';
 import { Input } from '../../../../../shared/components/ui/Input';
 import { Select, SelectOption } from '../../../../../shared/components/ui/Select';
-import { StatusBadge, Badge } from '../../../../../shared/components/ui/Badge';
+import { StatusBadge } from '../../../../../shared/components/ui/Badge';
 import { Pagination, PaginationInfo } from '../../../../../shared/components/ui/Pagination';
 import { Spinner } from '../../../../../shared/components/ui/Spinner';
 import {
@@ -97,7 +96,7 @@ export default function ProductsPage() {
       toast.success(`${selectedProducts.length} products updated`);
       setSelectedProducts([]);
       refetch();
-    } catch (error) {
+    } catch {
       toast.error('Failed to update products');
     }
   };
@@ -110,7 +109,7 @@ export default function ProductsPage() {
       toast.success('Product deleted');
       setDeleteModal({ open: false, product: null });
       refetch();
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete product');
     }
   };
@@ -175,7 +174,7 @@ export default function ProductsPage() {
                 {selectedProducts.length} selected
               </span>
               <Button
-                variant="secondary"
+                variant="neutral"
                 size="sm"
                 onClick={() => handleBulkStatusUpdate('active')}
               >
@@ -183,7 +182,7 @@ export default function ProductsPage() {
                 Activate
               </Button>
               <Button
-                variant="secondary"
+                variant="neutral"
                 size="sm"
                 onClick={() => handleBulkStatusUpdate('archived')}
               >

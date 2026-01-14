@@ -17,7 +17,7 @@ import { Button } from '@shared/components/ui/Button';
 import { Input } from '@shared/components/ui/Input';
 import { Card } from '@shared/components/ui/Card';
 import { Spinner } from '@shared/components/ui/Spinner';
-import { Tabs } from '@shared/components/ui/Tabs';
+// Tabs import available but using custom tab implementation
 import {
   Cog6ToothIcon,
   TruckIcon,
@@ -35,8 +35,6 @@ const paymentMethodLabels: Record<PaymentMethod, string> = {
 };
 
 export default function SettingsPage() {
-  const queryClient = useQueryClient();
-  const { addToast } = useUIStore();
   const [activeTab, setActiveTab] = useState('general');
 
   const tabs = [
@@ -50,7 +48,7 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Settings"
-        subtitle="Configure your store settings"
+        description="Configure your store settings"
       />
 
       <div className="flex gap-6">

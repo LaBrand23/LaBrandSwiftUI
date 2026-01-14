@@ -13,7 +13,6 @@ import { Card } from '@shared/components/ui/Card';
 import { Button } from '@shared/components/ui/Button';
 import { Badge } from '@shared/components/ui/Badge';
 import { Spinner } from '@shared/components/ui/Spinner';
-import { Modal } from '@shared/components/ui/Modal';
 import { Tabs } from '@shared/components/ui/Tabs';
 import {
   ArrowPathIcon,
@@ -21,16 +20,12 @@ import {
   CheckCircleIcon,
   ClockIcon,
   ArrowDownTrayIcon,
-  ArrowUpTrayIcon,
-  CubeIcon,
 } from '@heroicons/react/24/outline';
 
 export default function InventoryPage() {
   const queryClient = useQueryClient();
   const { addToast } = useUIStore();
   const [activeTab, setActiveTab] = useState('overview');
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [isSyncSettingsOpen, setIsSyncSettingsOpen] = useState(false);
 
   const { data: summary, isLoading: summaryLoading } = useQuery({
     queryKey: ['inventory', 'summary'],
@@ -87,7 +82,7 @@ export default function InventoryPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
       addToast('Export started', 'success');
-    } catch (error) {
+    } catch {
       addToast('Failed to export inventory', 'error');
     }
   };
@@ -102,7 +97,7 @@ export default function InventoryPage() {
     <div className="space-y-6">
       <PageHeader
         title="Inventory Management"
-        subtitle="Monitor and sync stock across all brands"
+        description="Monitor and sync stock across all brands"
         actions={
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={handleExport}>

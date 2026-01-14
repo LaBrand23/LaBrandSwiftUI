@@ -26,7 +26,7 @@ import { Button } from '../../../../../../shared/components/ui/Button';
 import { Badge, StatusBadge } from '../../../../../../shared/components/ui/Badge';
 import { Avatar } from '../../../../../../shared/components/ui/Avatar';
 import { Spinner } from '../../../../../../shared/components/ui/Spinner';
-import { Modal, ConfirmModal } from '../../../../../../shared/components/ui/Modal';
+import { ConfirmModal } from '../../../../../../shared/components/ui/Modal';
 import { usersService } from '../../../../../../shared/services/users.service';
 import { formatCurrency, formatDate } from '../../../../../../shared/lib/utils';
 import { toast } from '../../../../../../shared/stores/uiStore';
@@ -105,7 +105,7 @@ export default function UserDetailPage() {
       <div className="text-center py-12">
         <UserIcon className="h-12 w-12 text-text-muted mx-auto mb-4" />
         <p className="text-text-secondary mb-4">User not found</p>
-        <Button variant="secondary" onClick={() => router.back()}>
+        <Button variant="neutral" onClick={() => router.back()}>
           Go Back
         </Button>
       </div>
@@ -124,13 +124,13 @@ export default function UserDetailPage() {
         ]}
         actions={
           <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={() => router.back()}>
+            <Button variant="neutral" onClick={() => router.back()}>
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
             {isRootAdmin() && (
               <Link href={`/users/${userId}/edit`}>
-                <Button variant="secondary">
+                <Button variant="neutral">
                   <Edit className="h-4 w-4" />
                   Edit Role
                 </Button>
@@ -205,11 +205,11 @@ export default function UserDetailPage() {
                       href={`/brands/${user.brand_assignment.brand_id}`}
                       className="text-lg font-medium hover:underline"
                     >
-                      {user.brand_assignment.brand?.name || 'Brand'}
+                      {user.brand_assignment.brand_name || 'Brand'}
                     </Link>
-                    {user.brand_assignment.branch && (
+                    {user.brand_assignment.branch_name && (
                       <p className="text-sm text-text-muted">
-                        Branch: {user.brand_assignment.branch.name}
+                        Branch: {user.brand_assignment.branch_name}
                       </p>
                     )}
                   </div>
@@ -320,7 +320,7 @@ export default function UserDetailPage() {
             <CardContent className="space-y-3">
               {user.role === 'client' && user.orders_count && user.orders_count > 0 && (
                 <Link href={`/orders?user_id=${userId}`} className="block">
-                  <Button variant="secondary" className="w-full justify-start">
+                  <Button variant="neutral" className="w-full justify-start">
                     <ShoppingCart className="h-4 w-4" />
                     View Orders
                   </Button>
@@ -328,7 +328,7 @@ export default function UserDetailPage() {
               )}
 
               <Button
-                variant="secondary"
+                variant="neutral"
                 className="w-full justify-start"
                 onClick={() => setStatusModal(true)}
               >
@@ -372,7 +372,7 @@ export default function UserDetailPage() {
             : `Are you sure you want to activate ${user.full_name}? They will be able to access the platform again.`
         }
         confirmText={user.is_active ? 'Deactivate' : 'Activate'}
-        variant={user.is_active ? 'danger' : 'primary'}
+        variant={user.is_active ? 'danger' : 'info'}
         isLoading={toggleStatusMutation.isPending}
       />
 

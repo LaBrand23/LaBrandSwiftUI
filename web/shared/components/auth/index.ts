@@ -5,3 +5,4 @@ export {
   BrandGuard,
   withAuth,
 } from './AuthGuard';
+export { UnauthorizedPage } from './UnauthorizedPage';

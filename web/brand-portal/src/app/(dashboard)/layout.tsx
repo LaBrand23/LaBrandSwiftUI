@@ -10,6 +10,7 @@ import { auth } from '@shared/lib/firebase';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { Spinner } from '@shared/components/ui/Spinner';
+import { ErrorBoundary } from '@shared/components/ui/ErrorBoundary';
 
 export default function DashboardLayout({
   children,
@@ -45,8 +46,7 @@ export default function DashboardLayout({
         }
 
         setUser(currentUser);
-      } catch (error) {
-        console.error('[Dashboard] Auth failed:', error);
+      } catch {
         router.replace('/login');
       } finally {
         setLoading(false);
@@ -80,7 +80,11 @@ export default function DashboardLayout({
         }`}
       >
         <Header />
-        <main className="p-6">{children}</main>
+        <main className="p-6">
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
+        </main>
       </div>
     </div>
   );
