@@ -22,6 +22,7 @@ export interface ProductResponse {
 export interface CreateProductData {
   name: string;
   category_id: string;
+  primary_branch_id: string;
   description?: string;
   price: number;
   sale_price?: number;

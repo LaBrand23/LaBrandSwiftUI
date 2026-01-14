@@ -1,0 +1,201 @@
+# Swift 6.2 Concurrency Updates
+
+Guidelines for writing data-race safe concurrent code in Swift 6.2.
+
+---
+
+## 🎯 PHILOSOPHY CHANGE
+
+Swift 6.2 stays **single-threaded by default** until you choose concurrency. The most natural code is now data-race free by default.
+
+---
+
+## ✅ DATA-RACE SAFETY
+
+### Before Swift 6.2 (Error)
+
+```swift
+class PhotoProcessor {
+    func extractSticker(data: Data, with id: String?) async -> Sticker? { }
+}
+
+@MainActor
+final class StickerModel {
+    let photoProcessor = PhotoProcessor()
+
+    func extractSticker(_ item: PhotosPickerItem) async throws -> Sticker? {
+        guard let data = try await item.loadTransferable(type: Data.self) else { return nil }
+        
+        // ❌ Error: Sending 'self.photoProcessor' risks causing data races
+        return await photoProcessor.extractSticker(data: data, with: item.itemIdentifier)
+    }
+}
+```
+
+### Swift 6.2 (No Error)
+
+```swift
+// ✅ No longer a data race error - async functions run on calling actor
+return await photoProcessor.extractSticker(data: data, with: item.itemIdentifier)
+```
+
+---
+
+## 🔄 ISOLATED CONFORMANCES
+
+### Before Swift 6.2 (Error)
+
+```swift
+protocol Exportable {
+    func export()
+}
+
+// ❌ Error: Conformance crosses into main actor-isolated code
+extension StickerModel: Exportable {
+    func export() {
+        photoProcessor.exportAsPNG()
+    }
+}
+```
+
+### Swift 6.2 (Works)
+
+```swift
+// ✅ Mark conformance as MainActor
+extension StickerModel: @MainActor Exportable {
+    func export() {
+        photoProcessor.exportAsPNG()
+    }
+}
+
+// Usage must stay on MainActor
+@MainActor
+struct ImageExporter {
+    var items: [any Exportable]
+
+    mutating func add(_ item: StickerModel) {
+        items.append(item)  // ✅ Safe on MainActor
+    }
+}
+```
+
+---
+
+## 🌍 GLOBAL STATE
+
+### Protecting with MainActor
+
+```swift
+// Protect global state with MainActor
+@MainActor
+final class StickerLibrary {
+    static let shared: StickerLibrary = .init()
+}
+```
+
+### MainActor by Default Mode
+
+Swift 6.2 introduces a mode to infer `@MainActor` by default:
+
+```swift
+// With MainActor-by-default mode enabled:
+final class StickerLibrary {
+    static let shared: StickerLibrary = .init()  // ✅ No annotation needed
+}
+
+final class StickerModel {
+    let photoProcessor: PhotoProcessor
+    var selection: [PhotosPickerItem]
+}
+
+extension StickerModel: Exportable {  // ✅ No @MainActor needed
+    func export() {
+        photoProcessor.exportAsPNG()
+    }
+}
+```
+
+**Enable in Xcode:** Swift Compiler > Concurrency settings
+
+---
+
+## ⚡ OFFLOADING TO BACKGROUND
+
+Use `@concurrent` to explicitly run on background thread:
+
+```swift
+class PhotoProcessor {
+    var cachedStickers: [String: Sticker]
+
+    func extractSticker(data: Data, with id: String) async -> Sticker {
+        if let sticker = cachedStickers[id] {
+            return sticker
+        }
+
+        // Offload expensive work to background
+        let sticker = await Self.extractSubject(from: data)
+        cachedStickers[id] = sticker
+        return sticker
+    }
+
+    // @concurrent ensures this runs on concurrent thread pool
+    @concurrent
+    static func extractSubject(from data: Data) async -> Sticker { }
+}
+```
+
+### Making Functions Run in Background
+
+1. Make struct/class `nonisolated`
+2. Add `@concurrent` attribute
+3. Add `async` keyword
+4. Add `await` at call sites
+
+```swift
+nonisolated struct PhotoProcessor {
+    @concurrent
+    func process(data: Data) async -> ProcessedPhoto? { ... }
+}
+
+// Caller
+processedPhotos[item.id] = await PhotoProcessor().process(data: data)
+```
+
+---
+
+## 📊 SUMMARY
+
+| Scenario | Swift 6.2 Approach |
+|----------|-------------------|
+| Single-threaded code | Runs on MainActor by default |
+| Async functions | Run where called from |
+| Protocol conformance | Use `@MainActor` for isolated conformances |
+| Background work | Use `@concurrent` attribute |
+| Global/static vars | Protected by MainActor |
+
+---
+
+## 🔧 MIGRATION
+
+1. **Enable approachable concurrency** in Xcode build settings (Swift Compiler > Concurrency)
+2. **Use migration tooling** at swift.org/migration
+3. **Start single-threaded** - MainActor by default
+4. **Add concurrency explicitly** with `@concurrent` when needed
+
+---
+
+## ✅ BEST PRACTICES
+
+1. **Start single-threaded** - embrace MainActor by default
+2. **Use async functions** - they run on calling actor
+3. **Mark conformances** with `@MainActor` when needed
+4. **Offload explicitly** with `@concurrent` for CPU-intensive work
+5. **Enable new modes** via build settings for new projects
+
+---
+
+## 📚 REFERENCES
+
+- Swift 6.2 Release Notes
+- swift.org/migration
+- Xcode Build Settings: Swift Compiler > Concurrency

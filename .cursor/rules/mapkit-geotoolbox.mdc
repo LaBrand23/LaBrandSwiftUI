@@ -1,0 +1,238 @@
+# MapKit GeoToolbox - Place Descriptors
+
+Guidelines for using PlaceDescriptor with MapKit and GeoToolbox.
+
+---
+
+## 🎯 OVERVIEW
+
+`PlaceDescriptor` provides a standardized way to represent physical locations across mapping services.
+
+**Key Concepts:**
+- `PlaceDescriptor` - Structure containing place information
+- `PlaceRepresentation` - Common formats (coordinates, addresses)
+- `SupportingPlaceRepresentation` - Service-specific identifiers
+
+---
+
+## 📍 CREATING PLACE DESCRIPTORS
+
+### From Address
+
+```swift
+import GeoToolbox
+
+let fountain = PlaceDescriptor(
+    representations: [.address("121-122 James's St \n Dublin 8 \n D08 ET27 \n Ireland")],
+    commonName: "Obelisk Fountain"
+)
+```
+
+### From Coordinates
+
+```swift
+let eiffelTower = PlaceDescriptor(
+    representations: [.coordinate(CLLocationCoordinate2D(latitude: 48.8584, longitude: 2.2945))],
+    commonName: "Eiffel Tower"
+)
+```
+
+### From MKMapItem
+
+```swift
+import MapKit
+
+func convertMapItem(_ mapItem: MKMapItem) -> PlaceDescriptor? {
+    return PlaceDescriptor(item: mapItem)
+}
+```
+
+### Multiple Representations
+
+```swift
+let statue = PlaceDescriptor(
+    representations: [
+        .coordinate(CLLocationCoordinate2D(latitude: 40.6892, longitude: -74.0445)),
+        .address("Liberty Island, New York, NY 10004, United States")
+    ],
+    commonName: "Statue of Liberty"
+)
+```
+
+---
+
+## 🔍 ACCESSING DATA
+
+### Representations
+
+```swift
+for representation in descriptor.representations {
+    switch representation {
+    case .coordinate(let coordinate):
+        print("Lat: \(coordinate.latitude), Lon: \(coordinate.longitude)")
+    case .address(let address):
+        print("Address: \(address)")
+    }
+}
+```
+
+### Convenience Properties
+
+```swift
+// Get coordinate if available
+if let coordinate = descriptor.coordinate {
+    print("Location: \(coordinate.latitude), \(coordinate.longitude)")
+}
+
+// Get address if available
+if let address = descriptor.address {
+    print("Address: \(address)")
+}
+
+// Get common name
+if let name = descriptor.commonName {
+    print("Name: \(name)")
+}
+```
+
+---
+
+## 🗺️ GEOCODING
+
+### Forward Geocoding (Address → Coordinates)
+
+```swift
+func geocodeAddress(_ address: String) async throws -> [MKMapItem] {
+    guard let request = MKGeocodingRequest(addressString: address) else {
+        throw NSError(domain: "GeocodingError", code: 1)
+    }
+    return try await request.mapItems
+}
+```
+
+### Reverse Geocoding (Coordinates → Address)
+
+```swift
+func reverseGeocode(_ coordinate: CLLocationCoordinate2D) async throws -> [MKMapItem] {
+    let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    
+    guard let request = MKReverseGeocodingRequest(location: location) else {
+        throw NSError(domain: "ReverseGeocodingError", code: 1)
+    }
+    return try await request.mapItems
+}
+```
+
+### Create PlaceDescriptor from Geocoding
+
+```swift
+func createDescriptor(from address: String) async throws -> PlaceDescriptor? {
+    let mapItems = try await geocodeAddress(address)
+    guard let firstItem = mapItems.first else { return nil }
+    return PlaceDescriptor(item: firstItem)
+}
+```
+
+---
+
+## 🔗 SERVICE IDENTIFIERS
+
+### Creating with Multiple Service IDs
+
+```swift
+let landmark = PlaceDescriptor(
+    representations: [.coordinate(CLLocationCoordinate2D(latitude: 51.5074, longitude: -0.1278))],
+    commonName: "London Eye",
+    supportingRepresentations: [
+        .serviceIdentifiers([
+            "com.apple.maps": "AppleMapsID123",
+            "com.google.maps": "GoogleMapsID456",
+            "com.openstreetmap": "OSM789"
+        ])
+    ]
+)
+```
+
+### Retrieving Service ID
+
+```swift
+if let appleID = place.serviceIdentifier(for: "com.apple.maps") {
+    print("Apple Maps ID: \(appleID)")
+}
+```
+
+---
+
+## 🔄 MAPKIT CONVERSION
+
+```swift
+func convertBetweenFormats() async throws {
+    // 1. Geocode address to MKMapItem
+    let address = "1 Apple Park Way, Cupertino, CA"
+    guard let request = MKGeocodingRequest(addressString: address) else { return }
+    let mapItems = try await request.mapItems
+    
+    guard let mapItem = mapItems.first else { return }
+    
+    // 2. Convert to PlaceDescriptor
+    guard let descriptor = PlaceDescriptor(item: mapItem) else { return }
+    
+    print("Created: \(descriptor.commonName ?? "Unknown")")
+    
+    // 3. Create new MKMapItem from descriptor
+    if let coordinate = descriptor.coordinate {
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let newMapItem = MKMapItem(location: location, address: MKAddress())
+    }
+}
+```
+
+---
+
+## 📱 PRACTICAL EXAMPLE
+
+```swift
+func workWithLandmark() {
+    let landmark = PlaceDescriptor(
+        representations: [
+            .coordinate(CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)),
+            .address("San Francisco, CA, USA")
+        ],
+        commonName: "San Francisco"
+    )
+    
+    // Access common name
+    if let name = landmark.commonName {
+        print("Landmark: \(name)")
+    }
+    
+    // Access coordinate
+    if let coordinate = landmark.coordinate {
+        print("Location: \(coordinate.latitude), \(coordinate.longitude)")
+    }
+    
+    // Access address
+    if let address = landmark.address {
+        print("Address: \(address)")
+    }
+}
+```
+
+---
+
+## ✅ BEST PRACTICES
+
+1. **Include multiple representations** when possible
+2. **Use common names** for user-facing display
+3. **Handle optional values** - not all properties available
+4. **Cache geocoding results** - network operations are expensive
+5. **Store service identifiers** for cross-platform apps
+
+---
+
+## 📚 REFERENCES
+
+- [GeoToolbox Framework](https://developer.apple.com/documentation/GeoToolbox)
+- [PlaceDescriptor](https://developer.apple.com/documentation/GeoToolbox/PlaceDescriptor)
+- [MKGeocodingRequest](https://developer.apple.com/documentation/MapKit/MKGeocodingRequest)
+- [MKReverseGeocodingRequest](https://developer.apple.com/documentation/MapKit/MKReverseGeocodingRequest)

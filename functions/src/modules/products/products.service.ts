@@ -152,12 +152,14 @@ export class ProductsService {
 
   /**
    * Create a product (Brand Manager)
+   * Products must be assigned to a primary branch for inventory tracking
    */
   async createProduct(
     brandId: string,
     input: {
       name: string;
       category_id: string;
+      primary_branch_id: string;
       description?: string;
       price: number;
       sale_price?: number;
@@ -168,11 +170,23 @@ export class ProductsService {
   ): Promise<Product> {
     const slug = generateSlug(input.name);
 
+    // Verify branch belongs to brand
+    const { data: branch } = await supabase
+      .from("branches")
+      .select("id, brand_id")
+      .eq("id", input.primary_branch_id)
+      .single();
+
+    if (!branch || branch.brand_id !== brandId) {
+      throw new NotFoundError("Branch not found or does not belong to your brand");
+    }
+
     const { data, error } = await supabase
       .from("products")
       .insert({
         brand_id: brandId,
         category_id: input.category_id,
+        primary_branch_id: input.primary_branch_id,
         name: input.name,
         slug,
         description: input.description,
@@ -187,6 +201,16 @@ export class ProductsService {
       .single();
 
     if (error) throw error;
+
+    // Auto-create branch inventory record for the primary branch
+    await supabase.from("branch_inventory").insert({
+      branch_id: input.primary_branch_id,
+      product_id: data.id,
+      stock_quantity: input.stock_quantity || 0,
+      low_stock_threshold: 5,
+      is_available: true,
+    });
+
     return data;
   }
 
@@ -198,6 +222,7 @@ export class ProductsService {
     input: Partial<{
       name: string;
       category_id: string;
+      primary_branch_id: string;
       description: string;
       price: number;
       sale_price: number | null;
@@ -205,16 +230,48 @@ export class ProductsService {
       is_featured: boolean;
       stock_quantity: number;
       is_active: boolean;
-    }>
+    }>,
+    brandId?: string
   ): Promise<Product> {
     const updateData: Record<string, unknown> = { ...input };
-    
+
     if (input.name) {
       updateData.slug = generateSlug(input.name);
     }
 
     if (input.sale_price !== undefined) {
       updateData.is_on_sale = input.sale_price !== null;
+    }
+
+    // If changing primary branch, verify it belongs to the brand
+    if (input.primary_branch_id && brandId) {
+      const { data: branch } = await supabase
+        .from("branches")
+        .select("id, brand_id")
+        .eq("id", input.primary_branch_id)
+        .single();
+
+      if (!branch || branch.brand_id !== brandId) {
+        throw new NotFoundError("Branch not found or does not belong to your brand");
+      }
+
+      // Ensure branch inventory record exists for new primary branch
+      const { data: existingInventory } = await supabase
+        .from("branch_inventory")
+        .select("id")
+        .eq("branch_id", input.primary_branch_id)
+        .eq("product_id", id)
+        .single();
+
+      if (!existingInventory) {
+        await supabase.from("branch_inventory").insert({
+          branch_id: input.primary_branch_id,
+          product_id: id,
+          stock_quantity: 0,
+          low_stock_threshold: 5,
+          is_available: true,
+        });
+      }
     }
 
     const { data, error } = await supabase
@@ -226,7 +283,7 @@ export class ProductsService {
 
     if (error) throw error;
     if (!data) throw new NotFoundError("Product not found");
-    
+
     return data;
   }
 

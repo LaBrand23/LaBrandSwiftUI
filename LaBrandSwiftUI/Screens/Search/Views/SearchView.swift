@@ -116,6 +116,57 @@ private extension SearchView {
         }
     }
     
+    // MARK: - AI Suggestions Section
+    @ViewBuilder
+    var aiSuggestionsSection: some View {
+        if !viewModel.aiSuggestions.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 6) {
+                    if viewModel.isAIAvailable {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 10))
+                            .foregroundStyle(AppColors.Accent.gold)
+                    }
+                    Text("SUGGESTIONS")
+                        .font(.system(size: 11, weight: .semibold))
+                        .tracking(2)
+                        .foregroundStyle(AppColors.Text.tertiary)
+                }
+                
+                FlowLayout(spacing: 8) {
+                    ForEach(viewModel.aiSuggestions, id: \.self) { suggestion in
+                        Button {
+                            viewModel.selectAISuggestion(suggestion)
+                        } label: {
+                            Text(suggestion)
+                                .font(.system(size: 13))
+                                .foregroundStyle(AppColors.Text.primary)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(aiSuggestionBackground)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var aiSuggestionBackground: some View {
+        if #available(iOS 26.0, *) {
+            Capsule()
+                .fill(.clear)
+                .glassEffect(.regular)
+        } else {
+            Capsule()
+                .fill(AppColors.Background.secondary)
+                .overlay(
+                    Capsule()
+                        .stroke(AppColors.Border.primary, lineWidth: 1)
+                )
+        }
+    }
+    
     var recentSearchesSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -208,6 +259,9 @@ private extension SearchView {
     var searchResultsContent: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 16) {
+                // AI Suggestions (shown while typing)
+                aiSuggestionsSection
+                
                 // Results count
                 Text("\(viewModel.searchResults.count) results for \"\(viewModel.searchText)\"")
                     .font(.system(size: 13))

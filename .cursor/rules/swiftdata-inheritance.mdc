@@ -1,0 +1,237 @@
+# SwiftData Class Inheritance
+
+Guidelines for implementing class inheritance in SwiftData models.
+
+---
+
+## 🎯 WHEN TO USE INHERITANCE
+
+### ✅ Good Use Cases
+
+- Clear "IS-A" relationship (e.g., `BusinessTrip` IS-A `Trip`)
+- Models share fundamental properties but diverge for specific use cases
+- Need both deep searches (across all) and shallow searches (specific types)
+- Natural hierarchical data structure
+
+### ❌ Avoid When
+
+- Subclasses share only a few properties
+- Queries focus only on specialized properties
+- Boolean flag or enum would be simpler
+- Protocol conformance fits better
+
+---
+
+## 📐 BASE CLASS DESIGN
+
+```swift
+import SwiftData
+
+@Model class Trip {
+    @Attribute(.preserveValueOnDeletion)
+    var name: String
+    var destination: String
+    
+    @Attribute(.preserveValueOnDeletion)
+    var startDate: Date
+    
+    @Attribute(.preserveValueOnDeletion)
+    var endDate: Date
+
+    @Relationship(deleteRule: .cascade, inverse: \Accommodation.trip)
+    var accommodation: Accommodation?
+    
+    init(name: String, destination: String, startDate: Date, endDate: Date) {
+        self.name = name
+        self.destination = destination
+        self.startDate = startDate
+        self.endDate = endDate
+    }
+}
+```
+
+---
+
+## 🔀 SUBCLASS DESIGN
+
+```swift
+@Model class BusinessTrip: Trip {
+    var purpose: String
+    var expenseCode: String
+    var perDiemRate: Double
+    
+    @Relationship(deleteRule: .cascade, inverse: \BusinessMeal.trip)
+    var businessMeals: [BusinessMeal] = []
+    
+    init(name: String, destination: String, startDate: Date, endDate: Date,
+         purpose: String, expenseCode: String, perDiemRate: Double) {
+        self.purpose = purpose
+        self.expenseCode = expenseCode
+        self.perDiemRate = perDiemRate
+        super.init(name: name, destination: destination, startDate: startDate, endDate: endDate)
+    }
+}
+
+@Model class PersonalTrip: Trip {
+    enum Reason: String, CaseIterable, Codable, Identifiable {
+        case family, vacation, wellness, other
+        var id: Self { self }
+    }
+    
+    var reason: Reason
+    var notes: String?
+    
+    @Relationship(deleteRule: .cascade, inverse: \Attraction.trip)
+    var attractions: [Attraction] = []
+    
+    init(name: String, destination: String, startDate: Date, endDate: Date,
+         reason: Reason, notes: String? = nil) {
+        self.reason = reason
+        self.notes = notes
+        super.init(name: name, destination: destination, startDate: startDate, endDate: endDate)
+    }
+}
+```
+
+---
+
+## 🔍 QUERYING
+
+### Query All (Including Subclasses)
+
+```swift
+@Query(sort: \Trip.startDate)
+var allTrips: [Trip]  // Returns BusinessTrip AND PersonalTrip
+```
+
+### Type-Based Filtering
+
+```swift
+// Query only BusinessTrip instances
+let businessTripPredicate = #Predicate<Trip> { $0 is BusinessTrip }
+
+@Query(filter: businessTripPredicate)
+var businessTrips: [Trip]
+```
+
+### Combined Filtering
+
+```swift
+// PersonalTrip with specific reason
+let vacationPredicate = #Predicate<Trip> {
+    if let personalTrip = $0 as? PersonalTrip {
+        return personalTrip.reason == .vacation
+    }
+    return false
+}
+
+@Query(filter: vacationPredicate)
+var vacationTrips: [Trip]
+```
+
+### Enum-Based Filtering
+
+```swift
+enum TripKind: String, CaseIterable {
+    case all, personal, business
+}
+
+struct TripListView: View {
+    @Query var trips: [Trip]
+    
+    init(tripKind: TripKind, searchText: String = "") {
+        let typePredicate: Predicate<Trip>? = {
+            switch tripKind {
+            case .all: return nil
+            case .personal: return #Predicate { $0 is PersonalTrip }
+            case .business: return #Predicate { $0 is BusinessTrip }
+            }
+        }()
+        
+        _trips = Query(filter: typePredicate, sort: \.startDate)
+    }
+}
+```
+
+---
+
+## 🔄 TYPE CASTING
+
+```swift
+func calculateExpenses(for trips: [Trip]) -> Double {
+    var total = 0.0
+    
+    for trip in trips {
+        if let businessTrip = trip as? BusinessTrip {
+            // Access BusinessTrip-specific properties
+            let days = Calendar.current.dateComponents(
+                [.day], from: businessTrip.startDate, to: businessTrip.endDate
+            ).day ?? 0
+            
+            let perDiemTotal = businessTrip.perDiemRate * Double(days)
+            let mealExpenses = businessTrip.businessMeals.reduce(0.0) { $0 + $1.cost }
+            
+            total += perDiemTotal + mealExpenses
+        }
+    }
+    
+    return total
+}
+```
+
+---
+
+## 🔗 POLYMORPHIC RELATIONSHIPS
+
+```swift
+@Model class TravelPlanner {
+    var name: String
+    
+    @Relationship(deleteRule: .cascade)
+    var upcomingTrips: [Trip] = []  // Can contain BusinessTrip AND PersonalTrip
+    
+    func addTrip(_ trip: Trip) {
+        upcomingTrips.append(trip)
+    }
+}
+```
+
+---
+
+## ⚠️ ALTERNATIVE: ENUM APPROACH
+
+When inheritance is overkill:
+
+```swift
+@Model class Vehicle {
+    var manufacturer: String
+    var model: String
+    var year: Int
+    
+    enum VehicleType: String, Codable {
+        case car(numberOfDoors: Int, fuelType: FuelType)
+        case motorcycle(engineDisplacement: Int, hasABS: Bool)
+    }
+    
+    var type: VehicleType
+}
+```
+
+---
+
+## ✅ BEST PRACTICES
+
+1. **Keep hierarchies shallow** - avoid deep inheritance chains
+2. **Use meaningful IS-A relationships** - only when truly applicable
+3. **Consider alternatives** - enums or booleans may be simpler
+4. **Design for query patterns** - how will you query the data?
+5. **Be mindful of migrations** - inheritance changes are complex
+6. **Document the structure** - help other developers understand
+7. **Test with real data** - verify queries work as expected
+
+---
+
+## 📚 REFERENCES
+
+- [Adopting inheritance in SwiftData](https://developer.apple.com/documentation/SwiftData/Adopting-inheritance-in-SwiftData)
+- [Design for specialization](https://developer.apple.com/documentation/SwiftData/Adopting-inheritance-in-SwiftData#Design-for-specialization)

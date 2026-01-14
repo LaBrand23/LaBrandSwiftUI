@@ -1,0 +1,178 @@
+# SwiftUI Toolbar Features
+
+Guidelines for implementing modern toolbar features in SwiftUI.
+
+---
+
+## 🎯 CUSTOMIZABLE TOOLBARS
+
+### Creating a Customizable Toolbar
+
+```swift
+ContentView()
+    .toolbar(id: "main-toolbar") {
+        ToolbarItem(id: "tag") {
+            TagButton()
+        }
+        ToolbarItem(id: "share") {
+            ShareButton()
+        }
+        ToolbarSpacer(.fixed)
+        ToolbarItem(id: "more") {
+            MoreButton()
+        }
+    }
+```
+
+### Toolbar Spacers
+
+```swift
+ToolbarSpacer(.fixed)     // Fixed-width space
+ToolbarSpacer(.flexible)  // Flexible space that pushes items apart
+```
+
+---
+
+## 🔍 SEARCH INTEGRATION
+
+### Minimized Search Behavior
+
+```swift
+@State private var searchText = ""
+
+NavigationStack {
+    RecipeList()
+        .searchable($searchText)
+        .searchToolbarBehavior(.minimize)  // Renders as button, expands on tap
+}
+```
+
+### Repositioning Search
+
+```swift
+NavigationSplitView {
+    AllCalendarsView()
+} detail: {
+    SelectedCalendarView()
+        .searchable($query)
+        .toolbar {
+            ToolbarItem(placement: .bottomBar) {
+                CalendarPicker()
+            }
+            DefaultToolbarItem(kind: .search, placement: .bottomBar)
+            ToolbarSpacer(placement: .bottomBar)
+            ToolbarItem(placement: .bottomBar) {
+                NewEventButton()
+            }
+        }
+}
+```
+
+---
+
+## 📍 TOOLBAR PLACEMENTS
+
+### Large Subtitle Placement
+
+```swift
+NavigationStack {
+    DetailView()
+        .navigationTitle("Title")
+        .navigationSubtitle("Subtitle")
+        .toolbar {
+            ToolbarItem(placement: .largeSubtitle) {
+                CustomLargeNavigationSubtitle()
+            }
+        }
+}
+```
+
+---
+
+## ✨ TRANSITIONS
+
+### Matched Transition Source
+
+Create smooth transitions between toolbar items and other views:
+
+```swift
+struct ContentView: View {
+    @State private var isPresented = false
+    @Namespace private var namespace
+
+    var body: some View {
+        NavigationStack {
+            DetailView()
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Show Sheet", systemImage: "globe") {
+                            isPresented = true
+                        }
+                    }
+                    .matchedTransitionSource(id: "world", in: namespace)
+                }
+                .sheet(isPresented: $isPresented) {
+                    SheetView()
+                        .navigationTransition(.zoom(sourceID: "world", in: namespace))
+                }
+        }
+    }
+}
+```
+
+### Shared Background Visibility
+
+Control glass background on toolbar items:
+
+```swift
+ContentView()
+    .toolbar(id: "main") {
+        ToolbarItem(id: "build-status", placement: .principal) {
+            BuildStatus()
+        }
+        .sharedBackgroundVisibility(.hidden)
+    }
+```
+
+---
+
+## 🔧 SYSTEM-DEFINED ITEMS
+
+```swift
+.toolbar {
+    DefaultToolbarItem(kind: .search, placement: .bottomBar)
+    DefaultToolbarItem(kind: .sidebar, placement: .navigationBarLeading)
+}
+```
+
+---
+
+## 📱 PLATFORM CONSIDERATIONS
+
+### iOS/iPadOS
+- Bottom bar placement useful on iPhones
+- `.searchToolbarBehavior(.minimize)` for space efficiency
+
+### macOS
+- Customizable toolbars expected in productivity apps
+- Use spacers for logical groupings
+
+---
+
+## ✅ BEST PRACTICES
+
+1. **Use meaningful IDs** for toolbar items in customizable toolbars
+2. **Group related actions** with appropriate spacing
+3. **Consider platform differences** when designing layouts
+4. **Use system-defined items** for platform consistency
+5. **Test toolbar customization** for good UX
+6. **Use transitions thoughtfully** - enhance without distracting
+
+---
+
+## 📚 REFERENCES
+
+- [SearchToolbarBehavior](https://developer.apple.com/documentation/SwiftUI/SearchToolbarBehavior)
+- [ToolbarSpacer](https://developer.apple.com/documentation/SwiftUI/ToolbarSpacer)
+- [DefaultToolbarItem](https://developer.apple.com/documentation/SwiftUI/DefaultToolbarItem)
+- [ToolbarItemPlacement](https://developer.apple.com/documentation/SwiftUI/ToolbarItemPlacement)

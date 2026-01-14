@@ -1,0 +1,240 @@
+# Swift Charts 3D Visualization
+
+Guidelines for creating 3D data visualizations with Swift Charts.
+
+---
+
+## 📊 BASIC 3D CHART
+
+```swift
+import SwiftUI
+import Charts
+
+struct Basic3DChartView: View {
+    var body: some View {
+        Chart3D {
+            SurfacePlot(
+                x: "X Axis",
+                y: "Y Axis",
+                z: "Z Axis",
+                function: { x, y in
+                    sin(x) * cos(y)
+                }
+            )
+        }
+    }
+}
+```
+
+---
+
+## 🎯 CHART POSE (Viewing Angle)
+
+### Predefined Poses
+
+```swift
+@State private var chartPose: Chart3DPose = .default
+
+Chart3D { /* ... */ }
+    .chart3DPose(chartPose)
+
+// Available poses:
+// .default, .front, .back, .top, .bottom, .right, .left
+```
+
+### Custom Pose
+
+```swift
+let customPose = Chart3DPose(azimuth: .degrees(45), inclination: .degrees(30))
+```
+
+### Interactive Rotation
+
+```swift
+@State private var chartPose: Chart3DPose = .default
+
+Chart3D { /* ... */ }
+    .chart3DPose($chartPose)  // Bind for user interaction
+```
+
+---
+
+## 📷 CAMERA PROJECTION
+
+```swift
+@State private var cameraProjection: Chart3DCameraProjection = .perspective
+
+Chart3D { /* ... */ }
+    .chart3DCameraProjection(cameraProjection)
+
+// Options:
+// .automatic - System determines
+// .orthographic - Objects maintain size regardless of depth
+// .perspective - Objects appear smaller with distance
+```
+
+---
+
+## 🌊 SURFACE PLOTS
+
+### Basic Surface
+
+```swift
+SurfacePlot(
+    x: "X Axis",
+    y: "Y Axis",
+    z: "Z Axis",
+    function: { x, y in
+        sin(sqrt(x*x + y*y))
+    }
+)
+```
+
+### Styling
+
+```swift
+SurfacePlot(/* ... */)
+    .foregroundStyle(Color.blue)
+
+// Custom gradient
+let gradient = Gradient(colors: [.blue, .purple, .red])
+SurfacePlot(/* ... */)
+    .foregroundStyle(LinearGradient(gradient: gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
+```
+
+### Surface Roughness
+
+```swift
+SurfacePlot(/* ... */)
+    .roughness(0.3)  // 0 = smooth, 1 = rough
+```
+
+### Height-Based Styling
+
+```swift
+// Color based on height value
+SurfacePlot(/* ... */)
+    .foregroundStyle(Chart3DSurfaceStyle.heightBased(yRange: -1.0...1.0))
+
+// With custom gradient
+let gradient = Gradient(colors: [.blue, .green, .yellow, .red])
+SurfacePlot(/* ... */)
+    .foregroundStyle(Chart3DSurfaceStyle.heightBased(gradient, yRange: -1.0...1.0))
+```
+
+---
+
+## 🔀 MULTIPLE SURFACES
+
+```swift
+Chart3D {
+    SurfacePlot(
+        x: "X", y: "Y", z: "Z",
+        function: { x, y in sin(x) * cos(y) }
+    )
+    
+    SurfacePlot(
+        x: "X", y: "Y", z: "Z",
+        function: { x, y in cos(x) * sin(y) + 2 }  // Offset to avoid overlap
+    )
+}
+```
+
+---
+
+## 📱 COMPLETE INTERACTIVE EXAMPLE
+
+```swift
+import SwiftUI
+import Charts
+
+struct Interactive3DSurfaceView: View {
+    @State private var chartPose: Chart3DPose = .default
+    
+    let surfaceGradient = Gradient(colors: [
+        .blue, .cyan, .green, .yellow, .orange, .red
+    ])
+    
+    var body: some View {
+        VStack {
+            Text("Interactive 3D Surface")
+                .font(.headline)
+            
+            Chart3D {
+                SurfacePlot(
+                    x: "X Value",
+                    y: "Y Value",
+                    z: "Result",
+                    function: { x, y in
+                        sin(sqrt(x*x + y*y)) / sqrt(x*x + y*y + 0.1)
+                    }
+                )
+                .roughness(0.2)
+            }
+            .chart3DPose($chartPose)
+            .frame(height: 400)
+            
+            Text("Drag to rotate")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            HStack {
+                Button("Front") {
+                    withAnimation { chartPose = .front }
+                }
+                Button("Top") {
+                    withAnimation { chartPose = .top }
+                }
+                Button("Default") {
+                    withAnimation { chartPose = .default }
+                }
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding()
+    }
+}
+```
+
+---
+
+## 📋 DATA-DRIVEN 3D CHARTS
+
+```swift
+struct DataPoint3D: Identifiable {
+    var x: Double
+    var y: Double
+    var z: Double
+    var id = UUID()
+}
+
+struct Data3DChartView: View {
+    let dataPoints: [DataPoint3D]
+    
+    var body: some View {
+        Chart3D(dataPoints) { point in
+            // Create visualization for each point
+        }
+    }
+}
+```
+
+---
+
+## ✅ BEST PRACTICES
+
+1. **Use interactive pose** for exploration (`$chartPose`)
+2. **Choose appropriate projection** - perspective for realism, orthographic for precision
+3. **Style with gradients** to show value variation
+4. **Animate view changes** with `withAnimation`
+5. **Provide view controls** for preset angles
+6. **Consider roughness** for visual distinction
+
+---
+
+## 📚 REFERENCES
+
+- [Chart3D](https://developer.apple.com/documentation/Charts/Chart3D)
+- [SurfacePlot](https://developer.apple.com/documentation/Charts/SurfacePlot)
+- [Chart3DPose](https://developer.apple.com/documentation/Charts/Chart3DPose)
+- [Chart3DSurfaceStyle](https://developer.apple.com/documentation/Charts/Chart3DSurfaceStyle)

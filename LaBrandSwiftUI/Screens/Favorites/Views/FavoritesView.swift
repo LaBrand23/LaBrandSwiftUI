@@ -6,14 +6,19 @@
 //
 
 import SwiftUI
+#if canImport(FoundationModels)
+import FoundationModels
+#endif
 
 struct FavoritesView: View {
-    
+
     // MARK: - Properties
     @StateObject private var viewModel: FavoritesViewModel
     @State private var selectedProduct: Product?
     @State private var hasAppeared = false
-    
+    @State private var aiSuggestions: [String] = []
+    @State private var isLoadingAI = false
+
     init(favoritesManager: FavoritesManager) {
         _viewModel = StateObject(wrappedValue: FavoritesViewModel(favoritesManager: favoritesManager))
     }
@@ -131,31 +136,152 @@ private extension FavoritesView {
     var emptyState: some View {
         VStack(spacing: 24) {
             Spacer()
-            
-            // Icon
-            ZStack {
-                Circle()
-                    .stroke(AppColors.Border.primary, lineWidth: 1)
-                    .frame(width: 120, height: 120)
-                
-                Image(systemName: "heart")
-                    .font(.system(size: 40))
-                    .foregroundStyle(AppColors.Text.muted)
-            }
-            
+
+            // Icon with glass effect on iOS 26+
+            emptyStateIcon
+
             VStack(spacing: 8) {
                 Text("No Favorites Yet")
                     .font(.custom("Georgia", size: 22))
                     .foregroundStyle(AppColors.Text.primary)
-                
+
                 Text("Items you love will appear here")
                     .font(.system(size: 14))
                     .foregroundStyle(AppColors.Text.tertiary)
             }
-            
+
+            // AI Suggestions Section
+            if !aiSuggestions.isEmpty {
+                aiSuggestionsSection
+            } else if isLoadingAI {
+                ProgressView()
+                    .padding(.top, 16)
+            }
+
             Spacer()
         }
         .frame(maxWidth: .infinity)
+        .onAppear {
+            loadAISuggestions()
+        }
+    }
+
+    @ViewBuilder
+    private var emptyStateIcon: some View {
+        if #available(iOS 26.0, *) {
+            ZStack {
+                Circle()
+                    .fill(.ultraThinMaterial)
+                    .frame(width: 120, height: 120)
+                    .glassEffect(.regular.tint(AppColors.Accent.gold.opacity(0.1)))
+
+                Image(systemName: "heart")
+                    .font(.system(size: 40))
+                    .foregroundStyle(AppColors.Accent.gold)
+            }
+        } else {
+            ZStack {
+                Circle()
+                    .stroke(AppColors.Border.primary, lineWidth: 1)
+                    .frame(width: 120, height: 120)
+
+                Image(systemName: "heart")
+                    .font(.system(size: 40))
+                    .foregroundStyle(AppColors.Text.muted)
+            }
+        }
+    }
+
+    private var aiSuggestionsSection: some View {
+        VStack(spacing: 12) {
+            Text("YOU MIGHT LIKE")
+                .font(.system(size: 11, weight: .semibold))
+                .tracking(2)
+                .foregroundStyle(AppColors.Text.muted)
+
+            aiSuggestionChips
+        }
+        .padding(.top, 24)
+    }
+
+    @ViewBuilder
+    private var aiSuggestionChips: some View {
+        if #available(iOS 26.0, *) {
+            FlowLayout(spacing: 8) {
+                ForEach(aiSuggestions, id: \.self) { suggestion in
+                    Button {
+                        // Navigate to search with suggestion
+                    } label: {
+                        Text(suggestion)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(AppColors.Text.primary)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                    }
+                    .glassEffect(.regular.interactive())
+                }
+            }
+            .padding(.horizontal, 40)
+        } else {
+            FlowLayout(spacing: 8) {
+                ForEach(aiSuggestions, id: \.self) { suggestion in
+                    Button {
+                        // Navigate to search with suggestion
+                    } label: {
+                        Text(suggestion)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(AppColors.Text.primary)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(AppColors.Background.secondary)
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+            .padding(.horizontal, 40)
+        }
+    }
+
+    // MARK: - AI Suggestions
+    private func loadAISuggestions() {
+        #if canImport(FoundationModels)
+        if #available(iOS 26.0, *) {
+            let model = SystemLanguageModel.default
+            guard model.availability == .available else {
+                aiSuggestions = fallbackSuggestions
+                return
+            }
+
+            isLoadingAI = true
+            Task {
+                do {
+                    let session = LanguageModelSession(instructions: """
+                        You are a fashion assistant. Suggest 4-5 fashion categories or items
+                        that a luxury fashion shopper might like. Keep suggestions short (1-3 words).
+                        Return only the suggestions, one per line.
+                        """)
+                    let response = try await session.respond(to: "Suggest fashion items I might like")
+                    let suggestions = response.content
+                        .components(separatedBy: CharacterSet.newlines)
+                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        .filter { !$0.isEmpty }
+                        .prefix(5)
+                    aiSuggestions = Array(suggestions)
+                } catch {
+                    aiSuggestions = fallbackSuggestions
+                }
+                isLoadingAI = false
+            }
+        } else {
+            aiSuggestions = fallbackSuggestions
+        }
+        #else
+        aiSuggestions = fallbackSuggestions
+        #endif
+    }
+
+    private var fallbackSuggestions: [String] {
+        ["Silk Dresses", "Leather Bags", "Designer Shoes", "Cashmere Sweaters", "Statement Jewelry"]
     }
     
     var productsGrid: some View {

@@ -204,9 +204,9 @@ struct OrderRow: View {
         switch order.status {
         case .delivered:
             return AppColors.Accent.success
-        case .processing:
+        case .pending, .confirmed, .processing, .shipped:
             return AppColors.Accent.gold
-        case .cancelled:
+        case .cancelled, .refunded:
             return AppColors.Accent.error
         }
     }

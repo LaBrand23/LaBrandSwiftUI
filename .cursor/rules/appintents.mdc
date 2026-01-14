@@ -1,0 +1,307 @@
+# AppIntents Updates
+
+Guidelines for implementing App Intents for system-wide app functionality.
+
+---
+
+## 🎯 OVERVIEW
+
+AppIntents enables app actions from anywhere in the system - Siri, Spotlight, Shortcuts, and Apple Intelligence.
+
+---
+
+## 👁️ VISUAL INTELLIGENCE
+
+Allow users to circle objects and get app results:
+
+```swift
+@UnionValue
+enum VisualSearchResult {
+    case landmark(LandmarkEntity)
+    case collection(CollectionEntity)
+}
+
+struct LandmarkIntentValueQuery: IntentValueQuery {
+    func values(for input: SemanticContentDescriptor) async throws -> [VisualSearchResult] {
+        // Match visual input to app entities
+    }
+}
+```
+
+---
+
+## 📱 ONSCREEN ENTITIES
+
+Associate entities with visible content:
+
+```swift
+struct LandmarkDetailView: View {
+    let landmark: LandmarkEntity
+
+    var body: some View {
+        Group { /* View content */ }
+        .userActivity("com.landmarks.ViewingLandmark") { activity in
+            activity.title = "Viewing \(landmark.name)"
+            activity.appEntityIdentifier = EntityIdentifier(for: landmark)
+        }
+    }
+}
+```
+
+---
+
+## 🎛️ INTENT MODES
+
+Control foreground/background execution:
+
+```swift
+struct GetCrowdStatusIntent: AppIntent {
+    static let supportedModes: IntentModes = [.background, .foreground(.dynamic)]
+
+    func perform() async throws -> some ReturnsValue<Int> & ProvidesDialog {
+        guard await modelData.isOpen(landmark) else {
+            return .result(value: 0, dialog: "Closed.")
+        }
+
+        if systemContext.currentMode.canContinueInForeground {
+            do {
+                try await continueInForeground(alwaysConfirm: false)
+                await navigator.navigateToCrowdStatus(landmark)
+            } catch { }
+        }
+
+        let status = await modelData.getCrowdStatus(landmark)
+        return .result(value: status, dialog: "Level: \(status)")
+    }
+}
+```
+
+### Available Modes
+
+| Mode | Description |
+|------|-------------|
+| `.background` | Entirely in background |
+| `.foreground(.immediate)` | Foregrounded before perform() |
+| `.foreground(.dynamic)` | Can request foreground during execution |
+| `.foreground(.deferred)` | Background initially, foregrounded when requested |
+
+### Request Foreground
+
+```swift
+try await continueInForeground(alwaysConfirm: false)
+
+// Or after error
+throw needsToContinueInForegroundError(
+    IntentDialog("Need to open app"),
+    alwaysConfirm: true
+)
+```
+
+---
+
+## 🔘 MULTIPLE CHOICE API
+
+```swift
+let options = [
+    IntentChoiceOption(title: "Option 1", subtitle: "Description"),
+    IntentChoiceOption(title: "Option 2", subtitle: "Description"),
+    IntentChoiceOption.cancel(title: "Not now")
+]
+
+let choice = try await requestChoice(
+    between: options,
+    dialog: IntentDialog("Select an option")
+)
+```
+
+---
+
+## 🏷️ PROPERTY MACROS
+
+### @ComputedProperty
+
+For properties accessing source of truth:
+
+```swift
+struct SettingsEntity: UniqueAppEntity {
+    @ComputedProperty
+    var defaultPlace: PlaceDescriptor {
+        UserDefaults.standard.defaultPlace
+    }
+}
+```
+
+### @DeferredProperty
+
+For expensive calculations:
+
+```swift
+struct LandmarkEntity: IndexedEntity {
+    @DeferredProperty
+    var crowdStatus: Int {
+        get async throws {
+            await modelData.getCrowdStatus(self)
+        }
+    }
+}
+```
+
+---
+
+## 📦 SWIFT PACKAGE SUPPORT
+
+```swift
+// In framework/library
+public struct LandmarksKitPackage: AppIntentsPackage { }
+
+// In app target
+struct LandmarksPackage: AppIntentsPackage {
+    static var includedPackages: [any AppIntentsPackage.Type] {
+        [LandmarksKitPackage.self]
+    }
+}
+```
+
+---
+
+## 🎨 INTERACTIVE SNIPPETS
+
+### Static Snippet
+
+```swift
+func perform() async throws -> some IntentResult {
+    return .result(view: Text("Example").font(.title))
+}
+```
+
+### Interactive Snippet
+
+```swift
+func perform() async throws -> some IntentResult {
+    let landmark = await findNearestLandmark()
+    
+    return .result(
+        value: landmark,
+        opensIntent: OpenLandmarkIntent(landmark: landmark),
+        snippetIntent: LandmarkSnippetIntent(landmark: landmark)
+    )
+}
+
+struct LandmarkSnippetIntent: SnippetIntent {
+    @Parameter var landmark: LandmarkEntity
+    
+    var snippet: some View {
+        VStack {
+            Text(landmark.name).font(.headline)
+            HStack {
+                Button("Add to Favorites") { }
+                Button("Search Tickets") { }
+            }
+        }
+    }
+}
+```
+
+---
+
+## 🔍 SPOTLIGHT INTEGRATION
+
+### 1. Create Open Intent
+
+```swift
+struct OpenLandmarkIntent: OpenIntent {
+    static let title: LocalizedStringResource = "Open Landmark"
+
+    @Parameter(title: "Landmark", requestValueDialog: "Which landmark?")
+    var target: LandmarkEntity
+
+    func perform() async throws -> some IntentResult {
+        return .result()
+    }
+}
+```
+
+### 2. Make Entity Indexable
+
+```swift
+struct LandmarkEntity: AppEntity, IndexedEntity {
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(
+        name: "Landmark",
+        systemImage: "mountain.2"
+    )
+    
+    var id: String
+    
+    @Property(title: "Name")
+    var name: String
+    
+    @Property(title: "Location", indexingKey: \CSSearchableItemAttributeSet.namedLocation)
+    var regionDescription: String
+    
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(
+            title: "\(name)",
+            subtitle: "\(regionDescription)",
+            image: .init(systemName: "mountain.2")
+        )
+    }
+}
+```
+
+### 3. Add to Spotlight Index
+
+```swift
+func indexLandmarks() async {
+    let landmarks = await fetchLandmarks()
+    
+    try? await CSSearchableIndex.default().indexAppEntities(
+        landmarks,
+        priority: .normal
+    )
+}
+
+func deleteLandmark(_ landmark: LandmarkEntity) async {
+    await dataStore.delete(landmark)
+    
+    try? await CSSearchableIndex.default().deleteAppEntities(
+        identifiedBy: [landmark.id],
+        ofType: LandmarkEntity.self
+    )
+}
+```
+
+---
+
+## ⌨️ APP SHORTCUTS
+
+```swift
+struct AppShortcuts: AppShortcutsProvider {
+    static var appShortcuts: [AppShortcut] {
+        AppShortcut(
+            intent: FindNearestLandmarkIntent(),
+            phrases: ["Find the closest landmark with \(.applicationName)"],
+            systemImageName: "location"
+        )
+    }
+}
+```
+
+---
+
+## ✅ BEST PRACTICES
+
+1. **Support multiple modes** for flexibility
+2. **Use @DeferredProperty** for expensive computations
+3. **Index entities** for Spotlight discovery
+4. **Provide interactive snippets** for quick actions
+5. **Handle foreground requests** gracefully
+6. **Update index** when data changes
+
+---
+
+## 📚 REFERENCES
+
+- [App Intents updates](https://developer.apple.com/documentation/Updates/AppIntents)
+- [Adopting App Intents](https://developer.apple.com/documentation/AppIntents/adopting-app-intents-to-support-system-experiences)
+- [Making entities available in Spotlight](https://developer.apple.com/documentation/AppIntents/making-app-entities-available-in-spotlight)
+- [WWDC 2025: Explore App Intents](https://developer.apple.com/videos/play/wwdc2025/275)

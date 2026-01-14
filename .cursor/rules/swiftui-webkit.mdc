@@ -1,0 +1,270 @@
+# SwiftUI WebKit Integration
+
+Guidelines for embedding web content in SwiftUI using the native WebView.
+
+---
+
+## 🌐 BASIC WEBVIEW
+
+### Simple WebView
+
+```swift
+import SwiftUI
+import WebKit
+
+struct ContentView: View {
+    var body: some View {
+        WebView(url: URL(string: "https://www.apple.com"))
+            .frame(height: 400)
+    }
+}
+```
+
+### Toggle Between URLs
+
+```swift
+struct ContentView: View {
+    @State private var toggle = false
+
+    private var url: URL? {
+        toggle ? URL(string: "https://www.webkit.org") : URL(string: "https://www.swift.org")
+    }
+
+    var body: some View {
+        WebView(url: url)
+            .toolbar {
+                Button(toggle ? "Show Swift" : "Show WebKit", 
+                       systemImage: toggle ? "swift" : "network") {
+                    toggle.toggle()
+                }
+            }
+    }
+}
+```
+
+---
+
+## 📄 WEBPAGE MANAGEMENT
+
+### Using WebPage
+
+```swift
+struct ContentView: View {
+    @State private var page = WebPage()
+
+    var body: some View {
+        NavigationStack {
+            WebView(page)
+                .navigationTitle(page.title)
+        }
+        .onAppear {
+            if let url = URL(string: "https://www.apple.com") {
+                let _ = page.load(URLRequest(url: url))
+            }
+        }
+    }
+}
+```
+
+### WebPage Configuration
+
+```swift
+var configuration = WebPage.Configuration()
+configuration.loadsSubresources = true
+configuration.defaultNavigationPreferences.allowsContentJavaScript = true
+configuration.websiteDataStore = .default()
+
+let page = WebPage(configuration: configuration)
+
+// Non-persistent data store (private browsing)
+configuration.websiteDataStore = .nonPersistent()
+
+// Custom user agent
+page.customUserAgent = "MyApp/1.0 CustomUserAgent"
+```
+
+---
+
+## 🔍 TEXT SEARCH
+
+```swift
+struct ContentView: View {
+    @State private var searchVisible = true
+
+    var body: some View {
+        WebView(url: URL(string: "https://www.apple.com"))
+            .findNavigator(isPresented: $searchVisible)
+    }
+}
+```
+
+---
+
+## 🧭 NAVIGATION
+
+### Loading Content
+
+```swift
+// Load from URL
+let navigationID = page.load(URLRequest(url: url))
+
+// Load HTML string
+let html = "<html><body><h1>Hello World</h1></body></html>"
+page.load(html: html, baseURL: URL(string: "https://example.com")!)
+
+// Reload
+page.reload(fromOrigin: false)
+
+// Stop loading
+page.stopLoading()
+
+// Navigation controls
+let canGoBack = !page.backForwardList.backList.isEmpty
+if let backItem = page.backForwardList.backItem {
+    page.load(backItem)
+}
+```
+
+### Observing Navigation
+
+```swift
+struct ContentView: View {
+    @State private var page = WebPage()
+    @State private var isLoading = false
+    
+    var body: some View {
+        VStack {
+            WebView(page)
+            if isLoading { ProgressView() }
+        }
+        .onChange(of: page.currentNavigationEvent) { _, newEvent in
+            if let event = newEvent {
+                switch event.state {
+                case .started: isLoading = true
+                case .finished, .failed: isLoading = false
+                default: break
+                }
+            }
+        }
+    }
+}
+```
+
+---
+
+## ⚙️ JAVASCRIPT EXECUTION
+
+### Basic JavaScript
+
+```swift
+let script = "document.title"
+do {
+    let title = try await page.callJavaScript(script)
+    print("Page title: \(title)")
+} catch {
+    print("Error: \(error)")
+}
+```
+
+### With Arguments
+
+```swift
+let script = """
+function findElement(selector) {
+    return document.querySelector(selector)?.textContent;
+}
+return findElement(selector);
+"""
+
+let arguments = ["selector": ".main-content h1"]
+let result = try await page.callJavaScript(script, arguments: arguments)
+```
+
+---
+
+## 🎨 CUSTOMIZATION
+
+### Gestures and Behavior
+
+```swift
+WebView(url: url)
+    .webViewBackForwardNavigationGestures(.disabled)
+    .webViewMagnificationGestures(.enabled)
+    .webViewLinkPreviews(.disabled)
+    .webViewTextSelection(.enabled)
+    .webViewContentBackground(.color(.systemBackground))
+```
+
+### Context Menu
+
+```swift
+WebView(url: url)
+    .webViewContextMenu { defaultActions in
+        let filtered = defaultActions.filter { 
+            $0.identifier == .copy || $0.identifier == .share 
+        }
+        let custom = UIAction(title: "Custom") { _ in
+            print("Custom action")
+        }
+        return filtered + [custom]
+    }
+```
+
+---
+
+## 📸 ADVANCED FEATURES
+
+### Capture Snapshot
+
+```swift
+func captureSnapshot(from page: WebPage) async -> Image? {
+    let config = WKSnapshotConfiguration()
+    config.rect = CGRect(x: 0, y: 0, width: 1024, height: 768)
+    return try? await page.snapshot(config)
+}
+```
+
+### Generate PDF
+
+```swift
+func generatePDF(from page: WebPage) async -> Data? {
+    let config = WKPDFConfiguration()
+    return try? await page.pdf(configuration: config)
+}
+```
+
+### Custom URL Scheme
+
+```swift
+struct MyURLSchemeHandler: URLSchemeHandler {
+    func start(task: URLSchemeTask) {
+        guard let url = task.request.url, url.scheme == "myapp" else {
+            task.didFailWithError(URLError(.badURL))
+            return
+        }
+        
+        let response = URLResponse(url: url, mimeType: "text/html", 
+                                  expectedContentLength: -1, textEncodingName: "utf-8")
+        let html = "<html><body><h1>Custom Content</h1></body></html>"
+        
+        task.didReceive(response)
+        task.didReceive(Data(html.utf8))
+        task.didFinish()
+    }
+    
+    func stop(task: URLSchemeTask) { }
+}
+
+// Register
+var config = WebPage.Configuration()
+config.setURLSchemeHandler(MyURLSchemeHandler(), forURLScheme: "myapp")
+let page = WebPage(configuration: config)
+```
+
+---
+
+## 📚 REFERENCES
+
+- [WebKit for SwiftUI](https://developer.apple.com/documentation/WebKit/webkit-for-swiftui)
+- [WebView Documentation](https://developer.apple.com/documentation/WebKit/WebView-swift.struct)
+- [WebPage Documentation](https://developer.apple.com/documentation/WebKit/WebPage)

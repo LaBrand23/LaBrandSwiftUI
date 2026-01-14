@@ -34,20 +34,7 @@ struct EditorialBannerView: View {
                         .foregroundStyle(AppColors.Text.inverted.opacity(0.7))
                         .padding(.top, 4)
                     
-                    Button {
-                        onExploreTapped?()
-                    } label: {
-                        Text("EXPLORE")
-                            .font(.system(size: 12, weight: .semibold))
-                            .tracking(2)
-                            .foregroundStyle(AppColors.Text.inverted)
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 12)
-                            .background(
-                                RoundedRectangle(cornerRadius: 0)
-                                    .stroke(AppColors.Text.inverted.opacity(0.5), lineWidth: 1)
-                            )
-                    }
+                    exploreButton
                     .padding(.top, 16)
                 }
                 .padding(.leading, 28)
@@ -62,6 +49,39 @@ struct EditorialBannerView: View {
         .frame(height: 220)
     }
     
+    // MARK: - Explore Button with Liquid Glass (iOS 26+)
+    @ViewBuilder
+    private var exploreButton: some View {
+        if #available(iOS 26.0, *) {
+            Button {
+                onExploreTapped?()
+            } label: {
+                Text("EXPLORE")
+                    .font(.system(size: 12, weight: .semibold))
+                    .tracking(2)
+                    .foregroundStyle(AppColors.Text.inverted)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+            }
+            .glassEffect(.regular.tint(AppColors.Accent.gold.opacity(0.3)).interactive())
+        } else {
+            Button {
+                onExploreTapped?()
+            } label: {
+                Text("EXPLORE")
+                    .font(.system(size: 12, weight: .semibold))
+                    .tracking(2)
+                    .foregroundStyle(AppColors.Text.inverted)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 0)
+                            .stroke(AppColors.Text.inverted.opacity(0.5), lineWidth: 1)
+                    )
+            }
+        }
+    }
+
     // MARK: - Editorial Background
     /// Adaptive background that provides good contrast in both light and dark modes
     private var editorialBackground: some View {

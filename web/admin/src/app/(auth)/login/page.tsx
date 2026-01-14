@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +11,7 @@ import { FormInput } from '../../../../../shared/components/forms/FormField';
 import { signIn, signOut } from '../../../../../shared/lib/firebase';
 import { authService } from '../../../../../shared/services/auth.service';
 import { toast } from '../../../../../shared/stores/uiStore';
+import { useAuthStore } from '../../../../../shared/stores/authStore';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -21,7 +21,6 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,15 +53,18 @@ export default function LoginPage() {
         return;
       }
 
+      // Update auth store with user data directly
+      useAuthStore.getState().setUser(userData);
+
       toast.success('Welcome back!', `Logged in as ${userData.full_name}`);
-      // Navigate to dashboard - onAuthChange will handle setting user
-      router.push('/');
+
+      // Use window.location for reliable navigation
+      window.location.href = '/';
     } catch (error: unknown) {
       console.error('Login error:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Invalid email or password';
       toast.error('Login failed', errorMessage);
-    } finally {
       setIsLoading(false);
     }
   };

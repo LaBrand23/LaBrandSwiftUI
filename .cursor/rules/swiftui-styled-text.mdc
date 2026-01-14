@@ -1,0 +1,234 @@
+# SwiftUI Styled Text Editing
+
+Guidelines for implementing styled and editable text in SwiftUI using AttributedString.
+
+---
+
+## 🔤 BASIC TEXT STYLING
+
+### Font Customization
+
+```swift
+// System fonts
+Text("Hello").font(.largeTitle)
+Text("Hello").font(.headline)
+Text("Hello").font(.body)
+
+// Custom size
+Text("Custom").font(.system(size: 24))
+
+// Font weight
+Text("Bold").fontWeight(.bold)
+
+// Font design
+Text("Serif").font(.system(.body, design: .serif))
+Text("Rounded").font(.system(.body, design: .rounded))
+Text("Mono").font(.system(.body, design: .monospaced))
+```
+
+### Text Color
+
+```swift
+// Using foregroundStyle (preferred)
+Text("Styled").foregroundStyle(.red)
+
+// Gradient text
+Text("Gradient")
+    .foregroundStyle(
+        .linearGradient(
+            colors: [.yellow, .blue],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    )
+```
+
+### Text Decoration
+
+```swift
+Text("Bold").bold()
+Text("Italic").italic()
+
+// Conditional styling
+Text("Conditional").bold(someCondition)
+
+// Underline
+Text("Underlined").underline()
+Text("Pattern").underline(true, pattern: .dash, color: .blue)
+
+// Strikethrough
+Text("Strike").strikethrough()
+```
+
+---
+
+## 📝 ATTRIBUTEDSTRING
+
+### Creating AttributedString
+
+```swift
+// Basic
+var attributedText = AttributedString("This is styled text")
+
+// Styling ranges
+var complexText = AttributedString("Red and Blue")
+if let redRange = complexText.range(of: "Red") {
+    complexText[redRange].foregroundColor = .red
+}
+if let blueRange = complexText.range(of: "Blue") {
+    complexText[blueRange].foregroundColor = .blue
+}
+
+Text(complexText)
+```
+
+### Common Attributes
+
+```swift
+var text = AttributedString("Styled text")
+
+text.font = .headline
+text.foregroundColor = .blue
+text.backgroundColor = .yellow
+text.underlineStyle = .single
+text.underlineColor = .red
+text.strikethroughStyle = .single
+text.inlinePresentationIntent = .stronglyEmphasized  // Bold
+```
+
+---
+
+## ✏️ RICH TEXT EDITING
+
+### Basic TextEditor with AttributedString
+
+```swift
+struct RichTextEditorView: View {
+    @State private var text = AttributedString("Editable styled text...")
+    
+    var body: some View {
+        TextEditor(text: $text)
+            .frame(minHeight: 100)
+            .border(Color.gray)
+    }
+}
+```
+
+### Text Selection and Formatting
+
+```swift
+struct StyledTextEditingView: View {
+    @State private var text = AttributedString("Select text to format")
+    @State private var selection = AttributedTextSelection()
+    
+    @Environment(\.fontResolutionContext) private var fontResolutionContext
+    
+    var body: some View {
+        VStack {
+            TextEditor(text: $text, selection: $selection)
+                .frame(height: 200)
+            
+            HStack {
+                Button(action: toggleBold) {
+                    Image(systemName: "bold")
+                }
+                Button(action: toggleItalic) {
+                    Image(systemName: "italic")
+                }
+                Button(action: toggleUnderline) {
+                    Image(systemName: "underline")
+                }
+            }
+        }
+    }
+    
+    private func toggleBold() {
+        text.transformAttributes(in: &selection) {
+            let font = $0.font ?? .default
+            let resolved = font.resolve(in: fontResolutionContext)
+            $0.font = font.bold(!resolved.isBold)
+        }
+    }
+    
+    private func toggleItalic() {
+        text.transformAttributes(in: &selection) {
+            let font = $0.font ?? .default
+            let resolved = font.resolve(in: fontResolutionContext)
+            $0.font = font.italic(!resolved.isItalic)
+        }
+    }
+    
+    private func toggleUnderline() {
+        text.transformAttributes(in: &selection) {
+            $0.underlineStyle = $0.underlineStyle != nil ? nil : .single
+        }
+    }
+}
+```
+
+---
+
+## 📖 MARKDOWN SUPPORT
+
+```swift
+// Basic Markdown
+Text("This is **bold** and *italic* text")
+
+// Links
+Text("Visit [Apple](https://www.apple.com)")
+
+// Combined with modifiers
+Text("**Important** note")
+    .foregroundColor(.blue)
+```
+
+### Markdown Limitations
+- No line breaks or block formatting
+- No lists, block quotes, code blocks, or tables
+- No image URLs
+
+---
+
+## ♿ ACCESSIBILITY
+
+```swift
+Text("Accessible Text")
+    .font(.body)
+    .dynamicTypeSize(.large)
+    .accessibilityLabel("Alternative description")
+    .accessibilityTextContentType(.plain)
+```
+
+---
+
+## 🌍 LOCALIZATION
+
+```swift
+// Localizable strings
+Text("hello.world")  // Looks up in Localizable.strings
+
+// With Markdown
+Text(LocalizedStringKey("**Bold** and *italic* text"))
+
+// With variables
+Text("Hello, \(username)")
+```
+
+---
+
+## ✅ BEST PRACTICES
+
+1. **Cache complex AttributedString** objects for performance
+2. **Use appropriate text containers** based on content size
+3. **Support Dynamic Type** for accessibility
+4. **Localize text properly** with LocalizedStringKey
+5. **Use foregroundStyle** over deprecated foregroundColor
+
+---
+
+## 📚 REFERENCES
+
+- [Building Rich SwiftUI Text Experiences](https://developer.apple.com/documentation/SwiftUI/building-rich-swiftui-text-experiences)
+- [Text View Documentation](https://developer.apple.com/documentation/SwiftUI/Text)
+- [AttributedString Documentation](https://developer.apple.com/documentation/Foundation/AttributedString)
+- [TextEditor Documentation](https://developer.apple.com/documentation/SwiftUI/TextEditor)

@@ -14,6 +14,7 @@ struct HomeView: View {
     @State private var selectedProduct: Product?
     @State private var showSearch = false
     @State private var hasAppeared = false
+    @Namespace private var searchTransition
     
     // MARK: - Body
     var body: some View {
@@ -79,18 +80,17 @@ struct HomeView: View {
                     .fontWeight(.medium)
                     .tracking(6)
             }
-            
+
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showSearch = true
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundStyle(AppColors.Text.primary)
-                }
+                searchButton
             }
         }
+        .modifier(ToolbarEnhancementsModifier())
         .navigationDestination(item: $selectedProduct) { ProductDetailView(product: $0) }
+        .navigationDestination(isPresented: $showSearch) {
+            SearchView()
+                .modifier(ZoomTransitionModifier(sourceID: "searchIcon", namespace: searchTransition))
+        }
         .refreshable {
             await viewModel.fetchData()
         }
@@ -98,6 +98,71 @@ struct HomeView: View {
             withAnimation(.easeOut(duration: 0.6)) {
                 hasAppeared = true
             }
+        }
+    }
+    
+    // MARK: - Search Button with Liquid Glass (iOS 26+)
+    @ViewBuilder
+    private var searchButton: some View {
+        if #available(iOS 26.0, *) {
+            Button {
+                showSearch = true
+            } label: {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(AppColors.Text.primary)
+                    .frame(width: 36, height: 36)
+            }
+            .glassEffect(.regular.interactive())
+            .modifier(MatchedTransitionSourceModifier(id: "searchIcon", namespace: searchTransition))
+        } else {
+            Button {
+                showSearch = true
+            } label: {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(AppColors.Text.primary)
+            }
+            .modifier(MatchedTransitionSourceModifier(id: "searchIcon", namespace: searchTransition))
+        }
+    }
+}
+
+// MARK: - iOS 18+ Transition Modifiers
+private struct ZoomTransitionModifier: ViewModifier {
+    let sourceID: String
+    let namespace: Namespace.ID
+
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *) {
+            content.navigationTransition(.zoom(sourceID: sourceID, in: namespace))
+        } else {
+            content
+        }
+    }
+}
+
+private struct MatchedTransitionSourceModifier: ViewModifier {
+    let id: String
+    let namespace: Namespace.ID
+
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *) {
+            content.matchedTransitionSource(id: id, in: namespace)
+        } else {
+            content
+        }
+    }
+}
+
+// MARK: - Toolbar Enhancements Modifier (iOS 18+)
+private struct ToolbarEnhancementsModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *) {
+            content
+                .toolbarBackgroundVisibility(.automatic, for: .navigationBar)
+        } else {
+            content
         }
     }
 }

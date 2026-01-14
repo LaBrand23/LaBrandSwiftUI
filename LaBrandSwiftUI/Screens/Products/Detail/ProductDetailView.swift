@@ -212,14 +212,56 @@ private extension ProductDetailView {
                 .font(.system(size: 12, weight: .semibold))
                 .tracking(2)
                 .foregroundStyle(AppColors.Text.tertiary)
-            
-            Text(product.description)
+
+            Text(styledDescription)
                 .font(.system(size: 14))
                 .foregroundStyle(AppColors.Text.secondary)
                 .lineSpacing(6)
         }
         .opacity(hasAppeared ? 1 : 0)
         .animation(.easeOut(duration: 0.5).delay(0.4), value: hasAppeared)
+    }
+
+    /// Styled description using AttributedString for rich text formatting
+    private var styledDescription: AttributedString {
+        var description = AttributedString(product.description)
+
+        // Style brand mentions in bold
+        if let brandRange = description.range(of: product.brand.name, options: .caseInsensitive) {
+            description[brandRange].font = .system(size: 14, weight: .semibold)
+            description[brandRange].foregroundColor = UIColor(AppColors.Text.primary)
+        }
+
+        // Style key material/fabric words in italic
+        let materialKeywords = ["silk", "cotton", "wool", "cashmere", "leather", "linen", "velvet", "satin", "denim", "suede"]
+        for keyword in materialKeywords {
+            var searchRange = description.startIndex..<description.endIndex
+            while let range = description[searchRange].range(of: keyword, options: .caseInsensitive) {
+                description[range].font = .system(size: 14).italic()
+                description[range].foregroundColor = UIColor(AppColors.Accent.gold)
+                if range.upperBound < description.endIndex {
+                    searchRange = range.upperBound..<description.endIndex
+                } else {
+                    break
+                }
+            }
+        }
+
+        // Style quality descriptors
+        let qualityWords = ["premium", "luxury", "handcrafted", "artisan", "exclusive", "limited edition", "designer"]
+        for keyword in qualityWords {
+            var searchRange = description.startIndex..<description.endIndex
+            while let range = description[searchRange].range(of: keyword, options: .caseInsensitive) {
+                description[range].font = .system(size: 14, weight: .medium)
+                if range.upperBound < description.endIndex {
+                    searchRange = range.upperBound..<description.endIndex
+                } else {
+                    break
+                }
+            }
+        }
+
+        return description
     }
     
     var reviewsLink: some View {
@@ -289,34 +331,67 @@ private extension ProductDetailView {
                     .foregroundStyle(AppColors.Text.primary)
             }
             
-            // Add to Cart Button
-            Button {
-                viewModel.addToCart()
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "bag")
-                        .font(.system(size: 14, weight: .medium))
-                    Text("ADD TO BAG")
-                        .font(.system(size: 14, weight: .semibold))
-                        .tracking(2)
-                }
-                .foregroundStyle(AppColors.Button.primaryText)
-                .frame(maxWidth: .infinity)
-                .frame(height: 52)
-                .background(
-                    viewModel.selectedSize != nil
-                    ? AppColors.Button.primaryBackground
-                    : AppColors.Button.disabled
-                )
-            }
-            .disabled(viewModel.selectedSize == nil)
+            // Add to Cart Button - Enhanced with Liquid Glass on iOS 26+
+            addToCartButton
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 16)
-        .background(
+        .background(cartBarBackground)
+    }
+    
+    @ViewBuilder
+    private var addToCartButton: some View {
+        let isEnabled = viewModel.selectedSize != nil
+        
+        Button {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                viewModel.addToCart()
+            }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "bag")
+                    .font(.system(size: 14, weight: .medium))
+                Text("ADD TO BAG")
+                    .font(.system(size: 14, weight: .semibold))
+                    .tracking(2)
+            }
+            .foregroundStyle(isEnabled ? AppColors.Button.primaryText : AppColors.Text.muted)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(isEnabled ? AppColors.Button.primaryBackground : AppColors.Button.disabled)
+        }
+        .disabled(!isEnabled)
+        .modifier(LiquidGlassButtonModifier(isEnabled: isEnabled))
+    }
+    
+    @ViewBuilder
+    private var cartBarBackground: some View {
+        if #available(iOS 26.0, *) {
+            // Use glass effect for modern translucent bar
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    Rectangle()
+                        .fill(AppColors.Background.surface.opacity(0.5))
+                )
+        } else {
             AppColors.Background.surface
                 .shadow(color: AppColors.Shadow.light, radius: 10, y: -5)
-        )
+        }
+    }
+}
+
+// MARK: - Liquid Glass Button Modifier
+private struct LiquidGlassButtonModifier: ViewModifier {
+    let isEnabled: Bool
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .glassEffect(isEnabled ? .regular.tint(AppColors.Accent.gold).interactive() : .regular)
+        } else {
+            content
+        }
     }
 }
 

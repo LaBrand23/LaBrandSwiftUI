@@ -117,6 +117,27 @@ private extension ProductCard {
     var tagView: some View {
         switch product.tag {
         case .sale:
+            saleBadge
+
+        case .new:
+            newBadge
+
+        case .default:
+            EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private var saleBadge: some View {
+        if #available(iOS 26.0, *) {
+            Text("-\(product.discountPercentage ?? 0)%")
+                .font(.system(size: 10, weight: .bold))
+                .tracking(0.5)
+                .foregroundStyle(AppColors.Text.inverted)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .glassEffect(.regular.tint(AppColors.Accent.sale))
+        } else {
             Text("-\(product.discountPercentage ?? 0)%")
                 .font(.system(size: 10, weight: .bold))
                 .tracking(0.5)
@@ -125,8 +146,20 @@ private extension ProductCard {
                 .padding(.vertical, 6)
                 .background(AppColors.Accent.sale)
                 .clipShape(Capsule())
-            
-        case .new:
+        }
+    }
+
+    @ViewBuilder
+    private var newBadge: some View {
+        if #available(iOS 26.0, *) {
+            Text("NEW")
+                .font(.system(size: 9, weight: .bold))
+                .tracking(1)
+                .foregroundStyle(AppColors.Text.inverted)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .glassEffect(.regular.tint(AppColors.Background.editorial))
+        } else {
             Text("NEW")
                 .font(.system(size: 9, weight: .bold))
                 .tracking(1)
@@ -135,9 +168,6 @@ private extension ProductCard {
                 .padding(.vertical, 6)
                 .background(AppColors.Background.editorial)
                 .clipShape(Capsule())
-            
-        case .default:
-            EmptyView()
         }
     }
     

@@ -1,0 +1,285 @@
+# SwiftUI AlarmKit Integration
+
+Guidelines for implementing alarms and timers using AlarmKit (iOS 18+).
+
+---
+
+## 🔔 OVERVIEW
+
+AlarmKit enables custom alarms and timers with system integration, Live Activities support, and Dynamic Island presentation.
+
+**Key Components:**
+- `AlarmManager` - Central class for alarm system
+- `Alarm` - Structure describing an alarm
+- `AlarmPresentation` - UI content for alarm states
+- `AlarmAttributes` - Full alarm UI configuration
+
+---
+
+## ✅ AUTHORIZATION
+
+### Info.plist Requirement
+
+```xml
+<key>NSAlarmKitUsageDescription</key>
+<string>We'll schedule alerts for alarms you create.</string>
+```
+
+### Request Authorization
+
+```swift
+func requestAlarmAuthorization() async -> Bool {
+    do {
+        let state = try await AlarmManager.shared.requestAuthorization()
+        return state == .authorized
+    } catch {
+        print("Error: \(error)")
+        return false
+    }
+}
+
+// Check status (use authorizationState, NOT authorizationStatus)
+let status = await AlarmManager.shared.authorizationState
+```
+
+---
+
+## ⏰ CREATING ALARMS
+
+### One-time Alarm
+
+```swift
+func createOneTimeAlarm(hour: Int, minute: Int) async throws -> Alarm {
+    let id = UUID()
+    
+    let time = Alarm.Schedule.Relative.Time(hour: hour, minute: minute)
+    let schedule = Alarm.Schedule.relative(.init(
+        time: time,
+        repeats: .never
+    ))
+    
+    let alertContent = AlarmPresentation.Alert(
+        title: "Wake Up",
+        stopButton: .stopButton,
+        secondaryButton: .openAppButton,
+        secondaryButtonBehavior: .custom
+    )
+    
+    struct EmptyMetadata: AlarmMetadata {}
+    let attributes = AlarmAttributes(
+        presentation: AlarmPresentation(alert: alertContent),
+        metadata: EmptyMetadata(),
+        tintColor: .blue
+    )
+    
+    let configuration = AlarmManager.AlarmConfiguration(
+        countdownDuration: nil,
+        schedule: schedule,
+        attributes: attributes,
+        sound: .default
+    )
+    
+    return try await AlarmManager.shared.schedule(id: id, configuration: configuration)
+}
+```
+
+### Repeating Alarm
+
+```swift
+func createWeeklyAlarm(hour: Int, minute: Int, weekdays: Set<Locale.Weekday>) async throws -> Alarm {
+    let time = Alarm.Schedule.Relative.Time(hour: hour, minute: minute)
+    let schedule = Alarm.Schedule.relative(.init(
+        time: time,
+        repeats: .weekly(Array(weekdays))
+    ))
+    
+    let alertContent = AlarmPresentation.Alert(
+        title: "Weekly Reminder",
+        stopButton: .stopButton,
+        secondaryButton: .snoozeButton,
+        secondaryButtonBehavior: .countdown
+    )
+    
+    let countdownDuration = Alarm.CountdownDuration(
+        preAlert: nil,
+        postAlert: 9 * 60  // 9-minute snooze
+    )
+    
+    // ... rest of configuration
+}
+```
+
+### Countdown Timer
+
+```swift
+func createTimer(seconds: TimeInterval) async throws -> Alarm {
+    let countdownDuration = Alarm.CountdownDuration(
+        preAlert: seconds,
+        postAlert: 10
+    )
+    
+    let alertContent = AlarmPresentation.Alert(
+        title: "Timer Complete",
+        stopButton: .stopButton,
+        secondaryButton: .repeatButton,
+        secondaryButtonBehavior: .countdown
+    )
+    
+    let countdownContent = AlarmPresentation.Countdown(
+        title: "Timer Running",
+        pauseButton: .pauseButton
+    )
+    
+    let pausedContent = AlarmPresentation.Paused(
+        title: "Timer Paused",
+        resumeButton: .resumeButton
+    )
+    
+    let presentation = AlarmPresentation(
+        alert: alertContent,
+        countdown: countdownContent,
+        paused: pausedContent
+    )
+    
+    // schedule: nil for timers (no schedule, just countdown)
+}
+```
+
+---
+
+## 🎨 UI CUSTOMIZATION
+
+### Alert Presentation
+
+```swift
+// Basic
+let basicAlert = AlarmPresentation.Alert(
+    title: "Alarm",
+    stopButton: .stopButton
+)
+
+// With snooze
+let snoozeAlert = AlarmPresentation.Alert(
+    title: "Wake Up",
+    stopButton: .stopButton,
+    secondaryButton: .snoozeButton,
+    secondaryButtonBehavior: .countdown
+)
+
+// Custom labels
+let customAlert = AlarmPresentation.Alert(
+    title: "Medication",
+    stopButton: AlarmButton(label: "Taken"),
+    secondaryButton: AlarmButton(label: "Remind Later"),
+    secondaryButtonBehavior: .countdown
+)
+```
+
+### Custom Metadata
+
+```swift
+struct RecipeMetadata: AlarmMetadata {
+    let recipeName: String
+    let cookingStep: String
+}
+
+let attributes = AlarmAttributes(
+    presentation: presentation,
+    metadata: RecipeMetadata(recipeName: "Cake", cookingStep: "Remove from oven"),
+    tintColor: .brown
+)
+```
+
+---
+
+## 🔧 MANAGING ALARMS
+
+```swift
+// Get all alarms
+let alarms = try AlarmManager.shared.alarms
+
+// Pause
+try await AlarmManager.shared.pause(id: alarmID)
+
+// Resume
+try await AlarmManager.shared.resume(id: alarmID)
+
+// Cancel
+try await AlarmManager.shared.cancel(id: alarmID)
+```
+
+---
+
+## 👀 OBSERVING CHANGES
+
+```swift
+func observeAlarmChanges() {
+    Task {
+        for await alarms in AlarmManager.shared.alarmUpdates {
+            updateUI(with: alarms)
+        }
+    }
+}
+
+func observeAuthorizationChanges() {
+    Task {
+        for await authState in AlarmManager.shared.authorizationUpdates {
+            handleAuthState(authState)
+        }
+    }
+}
+```
+
+---
+
+## 📱 LIVE ACTIVITIES
+
+Implement widget extension for Dynamic Island and Lock Screen:
+
+```swift
+struct AlarmWidgetView: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: AlarmAttributes<YourMetadata>.self) { context in
+            // Lock Screen UI
+            VStack {
+                Text(context.state.mode == .countdown ? "Counting down" : "Alarm set")
+                if context.state.mode == .countdown {
+                    Text(timerInterval: context.state.countdownEndDate.timeIntervalSinceNow, countsDown: true)
+                }
+            }
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.leading) {
+                    Text(context.attributes.presentation.alert.title)
+                }
+            } compactLeading: {
+                Image(systemName: "alarm")
+            } compactTrailing: {
+                // Timer display
+            } minimal: {
+                Image(systemName: "alarm")
+            }
+        }
+    }
+}
+```
+
+---
+
+## ✅ BEST PRACTICES
+
+1. **Request authorization early** - on first launch or first alarm creation
+2. **Handle authorization denial** - provide clear path to Settings
+3. **Implement widget extension** for countdown presentations
+4. **Observe alarmUpdates** to keep UI in sync
+5. **Persist alarm IDs** to manage them later
+6. **Handle errors gracefully** - all operations can throw
+7. **Test on real devices** - simulators have limitations
+
+---
+
+## 📚 REFERENCES
+
+- [Scheduling an alarm with AlarmKit](https://developer.apple.com/documentation/AlarmKit/scheduling-an-alarm-with-alarmkit)
+- [AlarmKit Framework](https://developer.apple.com/documentation/AlarmKit)
+- [WWDC25 Session 230: Wake up to the AlarmKit API](https://developer.apple.com/wwdc25/230)

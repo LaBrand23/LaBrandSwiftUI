@@ -1,0 +1,202 @@
+# SwiftUI Liquid Glass Design
+
+Guidelines for implementing the Liquid Glass design system in SwiftUI (iOS 18+).
+
+---
+
+## 🔮 OVERVIEW
+
+Liquid Glass is Apple's dynamic material that combines optical glass properties with fluidity. Use this for modern, premium UI experiences.
+
+**Key Characteristics:**
+- Blurs content behind the material
+- Reflects color and light from surrounding content
+- Reacts to touch and pointer interactions
+- Can morph between shapes during transitions
+
+---
+
+## ✅ BASIC IMPLEMENTATION
+
+### Simple Glass Effect
+
+```swift
+Text("Hello, World!")
+    .font(.title)
+    .padding()
+    .glassEffect()  // Default: regular variant in Capsule shape
+```
+
+### Custom Shape
+
+```swift
+Text("Hello, World!")
+    .font(.title)
+    .padding()
+    .glassEffect(in: .rect(cornerRadius: 16.0))
+
+// Available shapes:
+// .capsule (default)
+// .rect(cornerRadius: CGFloat)
+// .circle
+```
+
+---
+
+## 🎨 CUSTOMIZATION
+
+### Tint and Interactive Effects
+
+```swift
+// Add color tint for prominence
+Text("Hello")
+    .padding()
+    .glassEffect(.regular.tint(.orange))
+
+// Make glass react to touch/pointer
+Text("Hello")
+    .padding()
+    .glassEffect(.regular.interactive())
+
+// Combined
+Text("Hello")
+    .padding()
+    .glassEffect(.regular.tint(.blue).interactive())
+```
+
+---
+
+## 📦 MULTIPLE GLASS EFFECTS
+
+### Using GlassEffectContainer
+
+Always use `GlassEffectContainer` for multiple glass views - improves performance and enables morphing:
+
+```swift
+GlassEffectContainer(spacing: 40.0) {
+    HStack(spacing: 40.0) {
+        Image(systemName: "scribble.variable")
+            .frame(width: 80.0, height: 80.0)
+            .font(.system(size: 36))
+            .glassEffect()
+
+        Image(systemName: "eraser.fill")
+            .frame(width: 80.0, height: 80.0)
+            .font(.system(size: 36))
+            .glassEffect()
+    }
+}
+```
+
+### Uniting Glass Effects
+
+Combine multiple views into a single glass effect:
+
+```swift
+@Namespace private var namespace
+
+GlassEffectContainer(spacing: 20.0) {
+    HStack(spacing: 20.0) {
+        ForEach(symbolSet.indices, id: \.self) { item in
+            Image(systemName: symbolSet[item])
+                .frame(width: 80.0, height: 80.0)
+                .glassEffect()
+                .glassEffectUnion(id: item < 2 ? "group1" : "group2", namespace: namespace)
+        }
+    }
+}
+```
+
+---
+
+## ✨ MORPHING TRANSITIONS
+
+Create smooth morphing effects when views appear/disappear:
+
+```swift
+@State private var isExpanded: Bool = false
+@Namespace private var namespace
+
+var body: some View {
+    GlassEffectContainer(spacing: 40.0) {
+        HStack(spacing: 40.0) {
+            Image(systemName: "scribble.variable")
+                .frame(width: 80.0, height: 80.0)
+                .glassEffect()
+                .glassEffectID("pencil", in: namespace)
+
+            if isExpanded {
+                Image(systemName: "eraser.fill")
+                    .frame(width: 80.0, height: 80.0)
+                    .glassEffect()
+                    .glassEffectID("eraser", in: namespace)
+            }
+        }
+    }
+
+    Button("Toggle") {
+        withAnimation {
+            isExpanded.toggle()
+        }
+    }
+    .buttonStyle(.glass)
+}
+```
+
+---
+
+## 🔘 BUTTON STYLES
+
+### Built-in Glass Button Styles
+
+```swift
+// Standard glass button
+Button("Click Me") { }
+    .buttonStyle(.glass)
+
+// Prominent glass button (more emphasis)
+Button("Important") { }
+    .buttonStyle(.glassProminent)
+```
+
+---
+
+## 📐 BEST PRACTICES
+
+1. **Always use GlassEffectContainer** for multiple glass views
+2. **Apply `.glassEffect()` after** other appearance modifiers
+3. **Choose spacing carefully** - controls when effects merge
+4. **Use animations** for view hierarchy changes
+5. **Add `.interactive()`** for touch-responsive glass
+6. **Maintain consistent shapes** across your app
+
+---
+
+## 🔧 ADVANCED: Background Extension
+
+Extend content under sidebars/inspectors:
+
+```swift
+NavigationSplitView {
+    // Sidebar
+} detail: {
+    DetailView()
+        .background {
+            // Background extends under sidebar
+        }
+}
+
+// Horizontal scrolling under sidebar
+ScrollView(.horizontal) {
+    // Content
+}
+.scrollExtensionMode(.underSidebar)
+```
+
+---
+
+## 📚 REFERENCES
+
+- [Applying Liquid Glass to custom views](https://developer.apple.com/documentation/SwiftUI/Applying-Liquid-Glass-to-custom-views)
+- [SwiftUI GlassEffectContainer](https://developer.apple.com/documentation/SwiftUI/GlassEffectContainer)
+- [SwiftUI GlassButtonStyle](https://developer.apple.com/documentation/SwiftUI/GlassButtonStyle)

@@ -19,9 +19,22 @@
 		34C5D0252D917F5C00761BB5 /* LaBrandSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LaBrandSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2ECC1DB22F175B57004683FC /* Exceptions for "LaBrandSwiftUI" folder in "LaBrandSwiftUI" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 34C5D0242D917F5C00761BB5 /* LaBrandSwiftUI */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		34C5D0272D917F5C00761BB5 /* LaBrandSwiftUI */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2ECC1DB22F175B57004683FC /* Exceptions for "LaBrandSwiftUI" folder in "LaBrandSwiftUI" target */,
+			);
 			path = LaBrandSwiftUI;
 			sourceTree = "<group>";
 		};
@@ -278,8 +291,10 @@
 				DEVELOPMENT_TEAM = 4V6HY9M86Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LaBrandSwiftUI/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LaBrand;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Need Camera Access";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -312,8 +327,10 @@
 				DEVELOPMENT_TEAM = 4V6HY9M86Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LaBrandSwiftUI/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LaBrand;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Need Camera Access";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

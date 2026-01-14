@@ -60,17 +60,31 @@ struct CategoryCard: View {
             )
         }
         .frame(height: 100)
-        .background(AppColors.Background.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(AppColors.Border.primary, lineWidth: 1)
-        )
+        .modifier(CategoryCardGlassModifier())
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.spring(response: 0.3), value: isPressed)
         .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
             isPressed = pressing
         }, perform: {})
+    }
+}
+
+// MARK: - Glass Effect Modifier for Category Cards
+private struct CategoryCardGlassModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .background(.ultraThinMaterial)
+                .glassEffect(.regular.tint(.clear).interactive(), in: .rect(cornerRadius: 8))
+        } else {
+            content
+                .background(AppColors.Background.surface)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(AppColors.Border.primary, lineWidth: 1)
+                )
+        }
     }
 }
 

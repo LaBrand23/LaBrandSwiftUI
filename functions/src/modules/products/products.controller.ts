@@ -14,6 +14,7 @@ const router = Router();
 const createProductSchema = z.object({
   name: z.string().min(1).max(255),
   category_id: z.string().uuid(),
+  primary_branch_id: z.string().uuid(),
   description: z.string().optional(),
   price: z.number().positive(),
   sale_price: z.number().positive().optional(),
@@ -25,6 +26,7 @@ const createProductSchema = z.object({
 const updateProductSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   category_id: z.string().uuid().optional(),
+  primary_branch_id: z.string().uuid().optional(),
   description: z.string().optional(),
   price: z.number().positive().optional(),
   sale_price: z.number().positive().nullable().optional(),
@@ -161,7 +163,7 @@ router.put(
         }
       }
 
-      const product = await productsService.updateProduct(req.params.id, req.body);
+      const product = await productsService.updateProduct(req.params.id, req.body, existingProduct.brand_id);
       success(res, product, "Product updated successfully");
     } catch (err) {
       if (err instanceof ApiError) {

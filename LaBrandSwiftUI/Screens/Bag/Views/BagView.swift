@@ -272,6 +272,38 @@ private extension BagView {
                 .fill(AppColors.Border.subtle)
                 .frame(height: 1)
             
+            checkoutButtonContent
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(checkoutBarBackground)
+        }
+    }
+    
+    @ViewBuilder
+    private var checkoutButtonContent: some View {
+        if #available(iOS 26.0, *) {
+            // Modern Liquid Glass button
+            Button {
+                showingCheckout = true
+            } label: {
+                HStack {
+                    Text("CHECKOUT")
+                        .font(.system(size: 14, weight: .semibold))
+                        .tracking(2)
+                    
+                    Spacer()
+                    
+                    Text("$\(viewModel.total, specifier: "%.2f")")
+                        .font(.system(size: 16, weight: .bold))
+                }
+                .foregroundStyle(AppColors.Text.primary)
+                .padding(.horizontal, 24)
+                .frame(height: 56)
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glassProminent)
+        } else {
+            // Classic button for older iOS
             Button {
                 showingCheckout = true
             } label: {
@@ -291,9 +323,20 @@ private extension BagView {
                 .frame(maxWidth: .infinity)
                 .background(AppColors.Button.primaryBackground)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .background(AppColors.Background.surface)
+        }
+    }
+    
+    @ViewBuilder
+    private var checkoutBarBackground: some View {
+        if #available(iOS 26.0, *) {
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    Rectangle()
+                        .fill(AppColors.Background.surface.opacity(0.3))
+                )
+        } else {
+            AppColors.Background.surface
         }
     }
 }

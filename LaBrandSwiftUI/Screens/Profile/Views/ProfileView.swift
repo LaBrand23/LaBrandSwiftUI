@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreSpotlight
 
 struct ProfileView: View {
     
@@ -42,7 +43,67 @@ struct ProfileView: View {
             withAnimation(.easeOut(duration: 0.6)) {
                 hasAppeared = true
             }
+            indexProfileForSpotlight()
         }
+        .userActivity("com.labrand.viewProfile") { activity in
+            activity.title = "View My Profile"
+            activity.isEligibleForSearch = true
+            activity.isEligibleForPrediction = true
+            activity.persistentIdentifier = "user-profile"
+
+            let attributes = CSSearchableItemAttributeSet(contentType: .content)
+            attributes.title = viewModel.userProfile.fullName
+            attributes.contentDescription = "LaBrand Profile - \(viewModel.userProfile.email)"
+            attributes.thumbnailData = nil
+            activity.contentAttributeSet = attributes
+        }
+    }
+
+    // MARK: - Spotlight Indexing
+    private func indexProfileForSpotlight() {
+        Task {
+            await indexUserProfile()
+            await indexUserOrders()
+        }
+    }
+
+    private func indexUserProfile() async {
+        let attributeSet = CSSearchableItemAttributeSet(contentType: .content)
+        attributeSet.title = viewModel.userProfile.fullName
+        attributeSet.contentDescription = "Your LaBrand profile and settings"
+        attributeSet.keywords = ["profile", "account", "settings", viewModel.userProfile.fullName]
+
+        let item = CSSearchableItem(
+            uniqueIdentifier: "labrand-user-profile",
+            domainIdentifier: "com.labrand.profile",
+            attributeSet: attributeSet
+        )
+        item.expirationDate = Date.distantFuture
+
+        try? await CSSearchableIndex.default().indexSearchableItems([item])
+    }
+
+    private func indexUserOrders() async {
+        var items: [CSSearchableItem] = []
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+
+        for order in viewModel.orders {
+            let attributeSet = CSSearchableItemAttributeSet(contentType: .content)
+            attributeSet.title = "Order #\(order.orderNumber)"
+            attributeSet.contentDescription = "Order placed on \(dateFormatter.string(from: order.date)) - \(order.status.displayName)"
+            attributeSet.keywords = ["order", "purchase", order.orderNumber, order.status.rawValue]
+
+            let item = CSSearchableItem(
+                uniqueIdentifier: "labrand-order-\(order.id)",
+                domainIdentifier: "com.labrand.orders",
+                attributeSet: attributeSet
+            )
+            item.expirationDate = Calendar.current.date(byAdding: .month, value: 6, to: Date()) ?? Date.distantFuture
+            items.append(item)
+        }
+
+        try? await CSSearchableIndex.default().indexSearchableItems(items)
     }
 }
 

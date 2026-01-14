@@ -7,6 +7,7 @@ import { useAuthStore } from '@shared/stores/authStore';
 import { toast } from '@shared/stores/uiStore';
 import { productsService, CreateProductData } from '@shared/services/products.service';
 import { categoriesService } from '@shared/services/categories.service';
+import { branchesService } from '@shared/services/branches.service';
 import { Gender } from '@shared/types';
 import { Card } from '@shared/components/ui/Card';
 import { Button } from '@shared/components/ui/Button';
@@ -42,6 +43,7 @@ interface FormData {
   compare_at_price: string;
   cost_per_item: string;
   category_id: string;
+  primary_branch_id: string;
   gender: Gender | '';
   stock_quantity: string;
   low_stock_threshold: string;
@@ -58,6 +60,7 @@ const initialFormData: FormData = {
   compare_at_price: '',
   cost_per_item: '',
   category_id: '',
+  primary_branch_id: '',
   gender: '',
   stock_quantity: '0',
   low_stock_threshold: '5',
@@ -86,6 +89,19 @@ export default function NewProductPage() {
   });
 
   const categories = categoriesData || [];
+
+  // Fetch branches for the brand
+  const { data: branchesData } = useQuery({
+    queryKey: ['branches', brandId],
+    queryFn: () => branchesService.getBranches(brandId!),
+    enabled: !!brandId,
+  });
+
+  const branches = branchesData || [];
+  const branchOptions = [
+    { value: '', label: 'Select Branch' },
+    ...branches.filter(b => b.is_active).map(b => ({ value: b.id, label: b.name })),
+  ];
 
   // Flatten categories for select options
   const flattenCategories = (cats: typeof categories, prefix = ''): { value: string; label: string }[] => {
@@ -126,6 +142,7 @@ export default function NewProductPage() {
     if (!formData.name.trim()) newErrors.name = 'Product name is required';
     if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = 'Valid price is required';
     if (!formData.category_id) newErrors.category_id = 'Category is required';
+    if (!formData.primary_branch_id) newErrors.primary_branch_id = 'Branch is required';
 
     setErrors(newErrors);
 
@@ -134,6 +151,7 @@ export default function NewProductPage() {
       const payload: CreateProductData = {
         name: formData.name.trim(),
         category_id: formData.category_id,
+        primary_branch_id: formData.primary_branch_id,
         description: formData.description.trim() || undefined,
         price: parseFloat(formData.price),
         sale_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : undefined,
@@ -411,6 +429,24 @@ export default function NewProductPage() {
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('status', e.target.value)}
                   options={statusOptions}
                 />
+              </div>
+            </Card>
+
+            {/* Branch Selection */}
+            <Card>
+              <div className="p-6">
+                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Primary Branch</h2>
+                <Select
+                  label="Branch"
+                  value={formData.primary_branch_id}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('primary_branch_id', e.target.value)}
+                  options={branchOptions}
+                  error={errors.primary_branch_id}
+                  required
+                />
+                <p className="text-sm text-neutral-500 mt-2">
+                  Select the branch where this product will be initially available
+                </p>
               </div>
             </Card>
 

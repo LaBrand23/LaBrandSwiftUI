@@ -158,7 +158,7 @@ private extension CheckoutView {
                 .font(.system(size: 12, weight: .semibold))
                 .tracking(2)
                 .foregroundStyle(AppColors.Text.tertiary)
-            
+
             HStack(spacing: 12) {
                 ForEach(DeliveryMethod.allCases) { method in
                     DeliveryMethodCard(
@@ -170,12 +170,7 @@ private extension CheckoutView {
             }
         }
         .padding(20)
-        .background(AppColors.Background.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(AppColors.Border.subtle, lineWidth: 1)
-        )
+        .modifier(GlassCardModifier())
     }
     
     var orderSummarySection: some View {
@@ -184,15 +179,15 @@ private extension CheckoutView {
                 .font(.system(size: 12, weight: .semibold))
                 .tracking(2)
                 .foregroundStyle(AppColors.Text.tertiary)
-            
+
             VStack(spacing: 12) {
                 SummaryRow(title: "Subtotal", value: "$112.98")
                 SummaryRow(title: "Delivery", value: "$\(String(format: "%.2f", viewModel.selectedDeliveryMethod.price))")
-                
+
                 Rectangle()
                     .fill(AppColors.Border.primary)
                     .frame(height: 1)
-                
+
                 HStack {
                     Text("Total")
                         .font(.system(size: 16, weight: .semibold))
@@ -205,12 +200,7 @@ private extension CheckoutView {
             }
         }
         .padding(20)
-        .background(AppColors.Background.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(AppColors.Border.subtle, lineWidth: 1)
-        )
+        .modifier(GlassCardModifier())
     }
     
     var submitButton: some View {
@@ -218,7 +208,28 @@ private extension CheckoutView {
             Rectangle()
                 .fill(AppColors.Border.subtle)
                 .frame(height: 1)
-            
+
+            submitOrderButton
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+        }
+        .background(submitButtonBackground)
+    }
+
+    @ViewBuilder
+    private var submitOrderButton: some View {
+        if #available(iOS 26.0, *) {
+            Button(action: viewModel.submitOrder) {
+                Text("SUBMIT ORDER")
+                    .font(.system(size: 14, weight: .semibold))
+                    .tracking(2)
+                    .foregroundStyle(AppColors.Button.primaryText)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+            }
+            .buttonStyle(.glassProminent)
+            .tint(AppColors.Accent.gold)
+        } else {
             Button(action: viewModel.submitOrder) {
                 Text("SUBMIT ORDER")
                     .font(.system(size: 14, weight: .semibold))
@@ -228,10 +239,17 @@ private extension CheckoutView {
                     .frame(height: 56)
                     .background(AppColors.Button.primaryBackground)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
         }
-        .background(AppColors.Background.surface)
+    }
+
+    @ViewBuilder
+    private var submitButtonBackground: some View {
+        if #available(iOS 26.0, *) {
+            Rectangle()
+                .fill(.ultraThinMaterial)
+        } else {
+            AppColors.Background.surface
+        }
     }
 }
 
@@ -241,7 +259,7 @@ private struct CheckoutCard<Content: View>: View {
     var actionTitle: String? = nil
     var action: (() -> Void)? = nil
     @ViewBuilder let content: Content
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -249,9 +267,9 @@ private struct CheckoutCard<Content: View>: View {
                     .font(.system(size: 12, weight: .semibold))
                     .tracking(2)
                     .foregroundStyle(AppColors.Text.tertiary)
-                
+
                 Spacer()
-                
+
                 if let actionTitle = actionTitle, let action = action {
                     Button(action: action) {
                         Text(actionTitle)
@@ -260,16 +278,30 @@ private struct CheckoutCard<Content: View>: View {
                     }
                 }
             }
-            
+
             content
         }
         .padding(20)
-        .background(AppColors.Background.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(AppColors.Border.subtle, lineWidth: 1)
-        )
+        .modifier(GlassCardModifier())
+    }
+}
+
+// MARK: - Glass Card Modifier
+private struct GlassCardModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .background(.ultraThinMaterial)
+                .glassEffect(.regular.tint(.clear).interactive(), in: .rect(cornerRadius: 8))
+        } else {
+            content
+                .background(AppColors.Background.surface)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(AppColors.Border.subtle, lineWidth: 1)
+                )
+        }
     }
 }
 

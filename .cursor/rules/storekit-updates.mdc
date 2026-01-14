@@ -1,0 +1,231 @@
+# StoreKit Updates
+
+Guidelines for implementing in-app purchases with the latest StoreKit features.
+
+---
+
+## 🆕 APPTRANSACTION UPDATES (iOS 18.4+)
+
+```swift
+Task {
+    do {
+        let appTransaction = try await AppTransaction.shared
+        
+        // Unique ID per Apple Account download
+        let transactionID = appTransaction.appTransactionID
+        
+        // Original purchase platform (iOS, macOS, tvOS, visionOS)
+        let platform = appTransaction.originalPlatform
+        
+        if platform == .iOS {
+            // Handle iOS-specific logic
+        }
+    } catch {
+        print("Error: \(error)")
+    }
+}
+```
+
+---
+
+## 💳 TRANSACTION UPDATES (iOS 18.4+)
+
+### New currentEntitlements API
+
+```swift
+// Replaces currentEntitlement(for:)
+for await result in Transaction.currentEntitlements(for: "your.product.id") {
+    switch result {
+    case .verified(let transaction):
+        let appTransactionID = transaction.appTransactionID
+        
+        if let offerPeriod = transaction.offerPeriod {
+            // Handle offer period info
+        }
+    case .unverified(_, let error):
+        print("Verification failed: \(error)")
+    }
+}
+```
+
+---
+
+## 🔄 RENEWALINFO UPDATES (iOS 18.4+)
+
+```swift
+Task {
+    let status = try await Product.SubscriptionInfo.Status(transactionID: "transaction_id")
+    
+    if let renewalInfo = status.renewalInfo {
+        if let reason = renewalInfo.expirationReason {
+            switch reason {
+            case .priceIncrease:
+                // Offer win-back promotion
+            case .billingError:
+                // Prompt to update payment method
+            default:
+                break
+            }
+        }
+    }
+}
+```
+
+---
+
+## 📱 SUBSCRIPTIONOFFERVIEW
+
+### Basic Usage
+
+```swift
+// With product ID
+SubscriptionOfferView(productID: "your.subscription.id")
+    .prefersPromotionalIcon(true)
+
+// With loaded product
+SubscriptionOfferView(product: loadedProduct)
+
+// With custom icon
+SubscriptionOfferView(productID: "your.subscription.id") {
+    Image("custom_icon")
+        .resizable()
+        .frame(width: 40, height: 40)
+}
+
+// With placeholder
+SubscriptionOfferView(productID: "your.subscription.id") {
+    Image("icon")
+} placeholderIcon: {
+    Image(systemName: "hourglass")
+}
+```
+
+### Detail Action
+
+```swift
+SubscriptionOfferView(productID: "your.subscription.id")
+    .subscriptionOfferViewDetailAction {
+        isShowingSubscriptionStore = true
+    }
+```
+
+### Visible Relationship
+
+```swift
+// Show specific plans based on customer status
+SubscriptionOfferView(groupID: "your.group.id", visibleRelationship: .upgrade)
+
+// Options:
+// .upgrade - One level higher than current
+// .downgrade - One level lower
+// .crossgrade - Equivalent tier, best value
+// .current - Customer's current plan
+// .all - All plans in group
+```
+
+---
+
+## 📊 SUBSCRIPTION STATUS TRACKING
+
+```swift
+@main
+struct MyApp: App {
+    @State private var customerStatus: SubscriptionStatus = .unknown
+    
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environment(\.customerSubscriptionStatus, customerStatus)
+                .subscriptionStatusTask(for: "your.group.id") { statuses in
+                    if statuses.contains(where: { $0.state == .subscribed }) {
+                        customerStatus = .subscribed
+                    } else if statuses.contains(where: { $0.state == .expired }) {
+                        customerStatus = .expired
+                    } else {
+                        customerStatus = .notSubscribed
+                    }
+                }
+        }
+    }
+}
+```
+
+---
+
+## ✍️ JWS SIGNING FOR OFFERS
+
+StoreKit now requires JSON Web Signatures (JWS) for:
+- Setting customer eligibility for introductory offers
+- Signing promotional offers
+
+```swift
+import AppStoreServerLibrary
+
+func createSignedOfferJWS(productID: String, offerID: String) async throws -> String {
+    let signingKey = try SigningKey(
+        privateKeyFilePath: "path/to/key.p8",
+        keyID: "YOUR_KEY_ID",
+        issuerID: "YOUR_ISSUER_ID"
+    )
+    
+    let library = try AppStoreServerLibrary(
+        signingKey: signingKey,
+        environment: .production
+    )
+    
+    return try library.createOfferSignature(
+        productIdentifier: productID,
+        subscriptionOfferID: offerID,
+        applicationUsername: nil,
+        nonce: UUID().uuidString,
+        keyIdentifier: "YOUR_KEY_ID",
+        timestamp: Int(Date().timeIntervalSince1970)
+    )
+}
+```
+
+---
+
+## 🧪 TESTING
+
+### Local StoreKit Configuration
+
+1. File > New > File From Template
+2. Search "storekit" > "StoreKit Configuration File"
+3. Name it (e.g., `LocalConfiguration.storekit`)
+4. Define products
+
+### Transaction Manager
+
+- Create and inspect transactions
+- Modify properties
+- Test different scenarios
+
+---
+
+## 🏪 ADVANCED COMMERCE API
+
+Access via `transaction.advancedCommerceInfo` for:
+- Large content catalogs
+- Creator experiences
+- Subscriptions with optional add-ons
+
+---
+
+## ✅ BEST PRACTICES
+
+1. **Use currentEntitlements** (plural) over deprecated singular API
+2. **Handle expiration reasons** for win-back opportunities
+3. **Implement SubscriptionOfferView** for consistent UI
+4. **Track subscription status** at app level
+5. **Test with local configuration** before App Store Connect
+6. **Sign offers properly** with JWS
+
+---
+
+## 📚 REFERENCES
+
+- [StoreKit Documentation](https://developer.apple.com/documentation/storekit)
+- [What's new in StoreKit (WWDC 2025)](https://developer.apple.com/videos/play/wwdc2025/241/)
+- [Getting started with StoreKit views](https://developer.apple.com/documentation/StoreKit/getting-started-with-in-app-purchases-using-storekit-views)
+- [App Store Server Library](https://github.com/apple/app-store-server-library-swift)

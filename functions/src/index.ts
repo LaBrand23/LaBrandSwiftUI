@@ -13,6 +13,7 @@ import reviewsController from "./modules/reviews/reviews.controller";
 import analyticsController from "./modules/analytics/analytics.controller";
 import inventoryController from "./modules/inventory/inventory.controller";
 import notificationsController from "./modules/notifications/notifications.controller";
+import branchInventoryController from "./modules/branch-inventory/branch-inventory.controller";
 
 // Initialize Express app
 const app = express();
@@ -46,6 +47,7 @@ app.use("/reviews", reviewsController);
 app.use("/analytics", analyticsController);
 app.use("/inventory", inventoryController);
 app.use("/notifications", notificationsController);
+app.use("/branch-inventory", branchInventoryController);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
